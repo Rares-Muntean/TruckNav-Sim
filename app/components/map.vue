@@ -143,7 +143,7 @@ watch(
                         destCoords,
                         truckCoords.value,
                         truckHeading.value,
-                        false
+                        false,
                     );
                 }
             }
@@ -153,7 +153,7 @@ watch(
             clearRouteState();
             currentJobKey.value = "";
         }
-    }
+    },
 );
 
 // We set the routeFound back to null with a delay if its true / false.
@@ -209,7 +209,7 @@ onMounted(async () => {
 
         map.value.on("click", async (e) => {
             console.log(
-                ` ${e.lngLat.lat.toFixed(5)}, ${e.lngLat.lng.toFixed(5)}`
+                ` ${e.lngLat.lat.toFixed(5)}, ${e.lngLat.lng.toFixed(5)}`,
             ); // KEEP FOR DEBUGGING BUGGED AREAS
             // if (hasActiveJob.value) return;
             if (!isClickingEnabled.value) return;
@@ -222,7 +222,7 @@ onMounted(async () => {
                     truckMarker.value.getLngLat().lat,
                 ],
                 truckHeading.value,
-                true
+                true,
             );
         });
 
@@ -251,7 +251,7 @@ function onStartNavigation() {
 
     startNavigationMode(
         [truckMarker.value.getLngLat().lng, truckMarker.value.getLngLat().lat],
-        truckHeading.value
+        truckHeading.value,
     );
 
     isSheetExpanded.value = false;
@@ -372,7 +372,10 @@ const onToggleFullscreen = async () => {
                 :speed-limit="speedLimit"
             />
 
-            <div class="warnings">
+            <div
+                class="warnings"
+                :style="{ '--bottom-nav-height': isWeb ? '60px' : '0px' }"
+            >
                 <WarningSlide
                     :show-if="hasInGameMarker && isRouteActive"
                     :reset-on="isRouteActive"
