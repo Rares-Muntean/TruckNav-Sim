@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { AppSettings } from "~~/shared/variables/appSettings";
+import { AppSettings } from "~~/shared/constants/appSettings";
 
 defineProps<{ closePanel: () => void }>();
 

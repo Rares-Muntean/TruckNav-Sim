@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { AppSettings } from "~~/shared/variables/appSettings";
+import { AppSettings } from "~~/shared/constants/appSettings";
 
 const { fetchIp, localIP } = useNetwork();
 const isServerRunning = ref(false);
@@ -13,7 +13,7 @@ const checkStatus = async () => {
     if (processExists) {
         try {
             const data = await (window as any).electronAPI.fetchTelemetry(
-                "127.0.0.1"
+                "127.0.0.1",
             );
             isServerRunning.value = !!data;
         } catch {
@@ -134,7 +134,7 @@ const openLink = async (url: string) => {
                     <a
                         @click.prevent="
                             openLink(
-                                'https://github.com/Rares-Muntean/ets2-navigation-gps'
+                                'https://github.com/Rares-Muntean/ets2-navigation-gps',
                             )
                         "
                         >TruckNav</a

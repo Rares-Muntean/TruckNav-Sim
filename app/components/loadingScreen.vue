@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { darkenColor } from "~/assets/utils/colors";
-import { AppSettings } from "~~/shared/variables/appSettings";
+import { AppSettings } from "~~/shared/constants/appSettings";
 
 defineProps<{ progress: number }>();
 </script>

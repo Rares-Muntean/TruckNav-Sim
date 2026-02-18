@@ -6,7 +6,7 @@ import type TruckMarker from "./truckMarker.vue";
 import SpeedLimit from "./speedLimit.vue";
 import { usePlatform } from "~/composables/Platform";
 import eruda from "eruda";
-import { AppSettings } from "~~/shared/variables/appSettings";
+import { AppSettings } from "~~/shared/constants/appSettings";
 import { blendWithBg, lightenColor } from "~/assets/utils/colors";
 
 defineProps<{ goHome: () => void }>();
@@ -228,7 +228,9 @@ onMounted(async () => {
         if (!map.value) return;
 
         map.value.on("load", async () => {
-            const { nodes, edges } = await initializeGraphData();
+            const graphData = await initializeGraphData();
+            if (!graphData) return;
+            const { nodes, edges } = graphData;
             initWorkerData(nodes, edges);
 
             setupRouteLayer();
@@ -343,7 +345,7 @@ const closeSettingsPanel = () => {
 
         <div class="ui-safe-container">
             <Transition name="ui-layer-fade">
-                <div v-if="!isSettingsPanelOpened" class="map-ui-layer">
+                <div v-show="!isSettingsPanelOpened" class="map-ui-layer">
                     <Transition name="fade">
                         <LoadingScreen v-if="loading" :progress="progress" />
                     </Transition>
@@ -438,7 +440,7 @@ const closeSettingsPanel = () => {
 
                     <div class="warnings">
                         <WarningSlide
-                            :show-if="hasInGameMarker && isRouteActive"
+                            :show-if="hasInGameMarker && !isRouteActive"
                             :reset-on="isRouteActive"
                             text="External Route Detected: Set Waypoint"
                         />

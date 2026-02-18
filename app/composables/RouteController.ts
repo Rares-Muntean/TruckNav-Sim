@@ -6,7 +6,7 @@ import {
     DEVIATION_THRESHOLD_SQ,
     getSquaredDist,
 } from "~/assets/utils/geographicMath";
-import { AppSettings } from "~~/shared/variables/appSettings";
+import { AppSettings } from "~~/shared/constants/appSettings";
 
 export const useRouteController = (
     map: Ref<maplibregl.Map | null>,
@@ -36,6 +36,20 @@ export const useRouteController = (
     const routeFound = ref<boolean | null>(null);
 
     const currentRouteIndex = ref(0);
+
+    watch(
+        () => AppSettings.theme.defaultColor,
+        (newColor) => {
+            if (endMarker.value) {
+                const element = endMarker.value.getElement();
+
+                const svgPaths = element.querySelectorAll("path");
+                svgPaths.forEach((path) => {
+                    path.setAttribute("fill", newColor);
+                });
+            }
+        },
+    );
 
     let worker: Worker | null = null;
 

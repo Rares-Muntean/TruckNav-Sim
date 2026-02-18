@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { AppSettings } from "~~/shared/variables/appSettings";
+import { AppSettings } from "~~/shared/constants/appSettings";
 
 const props = defineProps<{
     isSheetExpanded: boolean;

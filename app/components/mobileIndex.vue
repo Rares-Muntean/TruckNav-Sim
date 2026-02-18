@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { CapacitorHttp } from "@capacitor/core";
-import { AppSettings } from "~~/shared/variables/appSettings";
+import { AppSettings } from "~~/shared/constants/appSettings";
 
 const { saveIP, loadIP } = useSettings();
 

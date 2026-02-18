@@ -1,5 +1,3 @@
-import { pointOnFeature } from "@turf/turf";
-
 export class MinHeap {
     private ids: Int32Array;
     private costs: Float64Array;
