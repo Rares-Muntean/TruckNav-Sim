@@ -13,7 +13,7 @@ interface NodeIndexItem {
 
 const adjacency = new Map<
     number,
-    { to: number; weight: number; r: number }[]
+    { to: number; weight: number; r: number; dlc: number }[]
 >();
 const nodeCoords = new Map<number, [number, number]>();
 const nodeTree = new RBush<NodeIndexItem>();
@@ -69,6 +69,7 @@ export function useGraphSystem() {
                         to: edge.to,
                         w: edge.weight,
                         r: edge.r,
+                        dlc: edge.dlc,
                     });
                 }
             }
@@ -124,9 +125,12 @@ export function useGraphSystem() {
                 const to = idRedirect.get(edge.to);
                 if (from !== undefined && to !== undefined && from !== to) {
                     if (nodeCoords.has(from) && nodeCoords.has(to)) {
-                        adjacency
-                            .get(from)
-                            ?.push({ to: to, weight: edge.w, r: edge.r || 0 });
+                        adjacency.get(from)?.push({
+                            to: to,
+                            weight: edge.w,
+                            r: edge.r || 0,
+                            dlc: edge.dlc,
+                        });
                     }
                 }
             }

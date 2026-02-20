@@ -1,7 +1,6 @@
 //
 //
 //
-
 // ----------------------> MAP <----------------------
 .map-container {
     width: 100vw;
@@ -15,7 +14,8 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100dvh;
+
+    height: calc(100dvh - env(safe-area-inset-top));
     pointer-events: none;
     z-index: 10;
 }
@@ -74,71 +74,4 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 0.8rem;
-}
-
-//
-//
-//
-// ----------------------> TRANSITIONS <---------------------- \\
-
-// MAIN LAYER TRANSITIONS
-.ui-layer-fade-enter-active,
-.ui-layer-fade-leave-active {
-    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.ui-layer-fade-enter-from,
-.ui-layer-fade-leave-to {
-    opacity: 0;
-}
-
-// SHEET SLIDE TRANSITIONS
-.sheet-slide-enter-active,
-.sheet-slide-leave-active {
-    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.sheet-slide-enter-from,
-.sheet-slide-leave-to {
-    transform: translateY(100%);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0);
-
-    opacity: 0;
-}
-
-// PANEL SLIDE TRANSITIONS
-.panel-slide-enter-active,
-.panel-slide-leave-active {
-    transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-.panel-slide-enter-from,
-.panel-slide-leave-to {
-    transform: translateX(-100%);
-
-    opacity: 0;
-}
-
-// LOADING SCREEN TRANSITIONS
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-
-.over-limit-enter-active,
-.over-limit-leave-active {
-    transition: opacity 0.3s ease-in-out;
-}
-.over-limit-enter-from,
-.over-limit-leave-to {
-    opacity: 0;
-}
-.over-limit-enter-to,
-.over-limit-leave-from {
-    opacity: 1;
 }

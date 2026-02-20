@@ -1,0 +1,113 @@
+$ease-smooth: cubic-bezier(0.165, 0.84, 0.44, 1);
+$ease-pop: cubic-bezier(0.19, 1, 0.22, 1);
+
+/** 1. STANDARD FADE
+ * Usage: <Transition name="fade">
+ */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.6s $ease-smooth;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+/** 2. UI LAYER FADE (Faster/Different than standard fade)
+ * Usage: <Transition name="ui-layer-fade">
+ */
+.ui-layer-fade-enter-active,
+.ui-layer-fade-leave-active {
+    transition: 0.2s $ease-smooth;
+}
+
+.ui-layer-fade-enter-from,
+.ui-layer-fade-leave-to {
+    opacity: 0;
+}
+
+/** 3. SHEET SLIDE UP
+ * Usage: <Transition name="sheet-slide">
+ */
+.sheet-slide-enter-active,
+.sheet-slide-leave-active {
+    transition: 0.2s $ease-smooth;
+}
+
+.sheet-slide-enter-from,
+.sheet-slide-leave-to {
+    transform: translateY(100%);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0);
+    opacity: 0;
+}
+
+/** 4. PANEL POP (Scale effect)
+ * Usage: <Transition name="panel-pop">
+ */
+.panel-pop-enter-active,
+.panel-pop-leave-active {
+    transition: 0.2s $ease-pop;
+}
+
+.panel-pop-enter-from,
+.panel-pop-leave-to {
+    scale: 0.98;
+    opacity: 0;
+}
+
+/** 5. WARNING
+ * Usage: <Transition name="over-limit">
+ */
+.over-limit-enter-active,
+.over-limit-leave-active {
+    transition: opacity 0.3s ease-in-out;
+}
+.over-limit-enter-from,
+.over-limit-leave-to {
+    opacity: 0;
+}
+
+/** 6. NOTIFICATION SLIDE
+ * Usage: <Transition name="notification-slide">
+ */
+.notification-slide-enter-active {
+    transition: 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.notification-slide-leave-active {
+    transition: 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) 0s;
+}
+
+.notification-slide-enter-from,
+.notification-slide-leave-to {
+    transform: translateY(-$notification-height);
+    opacity: 0;
+}
+
+.notification-fade-enter-active,
+.notification-fade-leave-active {
+    transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.notification-fade-enter-from,
+.notification-fade-leave-to {
+    opacity: 0;
+}
+
+/** 7. COMPACT SLIDE (For compact bar)
+ * Usage: <Transition name="notification-slide">
+ */
+.compact-slide-enter-active {
+    transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
+}
+
+.compact-slide-leave-active {
+    transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.compact-slide-enter-from,
+.compact-slide-leave-to {
+    opacity: 0;
+    transform: translateX(30%);
+}

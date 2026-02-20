@@ -27,7 +27,7 @@
         max-width: 0;
         opacity: 0;
         overflow: hidden;
-        transition: 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 
         .text-nowrap {
             white-space: nowrap;
@@ -46,18 +46,4 @@
     display: flex;
     gap: 0.8rem;
     align-items: center;
-}
-
-.compact-slide-enter-active {
-    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
-}
-
-.compact-slide-leave-active {
-    transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.compact-slide-enter-from,
-.compact-slide-leave-to {
-    opacity: 0;
-    transform: translateX(30%);
 }

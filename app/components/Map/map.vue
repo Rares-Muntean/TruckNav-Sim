@@ -330,12 +330,8 @@ const onToggleFullscreen = async () => {
     }
 };
 
-const openSettingsPanel = () => {
-    isSettingsPanelOpened.value = true;
-};
-
-const closeSettingsPanel = () => {
-    isSettingsPanelOpened.value = false;
+const toggleSettingsPanel = () => {
+    isSettingsPanelOpened.value = !isSettingsPanelOpened.value;
 };
 </script>
 
@@ -371,14 +367,14 @@ const closeSettingsPanel = () => {
                         />
                         <HudButton
                             icon-name="flowbite:cog-outline"
-                            :onClick="openSettingsPanel"
+                            :onClick="toggleSettingsPanel"
                         />
                     </div>
 
                     <div class="left-buttons" v-else>
                         <HudButton
                             icon-name="flowbite:cog-outline"
-                            :onClick="openSettingsPanel"
+                            :onClick="toggleSettingsPanel"
                         />
                     </div>
 
@@ -479,10 +475,10 @@ const closeSettingsPanel = () => {
                 </div>
             </Transition>
 
-            <Transition name="panel-slide">
+            <Transition name="panel-pop">
                 <SettingsPanel
                     v-if="isSettingsPanelOpened"
-                    :close-panel="closeSettingsPanel"
+                    :close-panel="toggleSettingsPanel"
                 />
             </Transition>
         </div>

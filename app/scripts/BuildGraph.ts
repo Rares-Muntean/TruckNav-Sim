@@ -16,13 +16,7 @@
  *   * Builds a graph from a geojson containing LineStrings.
  */
 
-import {
-    createWriteStream,
-    existsSync,
-    mkdirSync,
-    readFileSync,
-    writeFileSync,
-} from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import RBush from "rbush";
 import * as turf from "@turf/turf";
 import path from "path";
@@ -466,6 +460,7 @@ function createNodesAndEdges(
             props.roadType === "freeway" || props.roadType === "divided";
         const inferredDir = directionInference[i];
         const isManualFix = props.roadType === "manual";
+        const dlcId = props.required_dlc || 0;
 
         // --- SEGMENT LOOP ---
         for (let point = 0; point < cleaned.length - 1; point++) {
@@ -508,6 +503,7 @@ function createNodesAndEdges(
                         roadTypeMap[
                             props.roadType as keyof typeof roadTypeMap
                         ] || 0,
+                    dlc: dlcId,
                 });
             }
             if (backwardWeight !== Infinity) {
@@ -519,6 +515,7 @@ function createNodesAndEdges(
                         roadTypeMap[
                             props.roadType as keyof typeof roadTypeMap
                         ] || 0,
+                    dlc: dlcId,
                 });
             }
         }
@@ -534,7 +531,7 @@ function saveFilesToDisk(outDir: any, nodes: Node[], edges: Edge[]) {
         Math.round(n.lat * 1e5),
         Math.round(n.lng * 1e5),
     ]);
-    const packedEdges = edges.map((e) => [e.from, e.to, e.w, e.r]);
+    const packedEdges = edges.map((e) => [e.from, e.to, e.w, e.r, e.dlc || 0]);
 
     writeFileSync(path.join(outDir, "nodes.json"), JSON.stringify(packedNodes));
     writeFileSync(path.join(outDir, "edges.json"), JSON.stringify(packedEdges));

@@ -37,7 +37,7 @@ function ensureCoordCache(nodeCoords: Map<number, [number, number]>) {
 export function getScaleMultiplier(
     gameX: number,
     gameZ: number,
-    cities: SimpleCityNode[] | null
+    cities: SimpleCityNode[] | null,
 ): number {
     if (!cities) return 19;
 
@@ -57,7 +57,7 @@ function fastDistKm(
     lng1: number,
     lat1: number,
     lng2: number,
-    lat2: number
+    lat2: number,
 ): number {
     const ky = 111.0;
     const kx = 111.0 * 0.65;
@@ -84,10 +84,14 @@ export const calculateRoute = (
     start: number,
     possibleEnds: Set<number | undefined>,
     startHeading: number | null,
-    adjacency: Map<number, { to: number; weight: number; r: number }[]>,
+    adjacency: Map<
+        number,
+        { to: number; weight: number; r: number; dlc: number }[]
+    >,
     nodeCoords: Map<number, [number, number]>,
     startType: "road" | "yard" = "road",
-    targetLocation?: [number, number]
+    ownedDlcs: number[],
+    targetLocation?: [number, number],
 ): { path: [number, number][]; endId: number } | null => {
     ensureCoordCache(nodeCoords);
     const flatCoords = cache_flatCoords!;
@@ -120,7 +124,7 @@ export const calculateRoute = (
     const startLat = flatCoords[start * 2 + 1]!;
 
     const distKm = fastDistKm(startLng, startLat, destLng, destLat);
-    const maxIterations = 70000 + distKm * 500;
+    const maxIterations = 70000 + distKm * 5000;
 
     const HEURISTIC_SCALE = 3.0;
 
@@ -163,8 +167,14 @@ export const calculateRoute = (
 
         for (let i = 0; i < neighbors.length; i++) {
             const edge = neighbors[i]!;
-            const neighborId = edge.to;
 
+            // DLC Check
+            const dlcId = edge.dlc || 0;
+            if (dlcId !== 0 && !ownedDlcs.includes(dlcId)) {
+                continue;
+            }
+
+            const neighborId = edge.to;
             if (cache_visited[neighborId] === 1) continue;
 
             let stepCost = edge.weight || 1;
@@ -192,16 +202,16 @@ export const calculateRoute = (
                 const angle = getSignedAngle(
                     [pLng, pLat],
                     [cLng, cLat],
-                    [nLng, nLat]
+                    [nLng, nLat],
                 );
                 const absAngle = Math.abs(angle);
 
                 if (edge.r === 2) {
                     stepCost *= 1.1;
-                    if (angle < -100) stepCost += 100_000;
+                    if (angle < -120) stepCost += 100_000;
                 }
 
-                if (absAngle > 100) {
+                if (absAngle > 120) {
                     stepCost += Infinity;
                 } else if (angle < -45) stepCost += 2000;
                 else if (angle > 45) stepCost += 500;
@@ -222,29 +232,30 @@ export const calculateRoute = (
                     const segDist = fastDistKm(gLng, gLat, tLng, tLat);
                     traveledDist += segDist;
 
-                    if (traveledDist > 0.8) {
-                        const headingOld = getHeading(gLng, gLat, tLng, tLat);
+                    // NOT NEEDED FOR NOW, CAN CAUSE BUGS BECAUSE OF CHANGED ROADNETWORK.
+                    // if (traveledDist > 0.8) {
+                    //     const headingOld = getHeading(gLng, gLat, tLng, tLat);
 
-                        const headingNew = getHeading(cLng, cLat, nLng, nLat);
+                    //     const headingNew = getHeading(cLng, cLat, nLng, nLat);
 
-                        const distNowToPast = fastDistKm(
-                            cLng,
-                            cLat,
-                            gLng,
-                            gLat
-                        );
+                    //     const distNowToPast = fastDistKm(
+                    //         cLng,
+                    //         cLat,
+                    //         gLng,
+                    //         gLat,
+                    //     );
 
-                        const ratio = traveledDist / distNowToPast;
+                    //     const ratio = traveledDist / distNowToPast;
 
-                        const diff = getRadianAngleDiff(headingOld, headingNew);
+                    //     const diff = getRadianAngleDiff(headingOld, headingNew);
 
-                        if (diff > 3.0 && ratio > 1.0) {
-                            stepCost += Infinity;
-                        } else if (diff > 3.0) {
-                            stepCost += 5000;
-                        }
-                        break;
-                    }
+                    //     if (diff > 3.0 && ratio > 1.0) {
+                    //         stepCost += Infinity;
+                    //     } else if (diff > 3.0) {
+                    //         stepCost += 5000;
+                    //     }
+                    //     break;
+                    // }
                     tempPrev = grandPrev;
                 }
             }
@@ -257,7 +268,7 @@ export const calculateRoute = (
                 cache_costs[neighborId] = tentativeG;
                 openHeap.push(
                     neighborId,
-                    tentativeG + getHeuristic(neighborId)
+                    tentativeG + getHeuristic(neighborId),
                 );
             }
         }
@@ -279,7 +290,7 @@ export const calculateRoute = (
 
 export const mergeClosePoints = (
     coords: [number, number][],
-    minDistanceMeters = 5
+    minDistanceMeters = 5,
 ): [number, number][] => {
     if (coords.length < 2) return coords;
     const result: [number, number][] = [];
@@ -341,7 +352,7 @@ export function smoothPath(coords: [number, number][]): [number, number][] {
 
 export function buildRouteStatsCache(
     pathCoords: [number, number][],
-    cities: SimpleCityNode[] | null
+    cities: SimpleCityNode[] | null,
 ) {
     const cache = new Float32Array(pathCoords.length * 2);
 
@@ -355,7 +366,7 @@ export function buildRouteStatsCache(
         const point1 = convertGeoToGame(pathCoords[i]![0], pathCoords[i]![1]);
         const point2 = convertGeoToGame(
             pathCoords[i + 1]![0],
-            pathCoords[i + 1]![1]
+            pathCoords[i + 1]![1],
         );
 
         const dx = point2[0] - point1[0];

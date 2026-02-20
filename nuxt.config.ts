@@ -4,11 +4,15 @@ export default defineNuxtConfig({
     devtools: { enabled: false },
     ssr: false,
     modules: ["@nuxt/icon", "nuxt-color-picker"],
+
+    css: ["~/assets/scss/global/_transitions.scss"],
+
     vite: {
         css: {
             preprocessorOptions: {
                 scss: {
-                    additionalData: `@use "~/assets/scss/global/variables.scss" as *;`,
+                    additionalData: `@use "~/assets/scss/global/variables.scss" as *;
+                     @use "~/assets/scss/global/_mixins.scss" as *;`,
                 },
             },
         },

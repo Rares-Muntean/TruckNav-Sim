@@ -185,21 +185,6 @@ $compact-bar-height: 35px;
     }
 }
 
-// COMPACT INFO TRANSITION
-.compact-slide-enter-active {
-    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s;
-}
-
-.compact-slide-leave-active {
-    transition: 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
-.compact-slide-enter-from,
-.compact-slide-leave-to {
-    opacity: 0;
-    transform: translateX(30%);
-}
-
 .compact-trip-progress {
     position: absolute;
     top: -50px;

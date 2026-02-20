@@ -99,6 +99,7 @@ export const useRouteController = (
         startType: string,
         targetCoords: [number, number],
         projectedStartCoords: [number, number],
+        ownedDlcs: number[],
     ): Promise<any> {
         return new Promise((resolve) => {
             if (!worker) {
@@ -124,6 +125,7 @@ export const useRouteController = (
                     startType,
                     targetCoords,
                     projectedStartCoords,
+                    ownedDlcs,
                 },
             });
         });
@@ -237,6 +239,7 @@ export const useRouteController = (
         projectedStartCoords: [number, number],
     ) {
         const SEARCH_RADII = [1, 2, 4, 8, 16, 32, 100, 300];
+        const userDlcs = toRaw(settings.value.ownedDlcs);
 
         for (const radius of SEARCH_RADII) {
             const candidates = getClosestNodes(targetCoords, radius, 0.1);
@@ -250,6 +253,7 @@ export const useRouteController = (
                 startType,
                 targetCoords,
                 projectedStartCoords,
+                userDlcs,
             );
 
             if (result) {

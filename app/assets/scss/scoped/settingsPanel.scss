@@ -1,9 +1,13 @@
+/**
+ * GENERAL
+ */
 .settings-panel {
     background-color: $primaryColor;
     height: 100dvh;
     width: 100dvw;
 
     padding-top: 1.8rem;
+    font-weight: 600;
 }
 
 .setting {
@@ -29,19 +33,31 @@
 }
 
 .icon-btn {
+    min-width: 26px;
+    min-height: 26px;
+
     display: flex;
     align-items: center;
+    cursor: pointer;
 }
 
 .title-icon {
+    min-width: 38px;
+    min-height: 38px;
+
     display: flex;
     align-items: center;
     gap: 1rem;
 }
 
+.panel-title {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
 .panel-description {
     opacity: 0.7;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .separator {
@@ -51,26 +67,19 @@
     border-radius: 3px;
 }
 
-.theme {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.settings-btn {
+    border-radius: 5px;
+    transition: 0s;
 
-    margin-top: 3.6rem;
+    &.default-color {
+        background-color: $primaryColor;
+        border: 2px solid $secondaryColor;
+    }
 }
 
-.setting-title {
-    display: flex;
-    gap: 1.6rem;
-    align-items: center;
-}
-
-.color-options {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
+/**
+ * COLOR SETTINGS
+ */
 .color-box {
     height: 34px;
     width: 34px;
@@ -86,7 +95,43 @@
     }
 }
 
-.change-btn {
-    border-radius: 6px;
-    transition: 0s;
+.option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 3.6rem;
+}
+
+.option-title {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.color-options {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.change-color-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/**
+ * DLC SETTINGS
+ */
+.owned-dlcs {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    @include for-phone {
+        font-size: 1.2rem;
+    }
 }

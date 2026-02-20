@@ -26,6 +26,5 @@ logs
 # Bloat
 ets2-telemetry-server
 
-public/debug-roadnetwork/europe-route-graph.geojson
 
-public/debug-roadnetwork/europe-route-graph.qmd
+public/debug-roadnetwork/

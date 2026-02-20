@@ -4,6 +4,8 @@ const props = defineProps<{
     isRouteFound: boolean | null;
 }>();
 
+const { isWeb } = usePlatform();
+
 const iconName = computed(() => {
     if (props.isRouteFound === true) {
         return "ic:outline-check";
@@ -40,7 +42,7 @@ const isVisible = computed(() => {
 </script>
 
 <template>
-    <div class="notification-container">
+    <div class="notification-container" :class="{ 'is-web': isWeb }">
         <Transition name="notification-slide">
             <div v-if="isVisible" class="notification-wrapper">
                 <Transition name="notification-fade" mode="out-in">

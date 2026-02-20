@@ -1,12 +1,11 @@
 import type { Map as MapLibreGl, StyleSpecification } from "maplibre-gl";
-import { AppSettings } from "../../shared/variables/appSettings";
 import { blendWithBg, lightenColor } from "~/assets/utils/colors";
 import { BlobSource } from "~/assets/utils/BlobSource";
 
 export async function initializeMap(
     container: HTMLElement,
 ): Promise<MapLibreGl> {
-    const appTheme = AppSettings.theme;
+    const { settings } = useSettings();
 
     const baseUrl = window.location.origin;
 
@@ -26,7 +25,6 @@ export async function initializeMap(
     }
 
     await loadPmtiles("roads", "roads");
-    await loadPmtiles("ets2-footprints", "ets2-footprints");
 
     const style: StyleSpecification = {
         version: 8,
@@ -37,11 +35,6 @@ export async function initializeMap(
                 type: "vector",
 
                 url: `pmtiles://roads`,
-            },
-
-            "ets2-footprints": {
-                type: "vector",
-                url: `pmtiles://ets2-footprints`,
             },
         },
 
@@ -308,59 +301,33 @@ export async function initializeMap(
                         ["get", "color"],
                         0,
                         blendWithBg(
-                            lightenColor(AppSettings.theme.defaultColor, 0.3),
+                            lightenColor(settings.value.themeColor, 0.3),
                             0.6,
                         ),
                         1,
                         blendWithBg(
-                            lightenColor(AppSettings.theme.defaultColor, 0.3),
+                            lightenColor(settings.value.themeColor, 0.3),
                             0.6,
                         ),
                         2,
                         blendWithBg(
-                            lightenColor(AppSettings.theme.defaultColor, 0),
+                            lightenColor(settings.value.themeColor, 0),
                             0.6,
                         ),
                         3,
                         blendWithBg(
-                            lightenColor(AppSettings.theme.defaultColor, 0.3),
+                            lightenColor(settings.value.themeColor, 0.3),
                             0.6,
                         ),
                         4,
                         blendWithBg(
-                            lightenColor(AppSettings.theme.defaultColor, 0.3),
+                            lightenColor(settings.value.themeColor, 0.3),
                             0.6,
                         ),
                         blendWithBg(
-                            lightenColor(AppSettings.theme.defaultColor, 0.3),
+                            lightenColor(settings.value.themeColor, 0.3),
                             0.6,
                         ),
-                    ],
-                },
-            },
-            "ets2-lines",
-        );
-
-        // DISPLAYING BUILDINGS
-        map.addLayer(
-            {
-                id: "footprints-fill",
-                type: "fill",
-                source: "ets2-footprints",
-                "source-layer": "footprints",
-                paint: {
-                    "fill-color": "#263444",
-                    // Interpolate Opacity based on Zoom
-                    "fill-opacity": [
-                        "interpolate",
-                        ["linear"],
-                        ["zoom"],
-                        6,
-                        0.0,
-                        9,
-                        0.5,
-                        10,
-                        0.9,
                     ],
                 },
             },
@@ -394,7 +361,7 @@ export async function initializeMap(
             minzoom: 5.5,
             maxzoom: 6.7,
             paint: {
-                "circle-color": appTheme.defaultColor,
+                "circle-color": settings.value.themeColor,
 
                 "circle-radius": [
                     "interpolate",
@@ -420,7 +387,7 @@ export async function initializeMap(
             maxzoom: 8,
             filter: ["==", ["get", "capital"], 2], // Only Capitals
             paint: {
-                "circle-color": appTheme.defaultColor,
+                "circle-color": settings.value.themeColor,
                 "circle-radius": [
                     "interpolate",
                     ["linear"],

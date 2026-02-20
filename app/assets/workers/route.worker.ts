@@ -31,6 +31,7 @@ self.onmessage = async (e: MessageEvent) => {
                 to: edge.to,
                 weight: edge.w,
                 r: edge.r,
+                dlc: edge.dlc,
             });
         }
 
@@ -47,6 +48,7 @@ self.onmessage = async (e: MessageEvent) => {
             startType,
             targetCoords,
             projectedStartCoords,
+            ownedDlcs,
         } = payload;
 
         const result = calculateRoute(
@@ -56,7 +58,8 @@ self.onmessage = async (e: MessageEvent) => {
             adjacency,
             nodeCoords,
             startType,
-            targetCoords
+            ownedDlcs,
+            targetCoords,
         );
 
         if (result && result.path) {
@@ -82,7 +85,7 @@ self.onmessage = async (e: MessageEvent) => {
                         stats: statsCache,
                     },
                 },
-                [statsCache.buffer]
+                [statsCache.buffer],
             );
         } else {
             self.postMessage({ type: "RESULT", payload: null });

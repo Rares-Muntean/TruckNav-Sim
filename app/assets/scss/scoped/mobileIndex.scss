@@ -1,5 +1,4 @@
 .section-mobile-menu {
-    height: 100vh;
     height: calc(100vh - env(safe-area-inset-top));
 
     color: $white-font-text;

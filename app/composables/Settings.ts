@@ -3,11 +3,13 @@ import { AppSettings } from "~~/shared/constants/appSettings";
 export interface AppSettingsState {
     themeColor: string;
     routeColor: string;
+    ownedDlcs: number[];
 }
 
 const DEFAULT_SETTINGS: AppSettingsState = {
     themeColor: AppSettings.theme.defaultColor,
     routeColor: "#22d3ee",
+    ownedDlcs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -60,5 +62,5 @@ export const useSettings = () => {
         saveSettings();
     };
 
-    return { settings, updateSettings, initSettings };
+    return { settings, updateSettings, initSettings, resetSettings };
 };
