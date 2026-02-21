@@ -48,12 +48,5 @@
         "tar": "7.5.8",
         "minimatch": "10.3.1",
         "pmtiles": "4.3.0"
-    },
-    "overrides": {
-        "minimatch": "10.2.1",
-        "tar": "7.5.8",
-        "glob": "11.1.0",
-        "onetime": "5.1.2",
-        "mimic-fn": "2.1.0"
     }
 }
