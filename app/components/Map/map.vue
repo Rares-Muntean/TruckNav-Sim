@@ -11,7 +11,7 @@ import { blendWithBg, lightenColor } from "~/assets/utils/colors";
 defineProps<{ goHome: () => void }>();
 
 // MAP STATE
-const mapEl = ref<HTMLElement | null>(null);
+const mapEl = shallowRef<HTMLElement | null>(null);
 const map = shallowRef<maplibregl.Map | null>(null);
 const isSettingsPanelOpened = ref(false);
 
@@ -228,7 +228,8 @@ onMounted(async () => {
     }
 
     try {
-        map.value = await initializeMap(mapEl.value);
+        const mapInstance = await initializeMap(mapEl.value);
+        map.value = markRaw(mapInstance);
         if (!map.value) return;
 
         map.value.on("load", async () => {

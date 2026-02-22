@@ -342,7 +342,7 @@ export const useRouteController = (
                     ],
                 },
             },
-            "sprite-locations",
+            "all-sprites",
         );
     }
 
