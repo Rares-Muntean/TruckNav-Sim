@@ -73,6 +73,10 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             map.value.jumpTo({
                 center: [lng, lat],
                 bearing: bearing,
+
+                padding: isNavigating.value
+                    ? { top: 180, bottom: 0, left: 0, right: 0 }
+                    : { top: 0, bottom: 0, left: 0, right: 0 },
             });
         }
 
@@ -144,9 +148,9 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             center: coords,
             bearing: isNavigating.value ? heading : 0,
             zoom: 11,
-            pitch: 45,
+            pitch: 38,
             duration: 300,
-            offset: [0, 50],
+            padding: { top: 180, bottom: 0, left: 0, right: 0 },
         });
     };
 
