@@ -5,7 +5,7 @@ import { BlobSource } from "~/assets/utils/shared/BlobSource";
 export async function initializeMap(
     container: HTMLElement,
 ): Promise<MapLibreGl> {
-    const { settings } = useSettings();
+    const { settings, activeSettings } = useSettings();
 
     const baseUrl = window.location.origin;
 
@@ -241,31 +241,31 @@ export async function initializeMap(
                         ["get", "color"],
                         0,
                         blendWithBg(
-                            lightenColor(settings.value.themeColor, 0.3),
+                            lightenColor(activeSettings.value.themeColor, 0.3),
                             0.6,
                         ),
                         1,
                         blendWithBg(
-                            lightenColor(settings.value.themeColor, 0.3),
+                            lightenColor(activeSettings.value.themeColor, 0.3),
                             0.6,
                         ),
                         2,
                         blendWithBg(
-                            lightenColor(settings.value.themeColor, 0),
+                            lightenColor(activeSettings.value.themeColor, 0),
                             0.6,
                         ),
                         3,
                         blendWithBg(
-                            lightenColor(settings.value.themeColor, 0.3),
+                            lightenColor(activeSettings.value.themeColor, 0.3),
                             0.6,
                         ),
                         4,
                         blendWithBg(
-                            lightenColor(settings.value.themeColor, 0.3),
+                            lightenColor(activeSettings.value.themeColor, 0.3),
                             0.6,
                         ),
                         blendWithBg(
-                            lightenColor(settings.value.themeColor, 0.3),
+                            lightenColor(activeSettings.value.themeColor, 0.3),
                             0.6,
                         ),
                     ],

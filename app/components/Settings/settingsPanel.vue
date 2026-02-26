@@ -4,7 +4,7 @@ import { ets2Expansions } from "~/data/ets2/ets2Expansions";
 const props = defineProps<{ closePanel: () => void }>();
 
 const isDlcPanelOpened = ref(false);
-const { settings } = useSettings();
+const { activeSettings } = useSettings();
 const toggleDlcPanel = () => {
     isDlcPanelOpened.value = !isDlcPanelOpened.value;
 };
@@ -53,7 +53,7 @@ const toggleDlcPanel = () => {
                     @click.prevent="toggleDlcPanel"
                     class="nav-btn settings-btn default-color"
                 >
-                    {{ settings.ownedDlcs.length }} /
+                    {{ activeSettings.ownedDlcs.length }} /
                     {{ Object.keys(ets2Expansions).length }} active
                 </button>
             </div>

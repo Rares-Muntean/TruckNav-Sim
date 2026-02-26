@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 defineProps<{ width: number }>();
-const selectedGame = defineModel<"ats" | "ets2" | null>();
+const { settings, updateGlobal } = useSettings();
 
 const selectCard = (game: "ats" | "ets2" | null) => {
-    selectedGame.value = game;
+    updateGlobal("selectedGame", game);
 };
 </script>
 
@@ -13,14 +13,14 @@ const selectCard = (game: "ats" | "ets2" | null) => {
             game-name="ats"
             icon-name="map:route"
             :select-card="selectCard"
-            :class="{ 'is-ats-selected': selectedGame === 'ats' }"
+            :class="{ 'is-selected': settings.selectedGame === 'ats' }"
             :width="width"
         />
         <GameSelectButton
             :select-card="selectCard"
             game-name="ets2"
             icon-name="mdi:highway"
-            :class="{ 'is-ets2-selected': selectedGame === 'ets2' }"
+            :class="{ 'is-selected': settings.selectedGame === 'ets2' }"
             :width="width"
         />
     </section>

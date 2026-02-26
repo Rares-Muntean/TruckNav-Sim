@@ -2,7 +2,7 @@
 const props = defineProps<{ launchChooseGame: () => void }>();
 
 const { fetchIp, localIP } = useNetwork();
-const { updateSettings } = useSettings();
+const { updateGlobal } = useSettings();
 
 const isServerRunning = ref(false);
 const polling = ref<any>(null);
@@ -26,7 +26,7 @@ const checkStatus = async () => {
 };
 
 const handleLocalLaunch = async () => {
-    updateSettings("savedIP", "127.0.0.1");
+    updateGlobal("savedIP", "127.0.0.1");
     props.launchChooseGame();
 };
 

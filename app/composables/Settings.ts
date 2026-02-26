@@ -1,22 +1,36 @@
 import { AppSettings } from "~/constants/appSettings";
 import type { GameType } from "~/types";
 
-export interface AppSettingsState {
+export interface GameProfile {
     themeColor: string;
     routeColor: string;
     ownedDlcs: number[];
     lastDestination: [number, number] | null;
-    selectedGame: GameType;
-    savedIP: string | null;
 }
 
-const DEFAULT_SETTINGS: AppSettingsState = {
+export interface AppSettingsState {
+    selectedGame: GameType;
+    savedIP: string | null;
+    profiles: {
+        ets2: GameProfile;
+        ats: GameProfile;
+    };
+}
+
+const DEFAULT_PROFILE: GameProfile = {
     themeColor: AppSettings.theme.defaultColor,
     routeColor: "#22d3ee",
     ownedDlcs: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     lastDestination: null,
+};
+
+const DEFAULT_SETTINGS: AppSettingsState = {
     selectedGame: null,
     savedIP: null,
+    profiles: {
+        ets2: { ...DEFAULT_PROFILE, themeColor: "#fbc02d" },
+        ats: { ...DEFAULT_PROFILE, themeColor: "#d32f2f" },
+    },
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -26,10 +40,15 @@ export const useSettings = () => {
         ...DEFAULT_SETTINGS,
     }));
 
+    const activeSettings = computed(() => {
+        const game = settings.value.selectedGame || "ets2";
+        return settings.value.profiles[game as "ets2" | "ats"];
+    });
+
     const applySideEffects = () => {
         document.documentElement.style.setProperty(
             "--theme-color",
-            settings.value.themeColor,
+            activeSettings.value.themeColor,
         );
     };
 
@@ -38,11 +57,20 @@ export const useSettings = () => {
         applySideEffects();
     };
 
-    const updateSettings = <K extends keyof AppSettingsState>(
+    const updateGlobal = <K extends keyof Omit<AppSettingsState, "profiles">>(
         key: K,
         value: AppSettingsState[K],
     ) => {
-        settings.value[key] = value;
+        (settings.value as any)[key] = value;
+        saveSettings();
+    };
+
+    const updateProfile = <K extends keyof GameProfile>(
+        key: K,
+        value: GameProfile[K],
+    ) => {
+        const game = settings.value.selectedGame || "ets2";
+        (settings.value.profiles[game as "ets2" | "ats"] as any)[key] = value;
         saveSettings();
     };
 
@@ -69,5 +97,12 @@ export const useSettings = () => {
         saveSettings();
     };
 
-    return { settings, updateSettings, initSettings, resetSettings };
+    return {
+        settings,
+        activeSettings,
+        updateGlobal,
+        updateProfile,
+        initSettings,
+        resetSettings,
+    };
 };

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-const { settings, updateSettings } = useSettings();
-type colorKeys = keyof AppSettingsState & `${string}Color`;
+const { activeSettings, updateProfile } = useSettings();
+type colorKeys = keyof GameProfile & `${string}Color`;
 
 const props = defineProps<{
     optionTitle: string;
@@ -13,11 +13,11 @@ const props = defineProps<{
  */
 const currentColor = computed({
     get() {
-        return settings.value[props.colorElement];
+        return activeSettings.value[props.colorElement];
     },
 
     set(newColor: string) {
-        updateSettings(props.colorElement, newColor);
+        updateProfile(props.colorElement, newColor);
     },
 });
 </script>

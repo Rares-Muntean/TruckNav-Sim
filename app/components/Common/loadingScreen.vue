@@ -2,7 +2,7 @@
 import { darkenColor } from "~/assets/utils/shared/colors";
 
 defineProps<{ progress: number }>();
-const { settings } = useSettings();
+const { activeSettings } = useSettings();
 </script>
 
 <template>
@@ -10,7 +10,7 @@ const { settings } = useSettings();
         <div
             class="progress-text"
             :style="{
-                color: darkenColor(settings.themeColor, 0.2),
+                color: darkenColor(activeSettings.themeColor, 0.2),
             }"
         >
             {{ progress }}%
@@ -20,7 +20,10 @@ const { settings } = useSettings();
                 class="progress-bar-fill"
                 :style="{
                     width: progress + '%',
-                    backgroundColor: darkenColor(settings.themeColor, 0.2),
+                    backgroundColor: darkenColor(
+                        activeSettings.themeColor,
+                        0.2,
+                    ),
                 }"
             ></div>
         </div>

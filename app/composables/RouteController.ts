@@ -19,7 +19,8 @@ export const useRouteController = (
 ) => {
     const { getGameLocationName, getWorkerCityData } = useCityData();
     const { getClosestNodes } = useGraphSystem();
-    const { settings, updateSettings } = useSettings();
+    const { settings, activeSettings, updateGlobal, updateProfile } =
+        useSettings();
 
     const currentRoutePath = shallowRef<[number, number][] | null>(null);
     const routeStatsCache = shallowRef<Float32Array | null>(null);
@@ -44,7 +45,7 @@ export const useRouteController = (
     const isWorkerReady = ref(false);
 
     watch(
-        () => settings.value.themeColor,
+        () => activeSettings.value.themeColor,
         async (newColor) => {
             if (map.value && map.value.hasImage("destination-icon")) {
                 const newPinImg = await generateDestinationIcon(newColor);
@@ -54,7 +55,7 @@ export const useRouteController = (
         },
     );
     watch(
-        () => settings.value.routeColor,
+        () => activeSettings.value.routeColor,
         (newColor) => {
             if (map.value && map.value.getLayer("route-line")) {
                 map.value.setPaintProperty(
@@ -250,7 +251,7 @@ export const useRouteController = (
         projectedStartCoords: [number, number],
     ) {
         const SEARCH_RADII = [1, 2, 4, 8, 16, 32, 100, 300];
-        const userDlcs = toRaw(settings.value.ownedDlcs);
+        const userDlcs = toRaw(activeSettings.value.ownedDlcs);
 
         for (const radius of SEARCH_RADII) {
             const candidates = getClosestNodes(targetCoords, radius, 0.1);
@@ -295,7 +296,7 @@ export const useRouteController = (
 
         if (!map.value.hasImage("destination-icon")) {
             const pinImg = await generateDestinationIcon(
-                settings.value.themeColor,
+                activeSettings.value.themeColor,
             );
             map.value.addImage("destination-icon", pinImg);
         }
@@ -312,7 +313,7 @@ export const useRouteController = (
                 source: "route-line",
                 layout: { "line-join": "round", "line-cap": "round" },
                 paint: {
-                    "line-color": settings.value.routeColor,
+                    "line-color": activeSettings.value.routeColor,
                     "line-width": [
                         "interpolate",
                         ["linear"],
@@ -425,7 +426,7 @@ export const useRouteController = (
 
                 routeFound.value = true;
                 currentRouteIndex.value = 0;
-                updateSettings("lastDestination", savedDestination.value);
+                updateProfile("lastDestination", savedDestination.value);
             } else {
                 routeFound.value = false;
             }
@@ -540,7 +541,7 @@ export const useRouteController = (
         currentRoutePath.value = null;
         savedDestination.value = null;
         isYardStart.value = false;
-        updateSettings("lastDestination", null);
+        updateProfile("lastDestination", null);
     }
 
     return {

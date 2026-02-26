@@ -1,5 +1,5 @@
 export const useGameSelection = () => {
-    const { settings, updateSettings } = useSettings();
+    const { settings, updateGlobal } = useSettings();
 
     const selectedGame = useState<"ats" | "ets2" | null>(
         "selected_game_state",
@@ -20,7 +20,7 @@ export const useGameSelection = () => {
 
     const commitSelection = () => {
         if (selectedGame.value) {
-            updateSettings("selectedGame", selectedGame.value);
+            updateGlobal("selectedGame", selectedGame.value);
         }
     };
 

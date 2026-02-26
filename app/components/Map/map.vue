@@ -100,7 +100,7 @@ const {
 //
 //
 // Settings Controller
-const { settings } = useSettings();
+const { updateGlobal, activeSettings } = useSettings();
 
 let uiTimer: ReturnType<typeof setTimeout> | null = null;
 let routeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -169,7 +169,7 @@ watch(
     [hasActiveJob, gameConnected, loading, isWorkerReady],
     ([hasJob, isGameConnected, isLoading, isWorkerReady]) => {
         if (!isLoading && isWorkerReady && isGameConnected && !hasJob) {
-            const destination = settings.value.lastDestination;
+            const destination = activeSettings.value.lastDestination;
 
             if (destination && truckCoords.value) {
                 clearRouteState();
@@ -187,7 +187,7 @@ watch(
 
 // We check each time the theme color changes to udate the map libre appsettings.default theme color
 watch(
-    () => settings.value.themeColor,
+    () => activeSettings.value.themeColor,
     async (newColor) => {
         if (!map.value) return;
 
@@ -251,7 +251,7 @@ onMounted(async () => {
         if (!map.value) return;
 
         const initialTruckImg = await generateTruckIcon(
-            settings.value.themeColor,
+            activeSettings.value.themeColor,
         );
         map.value!.addImage("truck-icon", initialTruckImg);
         map.value!.addSource("truck-source", {

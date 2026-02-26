@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const { settings, updateSettings } = useSettings();
+const { settings, activeSettings, updateProfile } = useSettings();
 import { ets2Expansions } from "~/data/ets2/ets2Expansions";
 
 defineProps<{ closePanel: () => void }>();
@@ -11,7 +11,7 @@ const onImageLoaded = (id: number) => {
 };
 
 const toggleDlc = (id: number) => {
-    const currentList = [...settings.value.ownedDlcs];
+    const currentList = [...activeSettings.value.ownedDlcs];
 
     const index = currentList.indexOf(id);
 
@@ -21,7 +21,7 @@ const toggleDlc = (id: number) => {
         currentList.push(id);
     }
 
-    updateSettings("ownedDlcs", currentList);
+    updateProfile("ownedDlcs", currentList);
 };
 </script>
 
@@ -34,7 +34,9 @@ const toggleDlc = (id: number) => {
                     class="dlc"
                     @click="toggleDlc(Number(id))"
                     :class="{
-                        'is-selected': settings.ownedDlcs.includes(Number(id)),
+                        'is-selected': activeSettings.ownedDlcs.includes(
+                            Number(id),
+                        ),
                     }"
                 >
                     <div class="dlc-details-wrapper">
@@ -65,13 +67,13 @@ const toggleDlc = (id: number) => {
                     <div
                         class="checkmarks"
                         :class="{
-                            'is-selected': settings.ownedDlcs.includes(
+                            'is-selected': activeSettings.ownedDlcs.includes(
                                 Number(id),
                             ),
                         }"
                     >
                         <Icon
-                            v-if="settings.ownedDlcs.includes(Number(id))"
+                            v-if="activeSettings.ownedDlcs.includes(Number(id))"
                             name="ic:round-check-circle"
                             size="26"
                         />

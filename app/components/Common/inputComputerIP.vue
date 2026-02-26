@@ -5,7 +5,7 @@ const props = defineProps<{ requireGame?: boolean }>();
 
 const { isElectron } = usePlatform();
 const { selectedGame, commitSelection } = useGameSelection();
-const { settings, updateSettings } = useSettings();
+const { settings, updateGlobal } = useSettings();
 
 const connectionError = ref("Disconnected");
 const ipInput = ref("");
@@ -68,7 +68,7 @@ const handleConnect = async () => {
         }
 
         if (data) {
-            updateSettings("savedIP", ipInput.value);
+            updateGlobal("savedIP", ipInput.value);
 
             isConnected.value = true;
             commitSelection();

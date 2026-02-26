@@ -5,16 +5,10 @@
     border-radius: 6px;
     background-color: $primaryDarkerColor;
 
-    &.is-ets2-selected {
-        outline: 2px solid $ets2-color;
-        opacity: 1;
+    &.is-selected {
+        outline: 2px solid var(--theme-color);
         color: $white-font-text;
-    }
-
-    &.is-ats-selected {
-        outline: 2px solid $ats-color;
         opacity: 1;
-        color: $white-font-text;
     }
 
     display: flex;
