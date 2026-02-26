@@ -69,7 +69,7 @@ export const useRouteController = (
     let worker: Worker | null = null;
     if (import.meta.client) {
         worker = new Worker(
-            new URL("~/assets/workers/route.worker.ts", import.meta.url),
+            new URL("~/workers/route.worker.ts", import.meta.url),
             { type: "module" },
         );
 
@@ -136,6 +136,7 @@ export const useRouteController = (
                     targetCoords,
                     projectedStartCoords,
                     ownedDlcs,
+                    selectedGame: settings.value.selectedGame,
                 },
             });
         });

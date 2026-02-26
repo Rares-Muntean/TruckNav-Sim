@@ -4,7 +4,8 @@ import {
     getAngleDiff,
     getSignedAngle,
 } from "~/assets/utils/map/maths";
-import { convertGeoToEts2 } from "../map/converters";
+import { convertGeoToAts, convertGeoToEts2 } from "../map/converters";
+import type { GameType } from "~/types";
 
 const MAX_NODES = 900000;
 
@@ -359,6 +360,7 @@ export function smoothPath(coords: [number, number][]): [number, number][] {
 export function buildRouteStatsCache(
     pathCoords: [number, number][],
     cities: SimpleCityNode[] | null,
+    selectedGame: GameType,
 ) {
     const cache = new Float32Array(pathCoords.length * 2);
 
@@ -369,11 +371,16 @@ export function buildRouteStatsCache(
     cache[1] = 0; // hours
 
     for (let i = 0; i < pathCoords.length - 1; i++) {
-        const point1 = convertGeoToEts2(pathCoords[i]![0], pathCoords[i]![1]);
-        const point2 = convertGeoToEts2(
-            pathCoords[i + 1]![0],
-            pathCoords[i + 1]![1],
-        );
+        let point1, point2;
+
+        point1 =
+            selectedGame === "ets2"
+                ? convertGeoToEts2(pathCoords[i]![0], pathCoords[i]![1])
+                : convertGeoToAts(pathCoords[i]![0], pathCoords[i]![1]);
+        point2 =
+            selectedGame === "ets2"
+                ? convertGeoToEts2(pathCoords[i + 1]![0], pathCoords[i + 1]![1])
+                : convertGeoToAts(pathCoords[i + 1]![0], pathCoords[i + 1]![1]);
 
         const dx = point2[0] - point1[0];
         const dy = point2[1] - point1[1];

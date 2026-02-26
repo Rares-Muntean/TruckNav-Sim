@@ -1,11 +1,12 @@
 import { AppSettings } from "~/constants/appSettings";
+import type { GameType } from "~/types";
 
 export interface AppSettingsState {
     themeColor: string;
     routeColor: string;
     ownedDlcs: number[];
     lastDestination: [number, number] | null;
-    selectedGame: "ats" | "ets2" | null;
+    selectedGame: GameType;
     savedIP: string | null;
 }
 

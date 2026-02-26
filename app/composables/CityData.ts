@@ -1,5 +1,8 @@
 import { shallowRef, ref } from "vue";
-import { convertGeoToEts2 } from "~/assets/utils/map/converters";
+import {
+    convertGeoToAts,
+    convertGeoToEts2,
+} from "~/assets/utils/map/converters";
 import {
     getScaleMultiplier,
     type SimpleCityNode,
@@ -44,6 +47,8 @@ const isLoaded = ref(false);
 const optimizedCityNodes = shallowRef<SimpleCityNode[]>([]);
 
 export function useCityData() {
+    const { settings } = useSettings();
+
     async function loadLocationData() {
         if (isLoaded.value) return;
 
@@ -195,14 +200,22 @@ export function useCityData() {
         let totalGameHours = 0;
 
         for (let i = 0; i < pathCoords.length - 1; i++) {
-            const point1 = convertGeoToEts2(
-                pathCoords[i]![0],
-                pathCoords[i]![1],
-            );
-            const point2 = convertGeoToEts2(
-                pathCoords[i + 1]![0],
-                pathCoords[i + 1]![1],
-            );
+            let point1, point2;
+
+            point1 =
+                settings.value.selectedGame === "ets2"
+                    ? convertGeoToEts2(pathCoords[i]![0], pathCoords[i]![1])
+                    : convertGeoToAts(pathCoords[i]![0], pathCoords[i]![1]);
+            point2 =
+                settings.value.selectedGame === "ets2"
+                    ? convertGeoToEts2(
+                          pathCoords[i + 1]![0],
+                          pathCoords[i + 1]![1],
+                      )
+                    : convertGeoToAts(
+                          pathCoords[i + 1]![0],
+                          pathCoords[i + 1]![1],
+                      );
 
             const dx = point2[0] - point1[0];
             const dy = point2[1] - point1[1];
@@ -247,7 +260,10 @@ export function useCityData() {
         for (const feature of collection.features) {
             const [lng, lat] = feature.geometry.coordinates;
 
-            const [gameX, gameZ] = convertGeoToEts2(lng, lat);
+            let [gameX, gameZ] =
+                settings.value.selectedGame === "ets2"
+                    ? convertGeoToEts2(lng, lat)
+                    : convertGeoToAts(lng, lat);
 
             let radius = 900;
             if (

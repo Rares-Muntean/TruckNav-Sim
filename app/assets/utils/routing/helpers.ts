@@ -1,4 +1,4 @@
-import type { Coord } from "~~/shared/types";
+import type { Coord } from "~/assets/utils/routing/graphTypes";
 
 export function haversine(a: Coord, b: Coord): number {
     const R = 6371000;
@@ -12,15 +12,4 @@ export function haversine(a: Coord, b: Coord): number {
     const sin2 = Math.sin(dLon / 2);
     const h = sin1 * sin1 + Math.cos(lat1) * Math.cos(lat2) * sin2 * sin2;
     return 2 * R * Math.asin(Math.sqrt(h));
-}
-
-export function convertTelemtryTime(time: string) {
-    const date = new Date(time);
-    return {
-        formatted: `${date.getUTCHours().toString().padStart(2, "0")}:${date
-            .getUTCMinutes()
-            .toString()
-            .padStart(2, "0")}`,
-        raw: date,
-    };
 }

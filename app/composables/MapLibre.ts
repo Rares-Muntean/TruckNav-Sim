@@ -193,7 +193,7 @@ export async function initializeMap(
                     9,
                     1,
                     11.5,
-                    12,
+                    13,
                 ],
                 "line-opacity": 1,
             },

@@ -49,6 +49,7 @@ self.onmessage = async (e: MessageEvent) => {
             targetCoords,
             projectedStartCoords,
             ownedDlcs,
+            selectedGame,
         } = payload;
 
         const result = calculateRoute(
@@ -73,7 +74,11 @@ self.onmessage = async (e: MessageEvent) => {
             displayPath = smoothPath(displayPath);
             displayPath = smoothPath(displayPath);
 
-            const statsCache = buildRouteStatsCache(fullPath, cityNodes);
+            const statsCache = buildRouteStatsCache(
+                fullPath,
+                cityNodes,
+                selectedGame,
+            );
 
             self.postMessage(
                 {

@@ -1,78 +1,45 @@
 import { ref } from "vue";
-import type { TelemetryData } from "../assets/utils/telemetry/telemetryTypes";
-import {
-    convertEts2ToGeo,
-    convertAtsToGeo,
-} from "~/assets/utils/map/converters";
-import { getBearing } from "~/assets/utils/map/maths";
-import { convertTelemtryTime } from "~/assets/utils/routing/helpers";
 import { CapacitorHttp } from "@capacitor/core";
-
-export interface TelemetryUpdate {
-    truck: TruckState;
-    game: GameState;
-    general: GeneralInfo;
-    job: JobInfo;
-}
-
-interface GameState {
-    gameTime: string;
-    gameConnected: boolean;
-    hasInGameMarker: boolean;
-}
-
-interface TruckState {
-    truckCoords: [number, number] | null;
-    truckHeading: number;
-    truckSpeed: number;
-}
-
-interface GeneralInfo {
-    fuel: number;
-    speedLimit: number;
-    restStoptime: string;
-    restStopMinutes: number;
-}
-
-interface JobInfo {
-    hasActiveJob: boolean;
-    income: number;
-    deadlineTime: Date;
-    remainingTime: Date;
-    sourceCity: string;
-    sourceCompany: string;
-    destinationCity: string;
-    destinationCompany: string;
-}
+import {
+    getGameState,
+    getJobState,
+    getNavigationState,
+    getTruckState,
+    verifyGameByTruck,
+} from "~/assets/utils/telemetry/helpers";
+import type {
+    TruckState,
+    GameState,
+    NavigationState,
+    JobState,
+    TelemetryUpdate,
+    TelemetryData,
+} from "~/types";
 
 const isTelemetryConnected = ref(false);
 const isRunning = ref(false);
 let currentSessionId = 0;
 
-// TRUCK STATE
 const truckState = reactive<TruckState>({
     truckCoords: [0, 0],
     truckHeading: 0,
     truckSpeed: 0,
 });
 
-// GAME STATE
 const gameState = reactive<GameState>({
     gameTime: "",
     gameConnected: false,
     hasInGameMarker: false,
 });
 
-// GAME INFO
-const generalInfo = reactive<GeneralInfo>({
+const navigationState = reactive<NavigationState>({
     fuel: 0,
     speedLimit: 0,
     restStoptime: "",
     restStopMinutes: 0,
 });
 
-// JOB INFO
-const jobInfo = reactive<JobInfo>({
+const jobState = reactive<JobState>({
     hasActiveJob: false,
     income: 0,
     deadlineTime: new Date(),
@@ -93,38 +60,6 @@ export function useEtsTelemetry() {
     const { isElectron, isMobile, isWeb } = usePlatform();
     const { settings } = useSettings();
 
-    function getCorrectHeading(
-        rawGameHeading: number,
-        truckSpeed: number,
-        currentCoords: [number, number],
-    ) {
-        const rawDegrees = -rawGameHeading * 360;
-
-        if (lastPosition && truckSpeed > 10) {
-            const dist = Math.sqrt(
-                Math.pow(currentCoords[0] - lastPosition[0], 2) +
-                    Math.pow(currentCoords[1] - lastPosition[1], 2),
-            );
-
-            if (dist > 0.00005) {
-                const trueBearing = getBearing(lastPosition, currentCoords);
-
-                let diff = trueBearing - rawDegrees;
-                while (diff < -180) diff += 360;
-                while (diff > 180) diff -= 360;
-
-                if (Math.abs(diff) < 90) {
-                    headingOffset += (diff - headingOffset) * 0.1;
-                }
-            }
-        }
-
-        let finalHeading = rawDegrees + headingOffset;
-        finalHeading = ((finalHeading % 360) + 360) % 360;
-
-        return finalHeading;
-    }
-
     function startTelemetry(onUpdate?: (data: TelemetryUpdate) => void) {
         if (isRunning.value) return;
         isRunning.value = true;
@@ -136,6 +71,7 @@ export function useEtsTelemetry() {
             if (!isRunning.value || currentSessionId !== mySessionId) return;
 
             const startTime = performance.now();
+            let nextTickDelay = 100;
 
             try {
                 if (isMobile.value) {
@@ -146,16 +82,32 @@ export function useEtsTelemetry() {
                         });
 
                         if (response.status === 200) {
-                            const telemetryData = response.data;
+                            const telemetryData =
+                                response.data as TelemetryData;
 
                             if (
                                 telemetryData &&
                                 telemetryData.game?.connected
                             ) {
-                                isTelemetryConnected.value = true;
-                                processData(telemetryData, onUpdate);
+                                const apiGame = verifyGameByTruck(
+                                    telemetryData.truck.id,
+                                    telemetryData.truck.model,
+                                    telemetryData.game.gameName,
+                                );
+
+                                if (apiGame === settings.value.selectedGame) {
+                                    isTelemetryConnected.value = true;
+                                    processData(telemetryData, onUpdate);
+                                    nextTickDelay = 100;
+                                } else {
+                                    isTelemetryConnected.value = false;
+                                    resetDataOnDisconnected(onUpdate);
+                                    nextTickDelay = 4000;
+                                }
                             } else {
+                                isTelemetryConnected.value = false;
                                 resetDataOnDisconnected(onUpdate);
+                                nextTickDelay = 1000;
                             }
                         } else {
                             isTelemetryConnected.value = false;
@@ -185,25 +137,56 @@ export function useEtsTelemetry() {
                             result.connected &&
                             result.telemetry.game?.connected
                         ) {
-                            isTelemetryConnected.value = true;
-                            processData(result.telemetry, onUpdate);
+                            const apiGame = verifyGameByTruck(
+                                result.telemetry.truck.id,
+                                result.telemetry.truck.model,
+                                result.telemetry.game.gameName,
+                            );
+
+                            if (apiGame === settings.value.selectedGame) {
+                                isTelemetryConnected.value = true;
+                                processData(result.telemetry, onUpdate);
+                                nextTickDelay = 100;
+                            } else {
+                                isTelemetryConnected.value = false;
+                                resetDataOnDisconnected(onUpdate);
+                                nextTickDelay = 4000;
+                            }
                         } else {
+                            isTelemetryConnected.value = false;
                             resetDataOnDisconnected(onUpdate);
+                            nextTickDelay = 1000;
                         }
                     }
                 } else if (isElectron.value) {
                     const targetElectronIP =
                         settings.value.savedIP || "127.0.0.1";
 
-                    const telemetryData = await (
+                    const telemetryData = (await (
                         window as any
-                    ).electronAPI.fetchTelemetry(targetElectronIP);
+                    ).electronAPI.fetchTelemetry(
+                        targetElectronIP,
+                    )) as TelemetryData;
 
                     if (telemetryData && telemetryData.game?.connected) {
-                        isTelemetryConnected.value = true;
-                        processData(telemetryData, onUpdate);
+                        const apiGame = verifyGameByTruck(
+                            telemetryData.truck.id,
+                            telemetryData.truck.model,
+                            telemetryData.game.gameName,
+                        );
+                        if (apiGame === settings.value.selectedGame) {
+                            isTelemetryConnected.value = true;
+                            processData(telemetryData, onUpdate);
+                            nextTickDelay = 100;
+                        } else {
+                            isTelemetryConnected.value = false;
+                            resetDataOnDisconnected(onUpdate);
+                            nextTickDelay = 4000;
+                        }
                     } else {
+                        isTelemetryConnected.value = false;
                         resetDataOnDisconnected(onUpdate);
+                        nextTickDelay = 1000;
                     }
                 }
             } catch (err) {
@@ -220,6 +203,7 @@ export function useEtsTelemetry() {
                 fetchTimer = setTimeout(loop, delay);
             }
         };
+
         loop();
     }
 
@@ -231,37 +215,90 @@ export function useEtsTelemetry() {
         fetchTimer = null;
     }
 
+    function processData(
+        data: TelemetryData,
+        onUpdate?: (data: TelemetryUpdate) => void,
+    ) {
+        const { gameConnected, hasInGameMarker, gameTime } = getGameState(data);
+        Object.assign(gameState, {
+            gameTime: gameTime,
+            gameConnected: gameConnected,
+            hasInGameMarker: hasInGameMarker,
+        });
+
+        const {
+            truckCoords,
+            truckSpeed,
+            truckHeading,
+            headingOffset: newOffset,
+        } = getTruckState(
+            data,
+            lastPosition,
+            settings.value.selectedGame,
+            headingOffset,
+        );
+        Object.assign(truckState, {
+            truckCoords: truckCoords,
+            truckHeading: truckHeading,
+            truckSpeed: truckSpeed,
+        });
+        lastPosition = truckCoords;
+        headingOffset = newOffset;
+
+        const { fuel, speedLimit, restStoptime, restStopMinutes } =
+            getNavigationState(data);
+        Object.assign(navigationState, {
+            restStoptime: restStoptime,
+            restStopMinutes: restStopMinutes,
+            speedLimit: speedLimit,
+            fuel: fuel,
+        });
+
+        const { hasActiveJob, destinationCity, destinationCompany } =
+            getJobState(data);
+        Object.assign(jobState, {
+            hasActiveJob: hasActiveJob,
+            destinationCity: destinationCity,
+            destinationCompany: destinationCompany,
+        });
+
+        if (onUpdate) {
+            onUpdate({
+                truck: { ...truckState },
+                game: { ...gameState },
+                general: { ...navigationState },
+                job: { ...jobState },
+            });
+        }
+    }
+
     function resetDataOnDisconnected(
         onUpdate?: (data: TelemetryUpdate) => void,
     ) {
         const wasConnected = gameState.gameConnected;
-
         isTelemetryConnected.value = false;
+        headingOffset = 0;
 
-        // GAME STATE
         Object.assign(gameState, {
             gameConnected: false,
             hasInGameMarker: false,
             gameTime: "",
         });
 
-        // TRUCK STATE
         Object.assign(truckState, {
             truckCoords: [0, 0],
             truckHeading: 0,
             truckSpeed: 0,
         });
 
-        // GENERAL INFO
-        Object.assign(generalInfo, {
+        Object.assign(navigationState, {
             fuel: 0,
             speedLimit: 0,
             restStopMinutes: 0,
             restStoptime: "0",
         });
 
-        // JOB INFO
-        Object.assign(jobInfo, {
+        Object.assign(jobState, {
             hasActiveJob: false,
         });
 
@@ -269,99 +306,17 @@ export function useEtsTelemetry() {
             onUpdate({
                 truck: { ...truckState },
                 game: { ...gameState },
-                general: { ...generalInfo },
-                job: { ...jobInfo },
-            });
-        }
-    }
-
-    function processData(
-        data: TelemetryData,
-        onUpdate?: (data: TelemetryUpdate) => void,
-    ) {
-        // Truck Placement
-        // GAME STATE
-        const gameConnected = data.game.connected;
-        const hasInGameMarker =
-            data.navigation.estimatedDistance > 100 && data.job.income === 0;
-
-        const { formatted: formattedTime, raw } = convertTelemtryTime(
-            data.game.time,
-        );
-        const day = raw.toUTCString().slice(0, 3);
-        const gameTime = `${day} ${formattedTime}`;
-
-        // TRUCK STATE
-        const { x, z } = data.truck.placement;
-        const rawGameHeading = data.truck.placement.heading;
-        const truckCoords = convertEts2ToGeo(x, z);
-        const truckSpeed = Math.max(0, Math.floor(data.truck.speed));
-        const truckHeading = getCorrectHeading(
-            rawGameHeading,
-            truckSpeed,
-            truckCoords,
-        );
-
-        // GENERAL INFO
-        const fuel = parseInt(data.truck.fuel.toFixed(1));
-        const speedLimit = data.navigation.speedLimit;
-        const { formatted: restStoptime, raw: restRaw } = convertTelemtryTime(
-            data.game.nextRestStopTime,
-        );
-        const restStopMinutes =
-            restRaw.getUTCHours() * 60 + restRaw.getUTCMinutes();
-
-        // JOB INFO
-        const hasActiveJob = data.job.income > 0;
-        const destinationCity = data.job.destinationCity;
-        const destinationCompany = data.job.destinationCompany;
-
-        // GAME STATE
-        Object.assign(gameState, {
-            gameTime: gameTime,
-            gameConnected: gameConnected,
-            hasInGameMarker: hasInGameMarker,
-        });
-
-        // TRUCK STATE
-        Object.assign(truckState, {
-            truckCoords: truckCoords,
-            truckHeading: truckHeading,
-            truckSpeed: truckSpeed,
-        });
-
-        // GENERAL INFO
-        Object.assign(generalInfo, {
-            restStoptime: restStoptime,
-            restStopMinutes: restStopMinutes,
-            speedLimit: speedLimit,
-            fuel: fuel,
-        });
-
-        // JOB INFO
-        Object.assign(jobInfo, {
-            hasActiveJob: hasActiveJob,
-            destinationCity: destinationCity,
-            destinationCompany: destinationCompany,
-        });
-
-        lastPosition = truckCoords;
-
-        if (onUpdate) {
-            onUpdate({
-                truck: { ...truckState },
-                game: { ...gameState },
-                general: { ...generalInfo },
-                job: { ...jobInfo },
+                general: { ...navigationState },
+                job: { ...jobState },
             });
         }
     }
 
     return {
-        ...toRefs(generalInfo),
+        ...toRefs(navigationState),
         ...toRefs(truckState),
         ...toRefs(gameState),
-        ...toRefs(jobInfo),
+        ...toRefs(jobState),
         startTelemetry,
         stopTelemetry,
     };

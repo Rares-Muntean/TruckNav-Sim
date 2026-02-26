@@ -111,13 +111,7 @@ export interface TrailerData {
     name: string;
     mass: number;
     wear: number;
-    placement: TrailerPlacement;
-}
-
-interface TrailerPlacement extends Vector3 {
-    heading: number;
-    pitch: number;
-    roll: number;
+    placement: Placement;
 }
 
 export interface JobData {

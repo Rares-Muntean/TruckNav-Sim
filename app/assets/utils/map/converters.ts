@@ -67,7 +67,7 @@ export function convertAtsToGeo(
     return result as [number, number];
 }
 
-export function convertGameToAts(lng: number, lat: number): [number, number] {
+export function convertGeoToAts(lng: number, lat: number): [number, number] {
     const projected = atsConverter.forward([lng, lat]);
     const projX = projected[0]!;
     const projY = projected[1]!;
