@@ -4,15 +4,16 @@ type PackedEdge = [number, number, number, number, number];
 import { Capacitor } from "@capacitor/core";
 
 const extenstion = Capacitor.isNativePlatform() ? "mp3" : "json";
+const { settings } = useSettings();
 
 export async function loadGraph() {
     const [packedNodes, packedEdges] = await Promise.all([
-        fetch(`/data/ets2/roadnetwork/nodes.${extenstion}`).then(
-            (r) => r.json() as Promise<PackedNode[]>,
-        ),
-        fetch(`/data/ets2/roadnetwork/edges.${extenstion}`).then(
-            (r) => r.json() as Promise<PackedEdge[]>,
-        ),
+        fetch(
+            `/data/${settings.value.selectedGame}/roadnetwork/nodes.${extenstion}`,
+        ).then((r) => r.json() as Promise<PackedNode[]>),
+        fetch(
+            `/data/${settings.value.selectedGame}/roadnetwork/edges.${extenstion}`,
+        ).then((r) => r.json() as Promise<PackedEdge[]>),
     ]);
 
     const nodes = packedNodes.map((n, index) => ({

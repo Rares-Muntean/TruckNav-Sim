@@ -20,8 +20,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import RBush from "rbush";
 import * as turf from "@turf/turf";
 import path from "path";
-import type { Node, Edge, Coord } from "../assets/utils/routing/graphTypes";
-import { haversine } from "../assets/utils/routing/helpers";
+import type { Node, Edge, Coord } from "../assets/utils/routing/graphTypes.ts";
+import { haversine } from "../assets/utils/routing/helpers.ts";
 
 interface InputFeature {
     type: "Feature";
@@ -53,7 +53,7 @@ const roadTypeMap = {
     ferry: 4,
 };
 
-const COORD_MAX_DECIMALS = 6;
+const COORD_MAX_DECIMALS = 5;
 function coordKey(c: Coord) {
     return `${c[0].toFixed(COORD_MAX_DECIMALS)},${c[1].toFixed(
         COORD_MAX_DECIMALS,

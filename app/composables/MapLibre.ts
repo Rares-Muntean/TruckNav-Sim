@@ -42,16 +42,15 @@ export async function initializeMap(
     const style: StyleSpecification = {
         version: 8,
 
-        name: "ETS2 PMTiles (local)",
+        name: "PMTiles (local)",
         sources: {
-            ets2: {
+            [`${settings.value.selectedGame}`]: {
                 type: "vector",
-
                 url: `pmtiles://roads`,
             },
         },
 
-        sprite: `${baseUrl}/sprites/sprites`,
+        sprite: `${baseUrl}/sprites/${settings.value.selectedGame}/sprites`,
         glyphs: `${baseUrl}/fonts/{fontstack}/{range}.pbf`,
 
         layers: [
@@ -61,11 +60,11 @@ export async function initializeMap(
                 paint: { "background-color": "#272d39" },
             },
             {
-                id: "ets2-lines",
+                id: "lines",
                 type: "line",
-                source: "ets2",
+                source: `${settings.value.selectedGame}`,
                 filter: ["!=", ["get", "type"], "ferry"],
-                "source-layer": "ets2",
+                "source-layer": `${settings.value.selectedGame}`,
                 paint: {
                     "line-color": "#3d546e",
                     "line-width": 2,
@@ -98,7 +97,7 @@ export async function initializeMap(
             center: [-115, 40],
             zoom: 6,
             minZoom: 5,
-            maxZoom: 10.5,
+            maxZoom: 11.5,
             maxPitch: 45,
             fadeDuration: 0,
             attributionControl: false,
@@ -129,7 +128,7 @@ export async function initializeMap(
     //// =================> LATER ATS UPDATE <=================
 
     map.on("load", async () => {
-        map.addSource("ets2-all-data", {
+        map.addSource("all-data", {
             type: "vector",
             url: "pmtiles://all-data",
         });
@@ -140,10 +139,10 @@ export async function initializeMap(
         ////
         // OUTLINE
         map.addLayer({
-            id: "ets2-water-outline",
+            id: "water-outline",
             type: "line",
-            source: "ets2-all-data",
-            "source-layer": "ets2water",
+            source: "all-data",
+            "source-layer": "water",
             paint: {
                 "line-color": "#1e3a5f",
                 "line-width": [
@@ -161,10 +160,10 @@ export async function initializeMap(
 
         // WATER
         map.addLayer({
-            id: "ets2-water",
+            id: "water",
             type: "fill",
-            source: "ets2-all-data",
-            "source-layer": "ets2water",
+            source: "all-data",
+            "source-layer": "water",
             paint: {
                 "fill-color": "#24467b",
                 "fill-opacity": 0.6,
@@ -173,10 +172,10 @@ export async function initializeMap(
 
         // THICK ROADS
         map.addLayer({
-            id: "ets2-roads",
+            id: "roads",
             type: "line",
-            source: "ets2",
-            "source-layer": "ets2",
+            source: `${settings.value.selectedGame}`,
+            "source-layer": `${settings.value.selectedGame}`,
             filter: ["!=", ["get", "type"], "ferry"],
             layout: {
                 "line-join": ["step", ["zoom"], "miter", 8, "round"],
@@ -191,9 +190,9 @@ export async function initializeMap(
                     5,
                     0.5,
                     9,
-                    1,
-                    11.5,
-                    13,
+                    2,
+                    10,
+                    6,
                 ],
                 "line-opacity": 1,
             },
@@ -204,8 +203,8 @@ export async function initializeMap(
             {
                 id: "maparea-zones",
                 type: "fill",
-                source: "ets2-all-data",
-                "source-layer": "ets2mapareas",
+                source: "all-data",
+                "source-layer": "mapareas",
                 paint: {
                     "fill-color": [
                         "match",
@@ -225,7 +224,7 @@ export async function initializeMap(
                     "fill-opacity": 0.5,
                 },
             },
-            "ets2-lines",
+            "lines",
         );
 
         // PREFABS FOR SERVICE AREAS     ETC
@@ -233,8 +232,8 @@ export async function initializeMap(
             {
                 id: "prefab-zones",
                 type: "fill",
-                source: "ets2-all-data",
-                "source-layer": "ets2prefabs",
+                source: "all-data",
+                "source-layer": "prefabs",
                 paint: {
                     "fill-color": [
                         "match",
@@ -270,16 +269,16 @@ export async function initializeMap(
                         ),
                     ],
                 },
-                minzoom: 8.5,
+                minzoom: 5,
             },
-            "ets2-lines",
+            "lines",
         );
 
         // DISPLAYING VILLAGE NAMES
         map.addLayer({
             id: "village-labels",
             type: "symbol",
-            source: "ets2-all-data",
+            source: "all-data",
             "source-layer": "ets2villages",
             layout: {
                 "text-field": ["get", "name"],
@@ -300,24 +299,40 @@ export async function initializeMap(
             {
                 id: "country-borders",
                 type: "line",
-                source: "ets2-all-data",
-                "source-layer": "ets2countries",
+                source: "all-data",
+                "source-layer": "countries",
                 paint: {
                     "line-color": "#3d546e",
                     "line-width": 2,
                     "line-opacity": 0.4,
                 },
             },
-            "ets2-lines",
+            "lines",
+        );
+
+        // DISPLAYING STATE DELIMITATIONS
+        map.addLayer(
+            {
+                id: "state-borders",
+                type: "line",
+                source: "all-data",
+                "source-layer": "states",
+                paint: {
+                    "line-color": "#3d546e",
+                    "line-width": 2,
+                    "line-opacity": 0.4,
+                },
+            },
+            "lines",
         );
 
         // ALL SPRITE SHEETS
         map.addLayer({
             id: "all-sprites",
             type: "symbol",
-            source: "ets2-all-data",
-            "source-layer": "ets2spritelocations",
-            minzoom: 7,
+            source: "all-data",
+            "source-layer": "spritelocations",
+            minzoom: 8,
             layout: {
                 "icon-image": ["get", "sprite"],
                 "icon-size": [
@@ -325,9 +340,33 @@ export async function initializeMap(
                     ["linear"],
                     ["zoom"],
                     7,
-                    0.8,
+                    0.7,
                     10,
                     1.5,
+                ],
+                "icon-allow-overlap": false,
+                "symbol-placement": "point",
+            },
+        });
+
+        // ROAD POI TYPE
+        map.addLayer({
+            id: "road-sprites",
+            type: "symbol",
+            source: "all-data",
+            "source-layer": "spritelocations",
+            filter: ["==", ["get", "poiType"], "road"],
+            minzoom: 8,
+            layout: {
+                "icon-image": ["get", "sprite"],
+                "icon-size": [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    7,
+                    0.6,
+                    10,
+                    0.9,
                 ],
                 "icon-allow-overlap": false,
                 "symbol-placement": "point",
@@ -338,8 +377,8 @@ export async function initializeMap(
         map.addLayer({
             id: "city-labels",
             type: "symbol",
-            source: "ets2-all-data",
-            "source-layer": "ets2cities",
+            source: "all-data",
+            "source-layer": "cities",
             filter: ["!=", ["get", "capital"], 2],
             layout: {
                 "text-field": ["get", "name"],
@@ -364,8 +403,8 @@ export async function initializeMap(
             id: "capital-major-labels",
             type: "symbol",
             filter: ["==", ["get", "capital"], 2],
-            source: "ets2-all-data",
-            "source-layer": "ets2cities",
+            source: "all-data",
+            "source-layer": "cities",
             layout: {
                 "text-field": ["get", "name"],
                 "text-size": 18,
@@ -386,8 +425,8 @@ export async function initializeMap(
         map.addLayer({
             id: "country-labels",
             type: "symbol",
-            source: "ets2-all-data",
-            "source-layer": "ets2countrynames",
+            source: "all-data",
+            "source-layer": "countrynames",
             layout: {
                 "text-field": ["get", "name"],
                 "text-size": 20,

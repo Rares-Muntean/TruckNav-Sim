@@ -53,22 +53,37 @@ export function useCityData() {
         if (isLoaded.value) return;
 
         try {
-            const [citiesRes, villagesRes, companiesRes, citiesFallbackRes] =
-                await Promise.all([
-                    fetch("/data/ets2/map-data/ets2-cities.geojson"),
-                    fetch("/data/ets2/map-data/ets2-villages.geojson"),
-                    fetch("/data/ets2/map-data/ets2-companies.geojson"),
+            if (settings.value.selectedGame === "ets2") {
+                const [
+                    citiesRes,
+                    villagesRes,
+                    companiesRes,
+                    citiesFallbackRes,
+                ] = await Promise.all([
+                    fetch("/data/ets2/map-data/cities.geojson"),
+                    fetch("/data/ets2/map-data/villages.geojson"),
+                    fetch("/data/ets2/map-data/companies.geojson"),
                     fetch("/data/ets2/map-data/citiesCheck.json"),
                 ]);
 
-            if (citiesRes.ok) cityData.value = await citiesRes.json();
-            if (villagesRes.ok) villageData.value = await villagesRes.json();
-            if (companiesRes.ok)
-                companiesData.value = await companiesRes.json();
-            if (citiesFallbackRes.ok)
-                citiesFallbackData.value = await citiesFallbackRes.json();
-            const cNodes = processCollection(cityData.value);
+                if (citiesRes.ok) cityData.value = await citiesRes.json();
+                if (villagesRes.ok)
+                    villageData.value = await villagesRes.json();
+                if (companiesRes.ok)
+                    companiesData.value = await companiesRes.json();
+                if (citiesFallbackRes.ok)
+                    citiesFallbackData.value = await citiesFallbackRes.json();
+            } else if (settings.value.selectedGame == "ats") {
+                const [citiesRes, companiesRes] = await Promise.all([
+                    fetch("/data/ats/map-data/cities.geojson"),
+                    fetch("/data/ats/map-data/companies.geojson"),
+                ]);
 
+                if (citiesRes.ok) cityData.value = await citiesRes.json();
+                if (companiesRes.ok)
+                    companiesData.value = await companiesRes.json();
+            }
+            const cNodes = processCollection(cityData.value);
             optimizedCityNodes.value = [...cNodes!];
 
             isLoaded.value = true;

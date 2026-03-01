@@ -58,7 +58,7 @@
     }
 
     &.loading {
-        color: #7c3aed;
+        color: var(--theme-color);
     }
 }
 

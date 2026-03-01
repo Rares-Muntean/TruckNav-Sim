@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { Color } from "maplibre-gl";
-
 const props = defineProps<{
     text: string;
     trigger: number;

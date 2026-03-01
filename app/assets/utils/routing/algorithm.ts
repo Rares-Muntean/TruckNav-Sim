@@ -224,47 +224,66 @@ export const calculateRoute = (
                     }
                 }
 
-                // NOT NEEDED FOR NOW, CAN CAUSE BUGS BECAUSE OF CHANGED ROADNETWORK.
-                // let tempPrev = prevId;
-                // let traveledDist = 0;
+                let tempPrev = prevId;
+                let traveledDist = 0;
+                let maxSingleTurn = 0;
 
-                // for (let k = 0; k < 30; k++) {
-                //     const grandPrev = cache_previous[tempPrev]!;
-                //     if (grandPrev === -1) break;
+                const currentHeading = getHeading(cLng, cLat, nLng, nLat);
+                let lastSegHeading = currentHeading;
+                let uTurnDist = -1;
 
-                //     const tLng = flatCoords[tempPrev * 2]!;
-                //     const tLat = flatCoords[tempPrev * 2 + 1]!;
-                //     const gLng = flatCoords[grandPrev * 2]!;
-                //     const gLat = flatCoords[grandPrev * 2 + 1]!;
+                for (let k = 0; k < 30; k++) {
+                    const grandPrev = cache_previous[tempPrev]!;
+                    if (grandPrev === -1) break;
 
-                //     const segDist = fastDistKm(gLng, gLat, tLng, tLat);
-                //     traveledDist += segDist;
+                    const tLng = flatCoords[tempPrev * 2]!;
+                    const tLat = flatCoords[tempPrev * 2 + 1]!;
+                    const gLng = flatCoords[grandPrev * 2]!;
+                    const gLat = flatCoords[grandPrev * 2 + 1]!;
 
-                // if (traveledDist > 0.5) {
-                //     const headingOld = getHeading(gLng, gLat, tLng, tLat);
+                    const segDist = fastDistKm(gLng, gLat, tLng, tLat);
+                    traveledDist += segDist;
 
-                //     const headingNew = getHeading(cLng, cLat, nLng, nLat);
+                    // Calculate heading of this historical segment
+                    const histHeading = getHeading(gLng, gLat, tLng, tLat);
 
-                //     const distNowToPast = fastDistKm(
-                //         cLng,
-                //         cLat,
-                //         gLng,
-                //         gLat,
-                //     );
+                    // Track the sharpest individual corner
+                    const turnAngle = getRadianAngleDiff(
+                        histHeading,
+                        lastSegHeading,
+                    );
+                    if (turnAngle > maxSingleTurn) {
+                        maxSingleTurn = turnAngle;
+                    }
 
-                //     const ratio = traveledDist / distNowToPast;
+                    lastSegHeading = histHeading;
 
-                //     const diff = getRadianAngleDiff(headingOld, headingNew);
+                    // Check how much the overall heading has changed from the past to the future
+                    const diff = getRadianAngleDiff(
+                        histHeading,
+                        currentHeading,
+                    );
 
-                //     if (diff > 4.0 && ratio > 1.0) {
-                //         stepCost += Infinity;
-                //     } else if (diff > 4.0) {
-                //         stepCost += 5000;
-                //     }
-                //     break;
-                // }
-                //     tempPrev = grandPrev;
-                // }
+                    // If we flipped ~160+ degrees (2.8 rad) AND havent recorded it yet
+                    if (diff > 2.8 && uTurnDist === -1) {
+                        uTurnDist = traveledDist;
+                    }
+
+                    // Looking back a certain distance
+                    if (traveledDist > 0.4) {
+                        break;
+                    }
+
+                    tempPrev = grandPrev;
+                }
+
+                if (uTurnDist !== -1) {
+                    if (maxSingleTurn > 1.2) {
+                        stepCost += Infinity;
+                    } else if (uTurnDist < 0.05) {
+                        stepCost += Infinity;
+                    }
+                }
             }
 
             if (stepCost < 1) stepCost = 1;
