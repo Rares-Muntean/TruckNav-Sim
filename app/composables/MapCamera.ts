@@ -19,7 +19,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
     let easeTimeout: ReturnType<typeof setTimeout> | null = null;
 
     let lastTime = 0;
-    let lastDataUpdate = 0;
 
     const renderLoop = (timestamp: number) => {
         if (!lastTime) lastTime = timestamp;
@@ -59,8 +58,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                     currentTruckHeading = targetHeading;
                 }
             }
-
-            if (iconMoved && timestamp - lastDataUpdate > 50) {
+            if (iconMoved) {
                 setMapLibreData(
                     map.value,
                     "truck-source",
@@ -68,7 +66,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                     currentTruckCoords,
                     { heading: currentTruckHeading },
                 );
-                lastDataUpdate = timestamp;
             }
         }
 
@@ -84,6 +81,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         ) {
             const currentCenter = map.value.getCenter();
             const currentBearing = map.value.getBearing();
+
             const diffX = currentTruckCoords[0] - currentCenter.lng;
             const diffY = currentTruckCoords[1] - currentCenter.lat;
 
