@@ -63,7 +63,6 @@ export async function initializeMap(
                 id: "lines",
                 type: "line",
                 source: `${settings.value.selectedGame}`,
-                filter: ["!=", ["get", "type"], "ferry"],
                 "source-layer": `${settings.value.selectedGame}`,
                 paint: {
                     "line-color": "#3d546e",
@@ -176,7 +175,6 @@ export async function initializeMap(
             type: "line",
             source: `${settings.value.selectedGame}`,
             "source-layer": `${settings.value.selectedGame}`,
-            filter: ["!=", ["get", "type"], "ferry"],
             layout: {
                 "line-join": ["step", ["zoom"], "miter", 8, "round"],
                 "line-cap": ["step", ["zoom"], "butt", 8, "round"],
@@ -228,6 +226,15 @@ export async function initializeMap(
         );
 
         // PREFABS FOR SERVICE AREAS     ETC
+
+        const color0 = blendWithBg(
+            lightenColor(activeSettings.value.themeColor, 0.3),
+            0.6,
+        );
+        const color1 = blendWithBg(
+            lightenColor(activeSettings.value.themeColor, 0),
+            0.6,
+        );
         map.addLayer(
             {
                 id: "prefab-zones",
@@ -239,34 +246,14 @@ export async function initializeMap(
                         "match",
                         ["get", "color"],
                         0,
-                        blendWithBg(
-                            lightenColor(activeSettings.value.themeColor, 0.3),
-                            0.6,
-                        ),
+                        color0,
                         1,
-                        blendWithBg(
-                            lightenColor(activeSettings.value.themeColor, 0.3),
-                            0.6,
-                        ),
+                        color0,
                         2,
-                        blendWithBg(
-                            lightenColor(activeSettings.value.themeColor, 0),
-                            0.6,
-                        ),
+                        color1,
                         3,
-                        blendWithBg(
-                            lightenColor(activeSettings.value.themeColor, 0.3),
-                            0.6,
-                        ),
-                        4,
-                        blendWithBg(
-                            lightenColor(activeSettings.value.themeColor, 0.3),
-                            0.6,
-                        ),
-                        blendWithBg(
-                            lightenColor(activeSettings.value.themeColor, 0.3),
-                            0.6,
-                        ),
+                        color0,
+                        "#3d546e",
                     ],
                 },
                 minzoom: 5,

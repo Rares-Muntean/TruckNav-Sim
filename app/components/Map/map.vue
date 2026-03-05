@@ -64,8 +64,14 @@ const { isElectron, isMobile, isWeb } = usePlatform();
 //
 //
 // Graph manipulation
-const { loading, progress, adjacency, nodeCoords, initializeGraphData } =
-    useGraphSystem();
+const {
+    loading,
+    progress,
+    adjacency,
+    nodeCoords,
+    initializeGraphData,
+    getClosestNodes,
+} = useGraphSystem();
 
 //
 //
@@ -96,12 +102,14 @@ const {
     isRouteActive,
     routeFound,
     getSnappedCoords,
+    findBestStartConfiguration,
+    worker,
 } = useRouteController(map, adjacency, nodeCoords);
 
 //
 //
 // Settings Controller
-const { updateGlobal, activeSettings } = useSettings();
+const { updateGlobal, activeSettings, settings } = useSettings();
 
 let uiTimer: ReturnType<typeof setTimeout> | null = null;
 let routeTimer: ReturnType<typeof setTimeout> | null = null;

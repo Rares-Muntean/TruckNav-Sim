@@ -626,6 +626,7 @@ export const useRouteController = (
     }
 
     return {
+        worker,
         destinationName,
         routeDistance,
         routeEta,
@@ -638,6 +639,7 @@ export const useRouteController = (
         destroyWorker,
         setupRouteLayer,
         handleRouteClick,
+        findBestStartConfiguration,
         updateRouteProgress,
         getSnappedCoords,
         clearRouteState,
