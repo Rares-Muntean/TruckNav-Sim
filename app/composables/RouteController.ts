@@ -377,7 +377,7 @@ export const useRouteController = (
             const pinImg = await generateDestinationIcon(
                 activeSettings.value.themeColor,
             );
-            map.value.addImage("destination-icon", pinImg);
+            map.value.addImage("destination-icon", pinImg, { pixelRatio: 2.5 });
         }
 
         map.value.addSource("route-line", {

@@ -262,7 +262,7 @@ onMounted(async () => {
         const initialTruckImg = await generateTruckIcon(
             activeSettings.value.themeColor,
         );
-        map.value!.addImage("truck-icon", initialTruckImg);
+        map.value!.addImage("truck-icon", initialTruckImg, { pixelRatio: 2.5 });
         map.value!.addSource("truck-source", {
             type: "geojson",
             data: {
