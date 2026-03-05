@@ -1,10 +1,15 @@
-# Euro Truck Nav
+# Truck Nav
 
-**Euro Truck Nav** is an external GPS navigation system for Euro Truck Simulator 2 built using Typescript. It runs in the browser (perfect for a second monitor, tablet or phone) and provides real-time tracking and routing based on the in-game map.
+**Truck Nav** is an external GPS navigation system for Euro Truck Simulator 2 and American Truck Siulator built using Typescript. It runs in the browser (perfect for a second monitor, tablet or phone) and provides real-time tracking and routing based on the in-game map.
 
 <div align="center">
-    <img src="https://github.com/user-attachments/assets/313c9f4c-ede2-44cf-bf9e-d3c9fcdcbc96" width="300" />
-    <img width="300" alt="image" src="https://github.com/user-attachments/assets/51117ee8-cde4-44d3-86b3-16eb6843da11" />
+    <img width="300" alt="image" src="https://github.com/user-attachments/assets/94d10ca3-bdc7-4d58-956d-606377efe75d" />
+    <img width="300" alt="image" src="https://github.com/user-attachments/assets/9b70c7ba-51fd-4bb1-afcb-4bb4a19f4020" />
+    <br />
+    <br />
+    <a href="https://buymeacoffee.com/raresmnt">
+        <img src="https://img.shields.io/badge/Support_the_Project-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me A Coffee">
+    </a>
 </div>
 
 
@@ -12,10 +17,8 @@
 > **Map Support Status**
 >
 > Parsing and correcting map data is a manual process. Currently, the map support is as follows:
-> *    **Supported:** Base Game and most older Map DLCs.
-> *    **Not Supported (Yet):** West Balkans DLC.
-> *    **Not Supported (Yet):** Greece DLC.
-> *    **Not Supported (Yet):** Nordic Horizons (Norway expansion).
+> *    **Supported:** Base ETS + ATS Game and all DLCs until 1.58 version.
+> *    **Not Supported (Yet):** Map Mods (e.g. ProMods).
 
 ## Current Status: Work in Progress / Demo
 
@@ -107,12 +110,12 @@ Follow the instructions from the opened .exe to install the telemetry plugin DLL
 > 2. Extract the .zip into the root folder of this project.
 > 3. Rename it: `ets2-telemetry-server'.
 
-## How to Access
-Once the server is running, you can access the dashboard from any device on your local network.
-- On your PC (Same machine): http://localhost:3000
-  
-- On your Phone/Tablet:
-  Download the .apk app and enter the IP address displayed in the PC application.
+## Accessing the App in Your Browser
+To open the app in your browser, click the network link shown in the terminal (the local link may have telemetry fetching issues):
+```Bash
+➜ Network: http://192.168.1.x:3000/
+```
+
 ##  How it Works
 
 1. **Telemetry:** The app uses a telemetry server to pull data (coordinates, speed, heading) directly from the running game.
@@ -120,7 +123,7 @@ Once the server is running, you can access the dashboard from any device on your
 3.  **Routing:** A custom graph built from game files allows the app to calculate the shortest path to your destination.
 
 <div align="center">
-  <img width="895" height="649" alt="{C6CE05EA-1AD3-4C53-9815-E813C4B923D4}" src="https://github.com/user-attachments/assets/985894ff-89bf-4d10-a0f6-a2ef291fa90c" />
+  <img width="895" height="649" alt="close-up-gps" src="https://github.com/user-attachments/assets/ab0e0baf-bb6e-49d2-b5f0-123277d278dc" />
 </div>
 
 ## How You Can Help Improve the Map
@@ -129,8 +132,8 @@ If you test the application and encounter broken intersections, missing road con
 
 ### What to Report
 - A brief description of the issue  
-- The exact coordinates of the location  
-- A screenshot from the app (optional but helpful)
+- The exact coordinates of the location (if using the app in the browser)  
+- A screenshot from the app
 
 ### How to Collect Coordinates
 1. Click or tap the spot on the map where the issue occurs  
@@ -140,6 +143,8 @@ If you test the application and encounter broken intersections, missing road con
 ### Where to Send Reports
 Send your findings to:
 
+* raresmnt@yahoo.com
+* OR
 * byatisglaaki@gmail.com
 
 Your reports help refine the routing graph and improve navigation accuracy.
