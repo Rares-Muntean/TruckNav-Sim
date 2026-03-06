@@ -492,7 +492,7 @@ export const useRouteController = (
                 drawRouteOnMap(result.displayPath);
                 if (createEndMarker) addDestinationMarker(result.endId);
 
-                routeDistance.value = `${Math.round(totalKm)} km`;
+                routeDistance.value = Math.round(totalKm);
                 const h = Math.floor(totalHours);
                 const m = Math.round((totalHours - h) * 60);
                 routeEta.value = `${h}h ${m}min`;
@@ -600,7 +600,7 @@ export const useRouteController = (
         const remKm = totalKm - currentKm;
         const remHours = totalHours - currentHours;
 
-        routeDistance.value = `${Math.round(remKm)} km`;
+        routeDistance.value = Math.round(remKm);
 
         if (remHours > 0) {
             const h = Math.floor(remHours);
