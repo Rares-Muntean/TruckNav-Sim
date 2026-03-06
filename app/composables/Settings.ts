@@ -14,6 +14,7 @@ export interface GameProfile {
 export interface AppSettingsState {
     selectedGame: GameType;
     savedIP: string | null;
+    units: UnitSystem;
     profiles: {
         ets2: GameProfile;
         ats: GameProfile;
@@ -31,6 +32,7 @@ const DEFAULT_PROFILE: GameProfile = {
 const DEFAULT_SETTINGS: AppSettingsState = {
     selectedGame: null,
     savedIP: null,
+    units: "metric",
     profiles: {
         ets2: { ...DEFAULT_PROFILE, themeColor: "#fbc02d", units: "metric" },
         ats: {

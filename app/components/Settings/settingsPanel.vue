@@ -72,6 +72,20 @@ function toggleUnits() {
                 </button>
             </div>
         </div>
+        <div class="option setting">
+            <div class="option-title">
+                <Icon name="lucide:ruler" size="24" />
+                <p>Units</p>
+            </div>
+            <div class="owned-dlcs">
+                <button
+                    @click="toggleUnits"
+                    class="unit-toggle"
+                >
+                    {{ isMetric ? "Metric (km/h)" : "Imperial (mph)" }}
+                </button>
+            </div>
+        </div>
 
         <div class="option setting">
             <div class="option-title">
