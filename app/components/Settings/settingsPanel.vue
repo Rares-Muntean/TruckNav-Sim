@@ -1,10 +1,13 @@
 <script lang="ts" setup>
 import { ets2Expansions } from "~/data/ets2/ets2Expansions";
 import { atsExpansions } from "~/data/ats/atsExpansions";
+import { computed } from "vue"
+
 const props = defineProps<{ closePanel: () => void }>();
 
 const isDlcPanelOpened = ref(false);
-const { settings, activeSettings } = useSettings();
+const { settings, activeSettings, updateGlobal } = useSettings();
+const isMetric = computed(() => settings.value.units === "metric")
 const toggleDlcPanel = () => {
     isDlcPanelOpened.value = !isDlcPanelOpened.value;
 };
@@ -14,6 +17,10 @@ const selectedExpansion = computed(() => {
         ? ets2Expansions
         : atsExpansions;
 });
+
+function toggleUnits() {
+    updateGlobal("units", isMetric.value ? "imperial" : "metric")
+}
 </script>
 
 <template>
@@ -61,6 +68,20 @@ const selectedExpansion = computed(() => {
                 >
                     {{ activeSettings.ownedDlcs.length }} /
                     {{ Object.keys(selectedExpansion).length }} active
+                </button>
+            </div>
+        </div>
+        <div class="option setting">
+            <div class="option-title">
+                <Icon name="lucide:ruler" size="24" />
+                <p>Units</p>
+            </div>
+            <div class="owned-dlcs">
+                <button
+                    @click="toggleUnits"
+                    class="unit-toggle"
+                >
+                    {{ isMetric ? "Metric (km/h)" : "Imperial (mph)" }}
                 </button>
             </div>
         </div>

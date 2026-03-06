@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-defineProps<{
+import { computed } from "vue"
+import { useConversions } from "~/composables/UnitConversion"
+
+const props = defineProps<{
     truckSpeed: number;
     gameConnected: boolean;
     fuel: number;
@@ -8,6 +11,16 @@ defineProps<{
     gameTime: string;
     isWeb: boolean;
 }>();
+
+const { kmToUserUnits, literToUserUnits, speedUnit, fuelUnit } = useConversions()
+const truckSpeedConverted = computed(() =>
+    Math.round(kmToUserUnits(props.truckSpeed))
+)
+
+const fuelConverted = computed(() =>
+    Math.round(literToUserUnits(props.fuel))
+)
+
 </script>
 
 <template>
@@ -15,8 +28,8 @@ defineProps<{
         <div class="truck-info">
             <div class="truck-speed-div">
                 <div class="road-perspective"></div>
-                <p class="truck-speed">{{ truckSpeed }}</p>
-                <p class="km-h">km/h</p>
+                <p class="truck-speed">{{ truckSpeedConverted }}</p>
+                <p class="km-h">{{ speedUnit }}</p>
             </div>
         </div>
 
@@ -27,7 +40,7 @@ defineProps<{
                         name="bi:fuel-pump-fill"
                         :class="{ 'pulse-red': fuel < 100 }"
                     />
-                    <p>{{ fuel }}<span class="liters">l</span></p>
+                    <p>{{ fuelConverted }}<span class="liters">{{ fuelUnit }}</span></p>
                 </div>
 
                 <div class="sleep-div">
