@@ -23,51 +23,61 @@ import { existsSync, writeFileSync, writeSync } from "fs";
 //
 //// ======> CUSTOM FUNCTIONS <======
 async function startTelemetryServer() {
-    const exeName = "Ets2Telemetry.exe";
-    const serverPath = app.isPackaged
-        ? path.join(process.resourcesPath, "telemetry-server", exeName)
-        : path.join(app.getAppPath(), "bin", "telemetry-server", exeName);
-
-    if (!existsSync(serverPath)) {
-        dialog.showErrorBox(
-            "DEBUG: Path Error",
-            `File NOT found at:\n${serverPath}`,
-        );
-        return;
-    }
-
     try {
-        const running = execSync(
-            `tasklist /FI "IMAGENAME eq ${exeName}" /NH`,
-        ).toString();
-        if (running.toLowerCase().includes(exeName.toLowerCase())) return;
-    } catch (e) {}
+        const exeName = "Ets2Telemetry.exe";
+        const serverPath = app.isPackaged
+            ? path.join(process.resourcesPath, "telemetry-server", exeName)
+            : path.join(app.getAppPath(), "bin", "telemetry-server", exeName);
 
-    const serverDir = path.dirname(serverPath);
-    const flagPath = path.join(app.getPath("userData"), ".first-run-completed");
-    const isFirstRun = !existsSync(flagPath);
+        if (!existsSync(serverPath)) {
+            dialog.showErrorBox(
+                "DEBUG: Path Error",
+                `File NOT found at:\n${serverPath}`,
+            );
+            return;
+        }
 
-    const style = isFirstRun ? "Normal" : "Minimized";
+        try {
+            const running = execSync(
+                `tasklist /FI "IMAGENAME eq ${exeName}" /NH`,
+            ).toString();
+            if (running.toLowerCase().includes(exeName.toLowerCase())) return;
+        } catch (e) {}
 
-    const psCommand = `Start-Process -FilePath '${serverPath}' -WorkingDirectory '${serverDir}' -WindowStyle ${style}`;
+        const serverDir = path.dirname(serverPath);
+        const flagPath = path.join(
+            app.getPath("userData"),
+            ".first-run-completed",
+        );
+        const isFirstRun = !existsSync(flagPath);
 
-    const logPath = path.join(os.homedir(), "Desktop", "truck-nav-debug.txt");
-    writeFileSync(
-        logPath,
-        `Attempting to launch:\n${psCommand}\n\nPackaged: ${app.isPackaged}`,
-    );
+        const style = isFirstRun ? "Normal" : "Minimized";
 
-    const child = spawn(
-        "powershell.exe",
-        ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", psCommand],
-        { shell: true },
-    );
+        const psCommand = `Start-Process -FilePath '${serverPath}' -WorkingDirectory '${serverDir}' -WindowStyle ${style}`;
 
-    child.stderr.on("data", (data) => {
-        dialog.showErrorBox("POWERSHELL ERROR", data.toString());
-    });
+        const logPath = path.join(
+            app.getPath("userData"),
+            "truck-nav-debug.txt",
+        );
+        writeFileSync(
+            logPath,
+            `Attempting to launch:\n${psCommand}\n\nPackaged: ${app.isPackaged}`,
+        );
 
-    if (isFirstRun) writeFileSync(flagPath, "done");
+        const child = spawn(
+            "powershell.exe",
+            ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", psCommand],
+            { shell: true },
+        );
+
+        child.stderr.on("data", (data) => {
+            dialog.showErrorBox("POWERSHELL ERROR", data.toString());
+        });
+
+        if (isFirstRun) writeFileSync(flagPath, "done");
+    } catch (globalError) {
+        console.error("Failed to start telemetry server:", globalError);
+    }
 }
 
 const dgram = require("dgram");
