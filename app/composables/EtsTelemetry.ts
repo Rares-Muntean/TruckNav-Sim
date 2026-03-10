@@ -197,7 +197,7 @@ export function useEtsTelemetry() {
             }
 
             const duration = performance.now() - startTime;
-            const delay = Math.max(50, 100 - duration);
+            const delay = Math.max(50, nextTickDelay - duration);
 
             if (isRunning.value && currentSessionId === mySessionId) {
                 fetchTimer = setTimeout(loop, delay);

@@ -122,7 +122,7 @@ export const useRouteController = (
     let lastPrefabCheckResult = false;
     function isPositionInPrefab(coords: [number, number]): boolean {
         const now = Date.now();
-        if (now - lastPrefabCheckTime < 250) {
+        if (now - lastPrefabCheckTime < 2000) {
             return lastPrefabCheckResult;
         }
         lastPrefabCheckTime = now;
@@ -160,28 +160,61 @@ export const useRouteController = (
             return truckCoords;
         }
 
+        if (
+            isRouteActive.value &&
+            currentRoutePath.value &&
+            currentRoutePath.value.length > 1
+        ) {
+            const path = currentRoutePath.value;
+            const idx = currentRouteIndex.value;
+
+            let bestProj = truckCoords;
+            let minSqDist = Infinity;
+            let bestSegmentHeading = 0;
+
+            const searchLimit = Math.min(path.length - 1, idx + 4);
+            const startSearch = Math.max(0, idx - 1);
+
+            for (let i = startSearch; i < searchLimit; i++) {
+                const proj = projectPointToSegment(
+                    truckCoords,
+                    path[i]!,
+                    path[i + 1]!,
+                );
+                const distSq = getSquaredDist(truckCoords, proj);
+
+                if (distSq < minSqDist) {
+                    minSqDist = distSq;
+                    bestProj = proj;
+                    bestSegmentHeading = getBearing(path[i]!, path[i + 1]!);
+                }
+            }
+
+            const distKm = Math.sqrt(minSqDist) * 111;
+
+            let hDiff = Math.abs(truckHeading - bestSegmentHeading);
+            while (hDiff > 180) hDiff = 360 - hDiff;
+            const trueDiff = hDiff > 90 ? 180 - hDiff : hDiff;
+
+            if (distKm < 0.4 && trueDiff < 35) {
+                return bestProj;
+            }
+        }
+
         const config = findBestStartConfiguration(truckCoords, truckHeading, 2);
 
         if (!config || !config.projectedCoords) {
             return truckCoords;
         }
 
-        const [tx, ty] = truckCoords;
-        const [px, py] = config.projectedCoords;
-
         const distSq = getSquaredDist(truckCoords, config.projectedCoords);
         const distKm = Math.sqrt(distSq) * 111;
 
-        let alpha = 0;
-        if (distKm > 0.015) {
-            alpha = Math.min((distKm - 0.015) / 0.03, 0.9);
+        if (distKm < 0.1) {
+            return config.projectedCoords;
         }
 
-        if (alpha === 0) {
-            return truckCoords;
-        }
-
-        return [tx + (px - tx) * alpha, ty + (py - ty) * alpha];
+        return truckCoords;
     }
 
     function calculateRouteInWorker(
@@ -259,6 +292,7 @@ export const useRouteController = (
 
                 const isOpposite = diff > 90;
                 const trueDiff = isOpposite ? 180 - diff : diff;
+                if (trueDiff > 45) continue;
 
                 const visualRoadBearing = isOpposite
                     ? (roadBearing + 180) % 360

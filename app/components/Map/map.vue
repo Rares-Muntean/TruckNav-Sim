@@ -82,6 +82,8 @@ const {
     followTruck,
     startNavigationMode,
     lockCamera,
+    initMarker,
+    updateMarkerImage,
 } = useMapCamera(map);
 
 //
@@ -200,10 +202,8 @@ watch(
     async (newColor) => {
         if (!map.value) return;
 
-        if (map.value.hasImage("truck-icon")) {
-            const newTruckImg = await generateTruckIcon(newColor);
-            map.value.updateImage("truck-icon", newTruckImg);
-        }
+        const newTruckImg = await generateTruckIcon(newColor);
+        updateMarkerImage(newTruckImg.src);
 
         if (map.value.getLayer("prefab-zones")) {
             const blended = blendWithBg(lightenColor(newColor, 0.3), 0.6);
@@ -262,28 +262,8 @@ onMounted(async () => {
         const initialTruckImg = await generateTruckIcon(
             activeSettings.value.themeColor,
         );
-        map.value!.addImage("truck-icon", initialTruckImg, { pixelRatio: 2.5 });
-        map.value!.addSource("truck-source", {
-            type: "geojson",
-            data: {
-                type: "Feature",
-                geometry: { type: "Point", coordinates: [0, 0] },
-                properties: { heading: 0 },
-            },
-        });
         map.value.on("load", async () => {
-            map.value!.addLayer({
-                id: "truck-layer",
-                type: "symbol",
-                source: "truck-source",
-                layout: {
-                    "icon-image": "truck-icon",
-                    "icon-rotate": ["get", "heading"],
-                    "icon-rotation-alignment": "map",
-                    "icon-allow-overlap": true,
-                    "icon-ignore-placement": true,
-                },
-            });
+            initMarker(initialTruckImg.src);
             const graphData = await initializeGraphData();
             if (!graphData) return;
             const { nodes, edges } = graphData;
@@ -338,12 +318,15 @@ onUnmounted(() => {
 function onTelemetryUpdate() {
     if (!truckCoords.value || !map.value) return;
 
-    const finalCoords = getSnappedCoords(truckCoords.value, truckHeading.value);
+    const snappedCoords = getSnappedCoords(
+        truckCoords.value,
+        truckHeading.value,
+    );
 
-    followTruck(finalCoords, truckHeading.value);
+    followTruck(snappedCoords, truckHeading.value);
 
     if (isRouteActive.value) {
-        updateRouteProgress(finalCoords, truckHeading.value);
+        updateRouteProgress(truckCoords.value, truckHeading.value);
     }
 }
 
