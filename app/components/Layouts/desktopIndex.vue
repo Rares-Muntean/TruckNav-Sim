@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const props = defineProps<{ launchChooseGame: () => void }>();
 
-const { fetchIp, localIP } = useNetwork();
+const { fetchIp, fetchPort, localIP, localPort } = useNetwork();
 const { updateGlobal } = useSettings();
 
 const isServerRunning = ref(false);
@@ -32,6 +32,8 @@ const handleLocalLaunch = async () => {
 
 onMounted(async () => {
     await fetchIp();
+    await fetchPort();
+
     (window as any).electronAPI.setWindowSize(900, 600, false, false);
 
     checkStatus();
@@ -86,15 +88,12 @@ const toggleWindow = () => {
                         Ensure your phone is connected to the same network as
                         your PC.
                     </li>
-                    <li>Open the GPS app or web browser on your phone to the ip address below.</li>
-                    <br>
+                    <li>Open the GPS app or web browser to the ip address below.</li>
                     <li>
-                        Enter this IP to connect to the desktop telemetry:
-                        <strong class="localIp">{{ localIP }}</strong>
-                    </li>
-                    <li>
-                        Enter this ip to connect from another browser:
-                        <strong class="localIp">{{ localIP }}:3000</strong>
+                        GPS App: 
+                        <strong class="localIp">{{ localIP }}</strong> |
+                        Browser:
+                        <strong class="localIp">{{ localIP }}:{{ localPort }}</strong>
                     </li>
                 </ol>
             </div>

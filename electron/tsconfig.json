@@ -3,6 +3,7 @@
     "include": ["./src/**/*", "./capacitor.config.ts", "./capacitor.config.js"],
     "compilerOptions": {
         "outDir": "./build",
+        "sourceMap": true,
         "importHelpers": true,
         "target": "ES2017",
         "skipLibCheck": true,
