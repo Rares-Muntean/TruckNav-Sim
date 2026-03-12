@@ -9,6 +9,7 @@ import electronIsDev from "electron-is-dev";
 import unhandled from "electron-unhandled";
 import express from "express";
 import net from "net";
+import { createProxyMiddleware, responseInterceptor } from 'http-proxy-middleware';
 import os from "os";
 
 import {
@@ -89,6 +90,32 @@ async function startWebServer() {
     const webDir = app.isPackaged 
         ? path.join(process.resourcesPath, 'app.asar', 'app') 
         : path.join(app.getAppPath(), 'app');
+
+    server.use('/api/ets2', createProxyMiddleware({
+        target: 'http://localhost:25555/api/ets2/telemetry', 
+        changeOrigin: true,
+        selfHandleResponse: true,
+        on: {
+            proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
+            if (proxyRes.headers['content-type']?.includes('application/json')) {
+                try {
+                    const data = JSON.parse(responseBuffer.toString('utf8'));
+                    const wrappedResponse = {
+                        connected: true,
+                        telemetry: data
+                    };
+
+                    return JSON.stringify(wrappedResponse);
+                } catch (e) {
+                    console.error("Failed to parse telemetry JSON", e);
+                }
+            }
+
+            return responseBuffer;
+        })
+        }
+    }));
+
     server.use(express.static(webDir));
 
     server.get('/*splat', (req, res) => {
