@@ -8,7 +8,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
         ipcRenderer.on("server-ip", (_event, value) => callback(value)),
 
     getLocalIP: () => ipcRenderer.invoke("get-local-ip"),
-
+    getLocalPort: () => ipcRenderer.invoke("get-local-port"),
     openExternal: (url: string) => ipcRenderer.send("open-external", url),
 
     setWindowSize: (
