@@ -7,6 +7,7 @@ import type { MenuItemConstructorOptions } from "electron";
 import { app, dialog, ipcMain, MenuItem, shell } from "electron";
 import electronIsDev from "electron-is-dev";
 import unhandled from "electron-unhandled";
+import express from "express";
 import os from "os";
 
 import {
@@ -80,6 +81,25 @@ async function startTelemetryServer() {
     }
 }
 
+async function startWebServer() {
+    const server = express();
+    const port = 3000;
+    const webDir = app.isPackaged 
+        ? path.join(process.resourcesPath, 'app.asar', 'app') 
+        : path.join(app.getAppPath(), 'app');
+
+    console.log("Serving assets from:", webDir);
+
+    server.use(express.static(webDir));
+
+    server.get('/*splat', (req, res) => {
+        res.sendFile(path.join(webDir, 'index.html'));
+    });
+
+    server.listen(port, '0.0.0.0', () => {
+        console.log(`Web server running on http://0.0.0.0:${port}`);
+    });
+}
 const dgram = require("dgram");
 ipcMain.handle("get-local-ip", async () => {
     return new Promise((resolve) => {
@@ -201,6 +221,7 @@ if (electronIsDev) {
     await app.whenReady();
 
     startTelemetryServer();
+    startWebServer();
 
     // Security - Set Content-Security-Policy based on whether or not we are in dev mode.
     setupContentSecurityPolicy(myCapacitorApp.getCustomURLScheme());

@@ -86,10 +86,15 @@ const toggleWindow = () => {
                         Ensure your phone is connected to the same network as
                         your PC.
                     </li>
-                    <li>Open the GPS app on your phone.</li>
+                    <li>Open the GPS app or web browser on your phone to the ip address below.</li>
+                    <br>
                     <li>
                         Enter this IP to connect to the desktop telemetry:
                         <strong class="localIp">{{ localIP }}</strong>
+                    </li>
+                    <li>
+                        Enter this ip to connect from another browser:
+                        <strong class="localIp">{{ localIP }}:3000</strong>
                     </li>
                 </ol>
             </div>
@@ -110,16 +115,21 @@ const toggleWindow = () => {
                         >
                     </div>
 
-                    <div v-if="isServerRunning" class="safe-to-close">
+                    <div v-if="isServerRunning" class="status-indicator is-safe">
                         <Icon
                             name="mdi:check-circle-outline"
                             size="20"
                             class="icon"
                         />
-                        <span
-                            >Safe to close this window! The server stays active
-                            in your taskbar.</span
-                        >
+                        <span>Safe to close this window if connecting from GPS app!</span>
+                    </div>
+                    <div v-if="isServerRunning" class="status-indicator is-not-safe">
+                        <Icon
+                            name="mdi:close-circle-outline"
+                            size="20"
+                            class="icon"
+                        />
+                        <span>Keep this window open if connecting from web browser!</span>
                     </div>
                 </div>
             </div>
