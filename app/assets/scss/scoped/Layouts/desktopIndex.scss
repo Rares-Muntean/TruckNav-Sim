@@ -95,20 +95,28 @@
     gap: 0.8rem;
 }
 
-.safe-to-close {
+.status-indicator {
     font-size: 1.6rem;
     display: flex;
     align-items: center;
     gap: 0.6rem;
-
     padding: 8px 0px 8px 6px;
-
-    border-left: $green-color 3px solid;
+    border-left: 3px solid; // Style and width shared
     border-radius: 3px;
 
     .icon {
         align-self: center;
-        color: $green-color;
+    }
+
+    // Color-specific modifiers
+    &.is-safe {
+        border-left-color: $green-color;
+        .icon { color: $green-color; }
+    }
+
+    &.is-not-safe {
+        border-left-color: $red-color;
+        .icon { color: $red-color; }
     }
 }
 
