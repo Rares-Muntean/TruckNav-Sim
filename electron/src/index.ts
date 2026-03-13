@@ -177,7 +177,7 @@ async function startWebServer() {
         if (response) {
             const wrappedResponse = {
                 connected: true,
-                telemetry: await response,
+                telemetry: response,
             };
             res.json(wrappedResponse);
         } else {
@@ -220,21 +220,22 @@ async function getAvailablePort(startingPort: number): Promise<number> {
     });
 }
 
-async function fetchTelemetry(ip: string | "localhost") {{
+async function fetchTelemetry(ip: string | "localhost") {
     try {
         const response = await fetch(`http://${ip}:25555/api/ets2/telemetry`);
         if (!response.ok) {
-            console.warn(`Telemetry fetch failed with status ${response.status}: ${response.statusText}`);
+            console.warn(
+                `Telemetry fetch failed with status ${response.status}: ${response.statusText}`,
+            );
 
             return null;
-        } 
+        }
 
         return await response.json();
     } catch {
         return null;
     }
-}};
-
+}
 
 /**
  * Ipc Handlers
