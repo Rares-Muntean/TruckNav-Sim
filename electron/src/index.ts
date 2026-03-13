@@ -9,10 +9,6 @@ import electronIsDev from "electron-is-dev";
 import unhandled from "electron-unhandled";
 import express from "express";
 import net from "net";
-import {
-    createProxyMiddleware,
-    responseInterceptor,
-} from "http-proxy-middleware";
 
 import {
     ElectronCapacitorApp,
@@ -93,44 +89,18 @@ async function startWebServer() {
         ? path.join(process.resourcesPath, "app.asar", "app")
         : path.join(app.getAppPath(), "app");
 
-    server.use(
-        "/api/ets2",
-        createProxyMiddleware({
-            target: "http://localhost:25555/api/ets2/telemetry",
-            changeOrigin: true,
-            selfHandleResponse: true,
-            on: {
-                proxyRes: responseInterceptor(
-                    async (responseBuffer, proxyRes) => {
-                        if (
-                            proxyRes.headers["content-type"]?.includes(
-                                "application/json",
-                            )
-                        ) {
-                            try {
-                                const data = JSON.parse(
-                                    responseBuffer.toString("utf8"),
-                                );
-                                const wrappedResponse = {
-                                    connected: true,
-                                    telemetry: data,
-                                };
-
-                                return JSON.stringify(wrappedResponse);
-                            } catch (e) {
-                                console.error(
-                                    "Failed to parse telemetry JSON",
-                                    e,
-                                );
-                            }
-                        }
-
-                        return responseBuffer;
-                    },
-                ),
-            },
-        }),
-    );
+    server.get("/api/ets2", async (_req, res) => {
+        var response = await fetchTelemetry("localhost");
+        if (response) {
+            const wrappedResponse = {
+                connected: true,
+                telemetry: await response,
+            };
+            res.json(wrappedResponse);
+        } else {
+            res.json({ connected: false, telemetry: null });
+        }
+    });
 
     server.use(express.static(webDir));
 
@@ -167,6 +137,21 @@ async function getAvailablePort(startingPort: number): Promise<number> {
     });
 }
 
+async function fetchTelemetry(ip: string | "localhost") {{
+    try {
+        const response = await fetch(`http://${ip}:25555/api/ets2/telemetry`);
+        if (!response.ok) {
+            console.warn(`Telemetry fetch failed with status ${response.status}: ${response.statusText}`);
+
+            return null;
+        } 
+
+        return await response.json();
+    } catch {
+        return null;
+    }
+}};
+
 ipcMain.handle("get-local-port", () => {
     return currentPort.value;
 });
@@ -195,13 +180,7 @@ ipcMain.handle("get-local-ip", async () => {
 });
 
 ipcMain.handle("fetch-telemetry", async (_event, ip) => {
-    try {
-        const response = await fetch(`http://${ip}:25555/api/ets2/telemetry`);
-        if (!response.ok) return null;
-        return await response.json();
-    } catch {
-        return null;
-    }
+    return await fetchTelemetry(ip);
 });
 
 ipcMain.on("open-external", (_event, url) => {
