@@ -137,7 +137,7 @@ async function getAvailablePort(startingPort: number): Promise<number> {
             }
         });
 
-        server.listen(startingPort, () => {
+        server.listen(startingPort, '0.0.0.0', () => {
             const address = server.address();
             if (address && typeof address !== 'string') {
                 const port = address.port;
