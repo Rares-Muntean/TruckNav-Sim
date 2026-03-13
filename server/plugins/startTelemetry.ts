@@ -1,6 +1,6 @@
 import { defineNitroPlugin } from "#imports";
-import { spawn, exec, execSync, spawnSync } from "node:child_process";
-import { existsSync, rmSync, writeFileSync } from "node:fs";
+import { spawn, execSync, spawnSync } from "node:child_process";
+import { existsSync, rmSync } from "node:fs";
 import path from "node:path";
 
 const REPO_URL = "https://github.com/Funbit/ets2-telemetry-server.git";
@@ -11,26 +11,28 @@ export default defineNitroPlugin((nitroApp) => {
     const rootDir = process.cwd();
     const serverDir = path.join(rootDir, FOLDER_NAME);
     const serverExeDir = path.join(serverDir, "server");
-    const lockFile = path.join(serverExeDir, ".setup-complete");
+    const serverExePath = path.join(serverExeDir, EXE_NAME);
 
-    let activeChild: any = null;
-
-    function gitExists() {
+    if (!existsSync(serverDir)) {
+        console.log(`[Auto-Setup] Cloning ${REPO_URL}...`);
         try {
-            execSync(`git --version`, { stdio: "ignore" });
-            return true;
-        } catch {
-            return false;
+            execSync(`git clone ${REPO_URL}`, {
+                stdio: "ignore",
+                cwd: rootDir,
+            });
+            const gitFolder = path.join(serverDir, ".git");
+            if (existsSync(gitFolder))
+                rmSync(gitFolder, { recursive: true, force: true });
+        } catch (e) {
+            console.error("Failed to clone telemetry server.");
+            return;
         }
     }
 
     const killTelemetry = () => {
-        if (activeChild && !activeChild.killed) {
-            activeChild.kill();
-        }
-
+        console.log("[Telemetry] Cleaning up background processes...");
         try {
-            spawnSync("taskkill", ["/IM", EXE_NAME, "/F", "/T"], {
+            spawnSync("taskkill", ["/F", "/IM", EXE_NAME, "/T"], {
                 stdio: "ignore",
             });
         } catch (e) {}
@@ -39,78 +41,24 @@ export default defineNitroPlugin((nitroApp) => {
     const isAppRunning = () => {
         try {
             const stdout = execSync(
-                `tasklist /FI "IMAGENAME eq ${EXE_NAME}"`
+                `tasklist /FI "IMAGENAME eq ${EXE_NAME}" /NH`,
             ).toString();
-            return stdout.includes(EXE_NAME);
+            return stdout.toLowerCase().includes(EXE_NAME.toLowerCase());
         } catch (e) {
             return false;
         }
     };
 
-    killTelemetry();
-
-    if (!existsSync(serverDir)) {
-        console.log(`[Auto-Setup] Cloning ${REPO_URL}...`);
-
-        if (!gitExists()) {
-            console.log(
-                "[Auto-Setup] Git is not installed. Please download it from:\nhttps://git-scm.com/downloads\n"
-            );
-            return;
-        }
-
-        try {
-            execSync(`git config --global core.longpaths true`);
-
-            execSync(`git clone ${REPO_URL}`, {
-                stdio: "inherit",
-                cwd: rootDir,
-            });
-
-            console.log(
-                "[Auto-Setup] Removing inner .git folder to prevent conflicts..."
-            );
-            const gitFolder = path.join(serverDir, ".git");
-            if (existsSync(gitFolder)) {
-                rmSync(gitFolder, { recursive: true, force: true });
-            }
-        } catch (e) {
-            console.log("Failed cloning the repository.");
-            return;
-        }
+    if (!isAppRunning() && existsSync(serverExePath)) {
+        console.log(`[Telemetry] Starting background process...`);
+        const child = spawn(EXE_NAME, [], {
+            cwd: serverExeDir,
+            detached: true,
+            stdio: "ignore",
+            windowsHide: true,
+        });
+        child.unref();
     }
 
-    if (isAppRunning()) {
-        console.log(
-            `\n[Telemetry] ✅ ${EXE_NAME} is already running. Skipping start.\n`
-        );
-    } else {
-        const isFirstRun = !existsSync(lockFile);
-        console.log(`\n[Telemetry] Starting ${EXE_NAME}...`);
-
-        if (isFirstRun) {
-            console.log(
-                "\n⚠️  First run detected! You may close telemetry manually after exiting app.\n"
-            );
-            exec(`start "" "${EXE_NAME}"`, { cwd: serverExeDir });
-            try {
-                writeFileSync(lockFile, "installed=true");
-            } catch (e) {}
-        } else {
-            activeChild = spawn(EXE_NAME, [], {
-                cwd: serverExeDir,
-                detached: false,
-                stdio: "ignore",
-                windowsHide: true,
-            });
-
-            activeChild.unref();
-        }
-    }
-
-    const shutdown = () => {
-        killTelemetry();
-    };
-
-    nitroApp.hooks.hook("close", shutdown);
+    nitroApp.hooks.hook("close", killTelemetry);
 });
