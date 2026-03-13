@@ -76,9 +76,9 @@ const toggleWindow = () => {
         </div>
 
         <div class="content">
-            <h2 class="title">Welcome to TruckerNav!</h2>
+            <h2 class="title">Welcome to TruckNav!</h2>
             <span class="subtitle"
-                >Below you’ll find instructions to set up the GPS on your
+                >Below you’ll find instructions to set up the app on your
                 phone.</span
             >
             <div class="steps">
@@ -88,12 +88,17 @@ const toggleWindow = () => {
                         Ensure your phone is connected to the same network as
                         your PC.
                     </li>
-                    <li>Open the GPS app or web browser to the ip address below.</li>
                     <li>
-                        GPS App: 
+                        Open the TruckNav app or web browser using the ip
+                        address below.
+                    </li>
+                    <li>
+                        TruckNav App:
                         <strong class="localIp">{{ localIP }}</strong> |
                         Browser:
-                        <strong class="localIp">{{ localIP }}:{{ localPort }}</strong>
+                        <strong class="localIp"
+                            >{{ localIP }}:{{ localPort }}</strong
+                        >
                     </li>
                 </ol>
             </div>
@@ -114,21 +119,34 @@ const toggleWindow = () => {
                         >
                     </div>
 
-                    <div v-if="isServerRunning" class="status-indicator is-safe">
+                    <div
+                        v-if="isServerRunning"
+                        class="status-indicator is-safe"
+                    >
                         <Icon
                             name="mdi:check-circle-outline"
                             size="20"
                             class="icon"
                         />
-                        <span>Safe to close this window if connecting from GPS app!</span>
+                        <span
+                            >Safe to close this window if connecting from
+                            TruckNav app!</span
+                        >
                     </div>
-                    <div v-if="isServerRunning" class="status-indicator is-not-safe">
+
+                    <div
+                        v-if="isServerRunning"
+                        class="status-indicator is-not-safe"
+                    >
                         <Icon
                             name="mdi:close-circle-outline"
                             size="20"
                             class="icon"
                         />
-                        <span>Keep this window open if connecting from web browser!</span>
+                        <span
+                            >Keep this window open if connecting from web
+                            browser!</span
+                        >
                     </div>
                 </div>
             </div>

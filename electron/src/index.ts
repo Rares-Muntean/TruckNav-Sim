@@ -9,8 +9,10 @@ import electronIsDev from "electron-is-dev";
 import unhandled from "electron-unhandled";
 import express from "express";
 import net from "net";
-import { createProxyMiddleware, responseInterceptor } from 'http-proxy-middleware';
-import os from "os";
+import {
+    createProxyMiddleware,
+    responseInterceptor,
+} from "http-proxy-middleware";
 
 import {
     ElectronCapacitorApp,
@@ -18,8 +20,8 @@ import {
     setupReloadWatcher,
 } from "./setup";
 import path from "path";
-import { exec, execSync, spawn } from "child_process";
-import { existsSync, writeFileSync, writeSync } from "fs";
+import { execSync, spawn } from "child_process";
+import { existsSync, writeFileSync } from "fs";
 
 //
 //
@@ -87,62 +89,76 @@ const currentPort = { value: 0 };
 async function startWebServer() {
     const server = express();
     currentPort.value = await getAvailablePort(8628);
-    const webDir = app.isPackaged 
-        ? path.join(process.resourcesPath, 'app.asar', 'app') 
-        : path.join(app.getAppPath(), 'app');
+    const webDir = app.isPackaged
+        ? path.join(process.resourcesPath, "app.asar", "app")
+        : path.join(app.getAppPath(), "app");
 
-    server.use('/api/ets2', createProxyMiddleware({
-        target: 'http://localhost:25555/api/ets2/telemetry', 
-        changeOrigin: true,
-        selfHandleResponse: true,
-        on: {
-            proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
-            if (proxyRes.headers['content-type']?.includes('application/json')) {
-                try {
-                    const data = JSON.parse(responseBuffer.toString('utf8'));
-                    const wrappedResponse = {
-                        connected: true,
-                        telemetry: data
-                    };
+    server.use(
+        "/api/ets2",
+        createProxyMiddleware({
+            target: "http://localhost:25555/api/ets2/telemetry",
+            changeOrigin: true,
+            selfHandleResponse: true,
+            on: {
+                proxyRes: responseInterceptor(
+                    async (responseBuffer, proxyRes) => {
+                        if (
+                            proxyRes.headers["content-type"]?.includes(
+                                "application/json",
+                            )
+                        ) {
+                            try {
+                                const data = JSON.parse(
+                                    responseBuffer.toString("utf8"),
+                                );
+                                const wrappedResponse = {
+                                    connected: true,
+                                    telemetry: data,
+                                };
 
-                    return JSON.stringify(wrappedResponse);
-                } catch (e) {
-                    console.error("Failed to parse telemetry JSON", e);
-                }
-            }
+                                return JSON.stringify(wrappedResponse);
+                            } catch (e) {
+                                console.error(
+                                    "Failed to parse telemetry JSON",
+                                    e,
+                                );
+                            }
+                        }
 
-            return responseBuffer;
-        })
-        }
-    }));
+                        return responseBuffer;
+                    },
+                ),
+            },
+        }),
+    );
 
     server.use(express.static(webDir));
 
-    server.get('/*splat', (req, res) => {
-        res.sendFile(path.join(webDir, 'index.html'));
+    server.get("/*splat", (_req, res) => {
+        res.sendFile(path.join(webDir, "index.html"));
     });
 
-    server.listen(currentPort.value, '0.0.0.0');
+    server.listen(currentPort.value, "0.0.0.0");
 }
 
 async function getAvailablePort(startingPort: number): Promise<number> {
     return new Promise((resolve) => {
         const server = net.createServer();
 
-        server.once('error', (err: any) => {
-            if (err.code === 'EADDRINUSE') {
+        server.once("error", (err: any) => {
+            if (err.code === "EADDRINUSE") {
                 resolve(getAvailablePort(startingPort + 1));
             } else {
                 console.error("Unexpected server error:", err);
             }
         });
 
-        server.listen(startingPort, '0.0.0.0', () => {
+        server.listen(startingPort, "0.0.0.0", () => {
             const address = server.address();
-            if (address && typeof address !== 'string') {
+            if (address && typeof address !== "string") {
                 const port = address.port;
-                
-                server.close(); 
+
+                server.close();
 
                 console.log(`Port ${port} confirmed available.`);
                 resolve(port);
@@ -151,8 +167,8 @@ async function getAvailablePort(startingPort: number): Promise<number> {
     });
 }
 
-ipcMain.handle('get-local-port', () => {
-    return currentPort.value; 
+ipcMain.handle("get-local-port", () => {
+    return currentPort.value;
 });
 
 const dgram = require("dgram");

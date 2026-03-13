@@ -49,10 +49,14 @@
 
         background-color: $secondaryColor;
         border-radius: 6px;
-        padding: 24px;
+        padding: 24px 24px 24px 38px;
 
         font-size: 1.6rem;
         font-weight: 600;
+
+        ol {
+            list-style-type: decimal;
+        }
 
         li {
             margin-bottom: 0.4rem;
@@ -101,22 +105,25 @@
     align-items: center;
     gap: 0.6rem;
     padding: 8px 0px 8px 6px;
-    border-left: 3px solid; // Style and width shared
+    border-left: 3px solid;
     border-radius: 3px;
 
     .icon {
         align-self: center;
     }
 
-    // Color-specific modifiers
     &.is-safe {
         border-left-color: $green-color;
-        .icon { color: $green-color; }
+        .icon {
+            color: $green-color;
+        }
     }
 
     &.is-not-safe {
         border-left-color: $red-color;
-        .icon { color: $red-color; }
+        .icon {
+            color: $red-color;
+        }
     }
 }
 

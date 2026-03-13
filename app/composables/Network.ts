@@ -18,11 +18,10 @@ export const useNetwork = () => {
         return "Could not find port";
     };
 
-
     return {
         localIP,
+        localPort,
         fetchIp,
         fetchPort,
-        localPort,
     };
 };
