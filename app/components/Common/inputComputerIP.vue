@@ -20,10 +20,14 @@ watch(isConnected, (connected) => {
     }
 });
 
-onMounted(async () => {
-    const existing = settings.value.savedIP;
-    if (existing) ipInput.value = existing;
-});
+watch(
+    () => settings.value.savedIP,
+    (newIP) => {
+        if (newIP && !ipInput.value) {
+            ipInput.value = newIP;
+        }
+    },
+);
 
 const canConnect = computed(() => {
     if (isConnecting.value) return false;
