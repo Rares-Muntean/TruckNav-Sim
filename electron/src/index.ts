@@ -73,10 +73,6 @@ if (electronIsDev) {
     // autoUpdater.checkForUpdatesAndNotify();
 })();
 
-app.on("before-quit", () => {
-    killTelemetryServer();
-});
-
 // Handle when all of our windows are close (platforms have their own expectations).
 app.on("window-all-closed", function () {
     // On OS X it is common for applications and their menu bar
@@ -113,12 +109,7 @@ async function startTelemetryServer() {
             return;
         }
 
-        try {
-            const running = execSync(
-                `tasklist /FI "IMAGENAME eq ${exeName}" /NH`,
-            ).toString();
-            if (running.toLowerCase().includes(exeName.toLowerCase())) return;
-        } catch (e) {}
+        killTelemetryServer();
 
         const serverDir = path.dirname(serverPath);
         const flagPath = path.join(
