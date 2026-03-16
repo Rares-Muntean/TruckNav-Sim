@@ -1,4 +1,3 @@
-import { shallowRef, ref } from "vue";
 import {
     convertGeoToAts,
     convertGeoToEts2,
@@ -38,10 +37,19 @@ interface CityFallback {
     SecondName: string;
 }
 
+interface RealCompanyModFallback {
+    [companyId: string]: {
+        name: string;
+        sort_name: string;
+        trailer_look: string;
+    };
+}
+
 const cityData = shallowRef<GeoJsonCollection | null>(null);
 const villageData = shallowRef<GeoJsonCollection | null>(null);
 const companiesData = shallowRef<GeoJsonCollection | null>(null);
 const citiesFallbackData = shallowRef<CityFallback[] | null>(null);
+const realCompanyModData = shallowRef<RealCompanyModFallback | null>(null);
 
 const isLoaded = ref(false);
 const optimizedCityNodes = shallowRef<SimpleCityNode[]>([]);
@@ -74,15 +82,22 @@ export function useCityData() {
                 if (citiesFallbackRes.ok)
                     citiesFallbackData.value = await citiesFallbackRes.json();
             } else if (settings.value.selectedGame == "ats") {
-                const [citiesRes, companiesRes] = await Promise.all([
-                    fetch("/data/ats/map-data/cities.geojson"),
-                    fetch("/data/ats/map-data/companies.geojson"),
-                ]);
+                const [citiesRes, companiesRes, realCompanyModRes] =
+                    await Promise.all([
+                        fetch("/data/ats/map-data/cities.geojson"),
+                        fetch("/data/ats/map-data/companies.geojson"),
+                        fetch(
+                            "/data/ats/map-data/RealCompaniesModVanillaMapping.json",
+                        ),
+                    ]);
 
                 if (citiesRes.ok) cityData.value = await citiesRes.json();
                 if (companiesRes.ok)
                     companiesData.value = await companiesRes.json();
+                if (realCompanyModRes.ok)
+                    realCompanyModData.value = await realCompanyModRes.json();
             }
+
             const cNodes = processCollection(cityData.value);
             optimizedCityNodes.value = [...cNodes!];
 
@@ -147,6 +162,19 @@ export function useCityData() {
         }
 
         const safeCompanyName = targetCompanyName.toLowerCase().trim();
+        let vanillaId: string | undefined = undefined;
+
+        if (realCompanyModData.value) {
+            vanillaId = Object.keys(realCompanyModData.value).find((key) => {
+                const entry = realCompanyModData.value![key];
+                return (
+                    entry?.sort_name &&
+                    safeCompanyName.includes(
+                        entry.sort_name.toLowerCase().trim(),
+                    )
+                );
+            });
+        }
 
         const companyCandidates = companiesData.value.features.filter((f) => {
             const p = f.properties;
@@ -154,7 +182,8 @@ export function useCityData() {
             return (
                 p.poiType === "company" &&
                 p.poiName &&
-                p.poiName.toLowerCase().trim() === safeCompanyName
+                (p.poiName.toLowerCase().trim() === safeCompanyName ||
+                    (vanillaId && p["sprite"].includes(vanillaId)))
             );
         });
 
