@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, reactive, toRefs } from "vue";
 import { CapacitorHttp } from "@capacitor/core";
 import {
     getGameState,
@@ -60,10 +60,47 @@ export function useEtsTelemetry() {
     const { isElectron, isMobile, isWeb } = usePlatform();
     const { settings } = useSettings();
 
+    async function fetchTelemetryData(): Promise<TelemetryData | null> {
+        try {
+            if (isMobile.value) {
+                const response = await CapacitorHttp.get({
+                    url: `http://${settings.value.savedIP}:25555/api/ets2/telemetry`,
+                    connectTimeout: 1000,
+                });
+
+                if (response.status === 200) return response.data as TelemetryData;
+
+            } else if (isWeb.value) {
+                if (abortController) abortController.abort();
+                abortController = new AbortController();
+                const timeoutId = setTimeout(() => abortController?.abort(), 1000);
+
+                const res = await fetch("/api/ets2", {
+                    signal: abortController.signal,
+                    cache: "no-cache",
+                    headers: { Pragma: "no-cache" },
+                });
+
+                clearTimeout(timeoutId);
+
+                if (res.ok) {
+                    const result = await res.json();
+                    if (result.connected) return result.telemetry as TelemetryData;
+                }
+            } else if (isElectron.value) {
+                const targetIP = settings.value.savedIP || "127.0.0.1";
+                return (await (window as any).electronAPI.fetchTelemetry(targetIP)) as TelemetryData;
+            }
+        } catch (err) {
+            if (err instanceof Error && err.name !== "AbortError") console.log(err);
+        }
+        
+        return null;
+    }
+
     function startTelemetry(onUpdate?: (data: TelemetryUpdate) => void) {
         if (isRunning.value) return;
         isRunning.value = true;
-
         currentSessionId++;
         const mySessionId = currentSessionId;
 
@@ -73,127 +110,28 @@ export function useEtsTelemetry() {
             const startTime = performance.now();
             let nextTickDelay = 100;
 
-            try {
-                if (isMobile.value) {
-                    try {
-                        const response = await CapacitorHttp.get({
-                            url: `http://${settings.value.savedIP}:25555/api/ets2/telemetry`,
-                            connectTimeout: 1000,
-                        });
+            const data = await fetchTelemetryData();
 
-                        if (response.status === 200) {
-                            const telemetryData =
-                                response.data as TelemetryData;
+            if (data && data.game?.connected) {
+                const apiGame = verifyGameByTruck(
+                    data.truck.id,
+                    data.truck.model,
+                    data.game.gameName,
+                );
 
-                            if (
-                                telemetryData &&
-                                telemetryData.game?.connected
-                            ) {
-                                const apiGame = verifyGameByTruck(
-                                    telemetryData.truck.id,
-                                    telemetryData.truck.model,
-                                    telemetryData.game.gameName,
-                                );
-
-                                if (apiGame === settings.value.selectedGame) {
-                                    isTelemetryConnected.value = true;
-                                    processData(telemetryData, onUpdate);
-                                    nextTickDelay = 100;
-                                } else {
-                                    isTelemetryConnected.value = false;
-                                    resetDataOnDisconnected(onUpdate);
-                                    nextTickDelay = 4000;
-                                }
-                            } else {
-                                isTelemetryConnected.value = false;
-                                resetDataOnDisconnected(onUpdate);
-                                nextTickDelay = 1000;
-                            }
-                        } else {
-                            isTelemetryConnected.value = false;
-                        }
-                    } catch (err) {
-                        console.log(err);
-                    }
-                } else if (isWeb.value) {
-                    if (abortController) abortController.abort();
-                    abortController = new AbortController();
-                    const timeoutId = setTimeout(
-                        () => abortController?.abort(),
-                        1000,
-                    );
-
-                    const response = await fetch("/api/ets2", {
-                        signal: abortController.signal,
-                        cache: "no-cache",
-                        headers: { Pragma: "no-cache" },
-                    });
-
-                    clearTimeout(timeoutId);
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        if (
-                            result.connected &&
-                            result.telemetry.game?.connected
-                        ) {
-                            const apiGame = verifyGameByTruck(
-                                result.telemetry.truck.id,
-                                result.telemetry.truck.model,
-                                result.telemetry.game.gameName,
-                            );
-
-                            if (apiGame === settings.value.selectedGame) {
-                                isTelemetryConnected.value = true;
-                                processData(result.telemetry, onUpdate);
-                                nextTickDelay = 100;
-                            } else {
-                                isTelemetryConnected.value = false;
-                                resetDataOnDisconnected(onUpdate);
-                                nextTickDelay = 4000;
-                            }
-                        } else {
-                            isTelemetryConnected.value = false;
-                            resetDataOnDisconnected(onUpdate);
-                            nextTickDelay = 1000;
-                        }
-                    }
-                } else if (isElectron.value) {
-                    const targetElectronIP =
-                        settings.value.savedIP || "127.0.0.1";
-
-                    const telemetryData = (await (
-                        window as any
-                    ).electronAPI.fetchTelemetry(
-                        targetElectronIP,
-                    )) as TelemetryData;
-
-                    if (telemetryData && telemetryData.game?.connected) {
-                        const apiGame = verifyGameByTruck(
-                            telemetryData.truck.id,
-                            telemetryData.truck.model,
-                            telemetryData.game.gameName,
-                        );
-                        if (apiGame === settings.value.selectedGame) {
-                            isTelemetryConnected.value = true;
-                            processData(telemetryData, onUpdate);
-                            nextTickDelay = 100;
-                        } else {
-                            isTelemetryConnected.value = false;
-                            resetDataOnDisconnected(onUpdate);
-                            nextTickDelay = 4000;
-                        }
-                    } else {
-                        isTelemetryConnected.value = false;
-                        resetDataOnDisconnected(onUpdate);
-                        nextTickDelay = 1000;
-                    }
-                }
-            } catch (err) {
-                console.log(err);
-                if (err instanceof Error && err.name !== "AbortError") {
+                if (apiGame === settings.value.selectedGame) {
+                    isTelemetryConnected.value = true;
+                    processData(data, onUpdate);
+                    nextTickDelay = 100;
+                } else {
                     isTelemetryConnected.value = false;
+                    resetDataOnDisconnected(onUpdate);
+                    nextTickDelay = 4000;
                 }
+            } else {
+                isTelemetryConnected.value = false;
+                resetDataOnDisconnected(onUpdate);
+                nextTickDelay = 1000;
             }
 
             const duration = performance.now() - startTime;

@@ -8,6 +8,7 @@ export interface GameProfile {
     routeColor: string;
     units: UnitSystem;
     ownedDlcs: number[];
+    useRealisticCompanyNames: boolean;
     lastDestination: [number, number] | null;
 }
 
@@ -25,6 +26,7 @@ const DEFAULT_PROFILE: GameProfile = {
     routeColor: "#22d3ee",
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
+    useRealisticCompanyNames: false,
     lastDestination: null,
 };
 
@@ -32,12 +34,13 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     selectedGame: null,
     savedIP: null,
     profiles: {
-        ets2: { ...DEFAULT_PROFILE, themeColor: "#fbc02d", units: "metric" },
+        ets2: { ...DEFAULT_PROFILE, themeColor: "#fbc02d", units: "metric", useRealisticCompanyNames: false },
         ats: {
             ...DEFAULT_PROFILE,
             themeColor: "#d32f2f",
             ownedDlcs: Array.from({ length: 16 }, (_, i) => i + 1),
             units: "imperial",
+            useRealisticCompanyNames: false,
         },
     },
 };
