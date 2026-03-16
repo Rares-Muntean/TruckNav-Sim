@@ -8,9 +8,6 @@ const props = defineProps<{ closePanel: () => void }>();
 
 const isDlcPanelOpened = ref(false);
 const isMetric = computed(() => activeSettings.value.units === "metric");
-const isRealisticCompanyNamesEnabled = computed(
-    () => activeSettings.value.useRealisticCompanyNames
-);
 
 const selectedExpansion = computed(() => {
     return settings.value.selectedGame === "ets2"
@@ -22,13 +19,9 @@ const toggleDlcPanel = () => {
     isDlcPanelOpened.value = !isDlcPanelOpened.value;
 };
 
-    function toggleUnits() {
-        updateProfile("units", isMetric.value ? "imperial" : "metric");
-    }
-
-    function toggleRealisticCompanyNames() {
-        updateProfile("useRealisticCompanyNames", !isRealisticCompanyNamesEnabled.value);
-    }
+function toggleUnits() {
+    updateProfile("units", isMetric.value ? "imperial" : "metric");
+}
 </script>
 
 <template>
@@ -93,24 +86,6 @@ const toggleDlcPanel = () => {
                 <button class="segment-btn" :class="{ active: !isMetric }">
                     <span class="label">Imperial</span>
                 </button>
-            </div>
-        </div>
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:map-plus" size="24" />
-                <p>Enable Realistic Company Names Mod Compatability</p>
-            </div>
-            <div class="owned-dlcs">
-                <div class="segmented-control" @click="toggleRealisticCompanyNames">
-                    <button class="segment-btn" :class="{ active: isRealisticCompanyNamesEnabled }">
-                        <span class="label">On</span>
-                    </button>
-
-                    <button class="segment-btn" :class="{ active: !isRealisticCompanyNamesEnabled }">
-                        <span class="label">Off</span>
-                    </button>
-                </div>
             </div>
         </div>
 

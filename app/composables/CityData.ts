@@ -1,4 +1,3 @@
-import { shallowRef, ref } from "vue";
 import {
     convertGeoToAts,
     convertGeoToEts2,
@@ -39,11 +38,11 @@ interface CityFallback {
 }
 
 interface RealCompanyModFallback {
-  [key: string]: {
-    name: string
-    sort_name: string
-    trailer_look: string
-  }
+    [companyId: string]: {
+        name: string;
+        sort_name: string;
+        trailer_look: string;
+    };
 }
 
 const cityData = shallowRef<GeoJsonCollection | null>(null);
@@ -83,16 +82,19 @@ export function useCityData() {
                 if (citiesFallbackRes.ok)
                     citiesFallbackData.value = await citiesFallbackRes.json();
             } else if (settings.value.selectedGame == "ats") {
-                const [citiesRes, companiesRes, realCompanyModRes] = await Promise.all([
-                    fetch("/data/ats/map-data/cities.geojson"),
-                    fetch("/data/ats/map-data/companies.geojson"),
-                    settings.value.profiles.ats.useRealisticCompanyNames ? fetch("/data/ats/map-data/RealCompaniesModVanillaMapping.json") : Promise.resolve(null),
-                ]);
+                const [citiesRes, companiesRes, realCompanyModRes] =
+                    await Promise.all([
+                        fetch("/data/ats/map-data/cities.geojson"),
+                        fetch("/data/ats/map-data/companies.geojson"),
+                        fetch(
+                            "/data/ats/map-data/RealCompaniesModVanillaMapping.json",
+                        ),
+                    ]);
 
                 if (citiesRes.ok) cityData.value = await citiesRes.json();
                 if (companiesRes.ok)
                     companiesData.value = await companiesRes.json();
-                if (realCompanyModRes && realCompanyModRes.ok)
+                if (realCompanyModRes.ok)
                     realCompanyModData.value = await realCompanyModRes.json();
             }
 
@@ -160,12 +162,17 @@ export function useCityData() {
         }
 
         const safeCompanyName = targetCompanyName.toLowerCase().trim();
-        const matchedKey = ref<string | undefined>(undefined);
-        
+        let vanillaId: string | undefined = undefined;
+
         if (realCompanyModData.value) {
-            matchedKey.value = Object.keys(realCompanyModData.value).find(key => {
+            vanillaId = Object.keys(realCompanyModData.value).find((key) => {
                 const entry = realCompanyModData.value![key];
-                return entry?.sort_name && safeCompanyName.includes(entry.sort_name.toLowerCase().trim());
+                return (
+                    entry?.sort_name &&
+                    safeCompanyName.includes(
+                        entry.sort_name.toLowerCase().trim(),
+                    )
+                );
             });
         }
 
@@ -176,7 +183,7 @@ export function useCityData() {
                 p.poiType === "company" &&
                 p.poiName &&
                 (p.poiName.toLowerCase().trim() === safeCompanyName ||
-                (matchedKey.value && p["sprite"].includes(matchedKey.value)))
+                    (vanillaId && p["sprite"].includes(vanillaId)))
             );
         });
 

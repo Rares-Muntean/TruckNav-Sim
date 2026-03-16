@@ -1,4 +1,3 @@
-import { ref, reactive, toRefs } from "vue";
 import { CapacitorHttp } from "@capacitor/core";
 import {
     getGameState,
@@ -68,12 +67,15 @@ export function useEtsTelemetry() {
                     connectTimeout: 1000,
                 });
 
-                if (response.status === 200) return response.data as TelemetryData;
-
+                if (response.status === 200)
+                    return response.data as TelemetryData;
             } else if (isWeb.value) {
                 if (abortController) abortController.abort();
                 abortController = new AbortController();
-                const timeoutId = setTimeout(() => abortController?.abort(), 1000);
+                const timeoutId = setTimeout(
+                    () => abortController?.abort(),
+                    1000,
+                );
 
                 const res = await fetch("/api/ets2", {
                     signal: abortController.signal,
@@ -85,21 +87,28 @@ export function useEtsTelemetry() {
 
                 if (res.ok) {
                     const result = await res.json();
-                    if (result.connected) return result.telemetry as TelemetryData;
+                    if (result.connected)
+                        return result.telemetry as TelemetryData;
                 }
+
+                return null;
             } else if (isElectron.value) {
                 const targetIP = settings.value.savedIP || "127.0.0.1";
-                return (await (window as any).electronAPI.fetchTelemetry(targetIP)) as TelemetryData;
+                return (await (window as any).electronAPI.fetchTelemetry(
+                    targetIP,
+                )) as TelemetryData;
             }
         } catch (err) {
-            if (err instanceof Error && err.name !== "AbortError") console.log(err);
+            if (err instanceof Error && err.name !== "AbortError")
+                console.log(err);
         }
-        
+
         return null;
     }
 
     function startTelemetry(onUpdate?: (data: TelemetryUpdate) => void) {
         if (isRunning.value) return;
+
         isRunning.value = true;
         currentSessionId++;
         const mySessionId = currentSessionId;
