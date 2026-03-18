@@ -6,6 +6,7 @@ import { usePlatform } from "~/composables/Platform";
 import eruda from "eruda";
 import { blendWithBg, lightenColor } from "~/assets/utils/shared/colors";
 import { generateTruckIcon } from "~/assets/utils/map/markers";
+import TurnNavigation from "~/components/navigation/turnNavigation/TurnNavigation.vue";
 
 defineProps<{ goHome: () => void }>();
 
@@ -107,6 +108,8 @@ const {
     getSnappedCoords,
     findBestStartConfiguration,
     worker,
+    turnInstructions,
+    nextTurns,
 } = useRouteController(map, adjacency, nodeCoords);
 
 //
@@ -522,6 +525,11 @@ const toggleSettingsPanel = () => {
                             text="Game Offline"
                         />
                     </div>
+                    <TurnNavigation
+                        v-if="isRouteActive && nextTurns.length > 0"
+                        :next-turns="nextTurns"
+                        class="turn-navigation-overlay"
+                    />
 
                     <Transition name="sheet-slide" @after-leave="onSheetClosed">
                         <SheetSlide
@@ -536,6 +544,14 @@ const toggleSettingsPanel = () => {
                             :route-eta="routeEta"
                             :speed-limit="speedLimit"
                             :truck-speed="truckSpeed"
+                        />
+                    </Transition>
+
+                    <Transition name="fade">
+                        <TurnNavigation
+                            v-if="isRouteActive && nextTurns.length > 0"
+                            :next-turns="nextTurns"
+                            class="turn-navigation-overlay"
                         />
                     </Transition>
                 </div>

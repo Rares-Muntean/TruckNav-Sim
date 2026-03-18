@@ -5,14 +5,14 @@ export const useUnitConversion = () => {
         if (value == null) return 0;
         return activeSettings.value.units === "metric"
             ? value
-            : Math.round(value * 0.621371);
+            : value * 0.621371;
     };
 
     const literToUserUnits = (value: number | null | undefined) => {
         if (value == null) return 0;
         return activeSettings.value.units === "metric"
             ? value
-            : Math.round(value * 0.264172);
+            : value * 0.264172;
     };
 
     const speedUnit = computed(() =>
