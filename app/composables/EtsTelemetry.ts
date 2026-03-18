@@ -1,10 +1,8 @@
-import { CapacitorHttp } from "@capacitor/core";
 import {
     getGameState,
     getJobState,
     getNavigationState,
     getTruckState,
-    verifyGameByTruck,
 } from "~/assets/utils/telemetry/helpers";
 import type {
     TruckState,
@@ -12,23 +10,21 @@ import type {
     NavigationState,
     JobState,
     TelemetryUpdate,
-    TelemetryData,
+    TelemetryPacket,
 } from "~/types";
-
-const isTelemetryConnected = ref(false);
-const isRunning = ref(false);
-let currentSessionId = 0;
 
 const truckState = reactive<TruckState>({
     truckCoords: [0, 0],
     truckHeading: 0,
     truckSpeed: 0,
+    averageSpeed: 80,
 });
 
 const gameState = reactive<GameState>({
     gameTime: "",
     gameConnected: false,
     hasInGameMarker: false,
+    scale: 0,
 });
 
 const navigationState = reactive<NavigationState>({
@@ -52,125 +48,75 @@ const jobState = reactive<JobState>({
 let lastPosition: [number, number] | null = null;
 let headingOffset = 0;
 
-let fetchTimer: ReturnType<typeof setTimeout> | null = null;
-let abortController: AbortController | null = null;
+let socket: WebSocket | null = null;
 
 export function useEtsTelemetry() {
-    const { isElectron, isMobile, isWeb } = usePlatform();
+    const { isElectron, isWeb } = usePlatform();
     const { settings } = useSettings();
 
-    async function fetchTelemetryData(): Promise<TelemetryData | null> {
-        try {
-            if (isMobile.value) {
-                const response = await CapacitorHttp.get({
-                    url: `http://${settings.value.savedIP}:25555/api/ets2/telemetry`,
-                    connectTimeout: 1000,
-                });
-
-                if (response.status === 200)
-                    return response.data as TelemetryData;
-            } else if (isWeb.value) {
-                if (abortController) abortController.abort();
-                abortController = new AbortController();
-                const timeoutId = setTimeout(
-                    () => abortController?.abort(),
-                    1000,
-                );
-
-                const res = await fetch("/api/ets2", {
-                    signal: abortController.signal,
-                    cache: "no-cache",
-                    headers: { Pragma: "no-cache" },
-                });
-
-                clearTimeout(timeoutId);
-
-                if (res.ok) {
-                    const result = await res.json();
-                    if (result.connected)
-                        return result.telemetry as TelemetryData;
-                }
-
-                return null;
-            } else if (isElectron.value) {
-                const targetIP = settings.value.savedIP || "127.0.0.1";
-                return (await (window as any).electronAPI.fetchTelemetry(
-                    targetIP,
-                )) as TelemetryData;
-            }
-        } catch (err) {
-            if (err instanceof Error && err.name !== "AbortError")
-                console.log(err);
-        }
-
-        return null;
-    }
+    let speedSamples: number[] = [];
+    const maxSamples = 120;
 
     function startTelemetry(onUpdate?: (data: TelemetryUpdate) => void) {
-        if (isRunning.value) return;
+        if (socket) return;
 
-        isRunning.value = true;
-        currentSessionId++;
-        const mySessionId = currentSessionId;
+        const ip =
+            isElectron.value || isWeb.value
+                ? "127.0.0.1"
+                : settings.value.savedIP;
+        const url = `ws://${ip}:30001`;
 
-        const loop = async () => {
-            if (!isRunning.value || currentSessionId !== mySessionId) return;
+        socket = new WebSocket(url);
 
-            const startTime = performance.now();
-            let nextTickDelay = 100;
+        socket.onopen = () => {
+            console.log("Connected to Bridge");
+        };
 
-            const data = await fetchTelemetryData();
+        socket.onmessage = (event) => {
+            try {
+                const rawData = JSON.parse(event.data);
 
-            if (data && data.game?.connected) {
-                const apiGame = verifyGameByTruck(
-                    data.truck.id,
-                    data.truck.model,
-                    data.game.gameName,
-                );
+                const data = rawData as TelemetryPacket;
 
-                if (apiGame === settings.value.selectedGame) {
-                    isTelemetryConnected.value = true;
-                    processData(data, onUpdate);
-                    nextTickDelay = 100;
-                } else {
-                    isTelemetryConnected.value = false;
+                if (data.game.toLowerCase() !== settings.value.selectedGame) {
                     resetDataOnDisconnected(onUpdate);
-                    nextTickDelay = 4000;
+                    return;
                 }
-            } else {
-                isTelemetryConnected.value = false;
-                resetDataOnDisconnected(onUpdate);
-                nextTickDelay = 1000;
-            }
 
-            const duration = performance.now() - startTime;
-            const delay = Math.max(50, nextTickDelay - duration);
-
-            if (isRunning.value && currentSessionId === mySessionId) {
-                fetchTimer = setTimeout(loop, delay);
+                if (data) {
+                    processData(data, onUpdate);
+                }
+            } catch (e) {
+                console.error("Data error", e);
             }
         };
 
-        loop();
+        socket.onclose = () => {
+            socket = null;
+            resetDataOnDisconnected(onUpdate);
+            setTimeout(() => startTelemetry(onUpdate), 3000);
+        };
     }
 
     function stopTelemetry() {
-        isRunning.value = false;
-        currentSessionId++;
-        if (fetchTimer) clearTimeout(fetchTimer);
-        if (abortController) abortController.abort();
-        fetchTimer = null;
+        if (socket) {
+            socket.close();
+            socket = null;
+        }
     }
 
     function processData(
-        data: TelemetryData,
+        data: TelemetryPacket,
         onUpdate?: (data: TelemetryUpdate) => void,
     ) {
-        const { gameConnected, hasInGameMarker, gameTime } = getGameState(data);
+        const { gameConnected, hasInGameMarker, gameTime, scale } =
+            getGameState(data);
+
         Object.assign(gameState, {
             gameTime: gameTime,
             gameConnected: gameConnected,
             hasInGameMarker: hasInGameMarker,
+            scale: scale,
         });
 
         const {
@@ -178,22 +124,29 @@ export function useEtsTelemetry() {
             truckSpeed,
             truckHeading,
             headingOffset: newOffset,
+            avgSpeed,
         } = getTruckState(
             data,
             lastPosition,
             settings.value.selectedGame,
             headingOffset,
+            speedSamples,
+            maxSamples,
         );
+
         Object.assign(truckState, {
             truckCoords: truckCoords,
             truckHeading: truckHeading,
             truckSpeed: truckSpeed,
+            averageSpeed: avgSpeed,
         });
+
         lastPosition = truckCoords;
         headingOffset = newOffset;
 
         const { fuel, speedLimit, restStoptime, restStopMinutes } =
             getNavigationState(data);
+
         Object.assign(navigationState, {
             restStoptime: restStoptime,
             restStopMinutes: restStopMinutes,
@@ -203,6 +156,7 @@ export function useEtsTelemetry() {
 
         const { hasActiveJob, destinationCity, destinationCompany } =
             getJobState(data);
+
         Object.assign(jobState, {
             hasActiveJob: hasActiveJob,
             destinationCity: destinationCity,
@@ -223,13 +177,15 @@ export function useEtsTelemetry() {
         onUpdate?: (data: TelemetryUpdate) => void,
     ) {
         const wasConnected = gameState.gameConnected;
-        isTelemetryConnected.value = false;
         headingOffset = 0;
+        lastPosition = null;
+        speedSamples = [];
 
         Object.assign(gameState, {
             gameConnected: false,
             hasInGameMarker: false,
             gameTime: "",
+            scale: 0,
         });
 
         Object.assign(truckState, {

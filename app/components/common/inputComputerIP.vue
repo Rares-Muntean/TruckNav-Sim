@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { CapacitorHttp } from "@capacitor/core";
-
+import { isBridgeRunning } from "~/assets/utils/telemetry/helpers";
 const props = defineProps<{ requireGame?: boolean }>();
 
-const { isElectron } = usePlatform();
 const { selectedGame, commitSelection } = useGameSelection();
 const { settings, updateGlobal } = useSettings();
 
@@ -46,44 +44,16 @@ const handleConnect = async () => {
     isConnecting.value = true;
 
     try {
-        let data;
+        if (!(await isBridgeRunning(ipInput.value)))
+            throw new Error("Bridge not reachable");
 
-        if (isElectron.value) {
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => {
-                    reject(new Error("Timeout"));
-                }, 2000);
-            });
+        updateGlobal("savedIP", ipInput.value);
+        isConnected.value = true;
+        commitSelection();
 
-            data = await Promise.race([
-                (window as any).electronAPI.fetchTelemetry(ipInput.value),
-                timeoutPromise,
-            ]);
-        } else {
-            const url = `http://${ipInput.value}:25555/api/ets2/telemetry`;
-            const options = {
-                url: url,
-                connectTimeout: 2000,
-                readTimeout: 2000,
-            };
-
-            const response = await CapacitorHttp.get(options);
-            data = response.data;
-        }
-
-        if (data) {
-            updateGlobal("savedIP", ipInput.value);
-
-            isConnected.value = true;
-            commitSelection();
-
-            setTimeout(() => {
-                isConnecting.value = false;
-                emit("connected");
-            }, 500);
-        } else {
-            throw new Error("Server reached but returned invalid data");
-        }
+        setTimeout(() => {
+            isConnecting.value = false;
+        }, 500);
     } catch (error) {
         isConnected.value = false;
         console.error("Connection failed:", error);

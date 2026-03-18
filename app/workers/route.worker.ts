@@ -50,6 +50,8 @@ self.onmessage = async (e: MessageEvent) => {
             projectedStartCoords,
             ownedDlcs,
             selectedGame,
+            sdkScale,
+            avgSpeed,
         } = payload;
 
         const result = calculateRoute(
@@ -78,6 +80,8 @@ self.onmessage = async (e: MessageEvent) => {
                 fullPath,
                 cityNodes,
                 selectedGame,
+                sdkScale,
+                avgSpeed,
             );
 
             self.postMessage(

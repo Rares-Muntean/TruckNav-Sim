@@ -39,8 +39,9 @@ export function getScaleMultiplier(
     gameX: number,
     gameZ: number,
     cities: SimpleCityNode[] | null,
+    selectedGame: string | null,
 ): number {
-    if (!cities) return 19;
+    if (!cities) return selectedGame === "ats" ? 20 : 19;
 
     for (let i = 0; i < cities.length; i++) {
         const city = cities[i]!;
@@ -51,7 +52,8 @@ export function getScaleMultiplier(
             return 3;
         }
     }
-    return 19;
+
+    return selectedGame === "ats" ? 20 : 19;
 }
 
 function fastDistKm(
@@ -380,49 +382,65 @@ export function buildRouteStatsCache(
     pathCoords: [number, number][],
     cities: SimpleCityNode[] | null,
     selectedGame: GameType,
+    sdkScale: number = 0,
+    avgSpeed: number,
 ) {
     const cache = new Float32Array(pathCoords.length * 2);
+    const isAts = selectedGame === "ats";
+    const highwayScale = isAts ? 20 : 19;
 
-    let totalGameKm = 0;
-    let totalGameHours = 0;
+    const baseHighway = isAts ? 105 : 82;
+    const highwaySpeed =
+        avgSpeed > 40 ? avgSpeed * 0.7 + baseHighway * 0.3 : baseHighway;
+
+    const baseCity = isAts ? 40 : 32;
+    const citySpeed =
+        avgSpeed > 40
+            ? avgSpeed * 0.4 + baseCity * 0.6 // Cities are always slower
+            : baseCity;
+
+    const speeds = { highway: highwaySpeed, city: citySpeed };
+
+    const gamePoints = pathCoords.map((p) =>
+        isAts ? convertGeoToAts(p[0], p[1]) : convertGeoToEts2(p[0], p[1]),
+    );
+
+    let totalKm = 0;
+    let totalHours = 0;
 
     cache[0] = 0; // km
     cache[1] = 0; // hours
 
     for (let i = 0; i < pathCoords.length - 1; i++) {
-        let point1, point2;
+        const [x1, z1] = gamePoints[i]!;
+        const [x2, z2] = gamePoints[i + 1]!;
 
-        point1 =
-            selectedGame === "ets2"
-                ? convertGeoToEts2(pathCoords[i]![0], pathCoords[i]![1])
-                : convertGeoToAts(pathCoords[i]![0], pathCoords[i]![1]);
-        point2 =
-            selectedGame === "ets2"
-                ? convertGeoToEts2(pathCoords[i + 1]![0], pathCoords[i + 1]![1])
-                : convertGeoToAts(pathCoords[i + 1]![0], pathCoords[i + 1]![1]);
+        const dx = x2 - x1;
+        const dz = z2 - z1;
+        const rawLength = Math.sqrt(dx * dx + dz * dz);
 
-        const dx = point2[0] - point1[0];
-        const dy = point2[1] - point1[1];
-        const rawSegmentLength = Math.sqrt(dx * dx + dy * dy);
+        let multiplier = getScaleMultiplier(
+            (x1 + x2) / 2,
+            (z1 + z2) / 2,
+            cities,
+            selectedGame,
+        );
 
-        const midX = (point1[0] + point2[0]) / 2;
-        const midZ = (point1[1] + point2[1]) / 2;
+        if (i < 5 && sdkScale > 0) {
+            multiplier = sdkScale;
+        } else if (multiplier !== 3) {
+            multiplier = highwayScale;
+        }
 
-        // Same logic as in calculategameroute but much performant.
-        const multiplier = getScaleMultiplier(midX, midZ, cities);
+        const segmentKm = (rawLength * multiplier) / 1000;
+        const segmentSpeed = multiplier === 3 ? speeds.city : speeds.highway;
 
-        const segmentKm = (rawSegmentLength * multiplier) / 1000;
-        totalGameKm += segmentKm;
+        totalKm += segmentKm;
+        totalHours += segmentKm / segmentSpeed;
 
-        let segmentSpeed = 70;
-        if (multiplier === 3) segmentSpeed = 35;
-
-        const segmentHours = segmentKm / segmentSpeed;
-        totalGameHours += segmentHours;
-
-        const nextIdx = (i + 1) * 2;
-        cache[nextIdx] = totalGameKm;
-        cache[nextIdx + 1] = totalGameHours;
+        const idx = (i + 1) * 2;
+        cache[idx] = totalKm;
+        cache[idx + 1] = totalHours;
     }
 
     return cache;

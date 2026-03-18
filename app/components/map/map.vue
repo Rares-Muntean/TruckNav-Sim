@@ -47,6 +47,8 @@ const {
     hasInGameMarker,
     hasActiveJob,
     destinationCity,
+    scale,
+    averageSpeed,
     destinationCompany,
 } = useEtsTelemetry();
 
@@ -119,6 +121,13 @@ let routeTimer: ReturnType<typeof setTimeout> | null = null;
 loading.value = true;
 progress.value = 0;
 
+const isTruckSpawned = computed(() => {
+    return (
+        truckCoords.value &&
+        (truckCoords.value[0] !== 0 || truckCoords.value[1] !== 0)
+    );
+});
+
 // We check if it has active job, if it has one, plot a route
 watch(
     [
@@ -128,47 +137,47 @@ watch(
         gameConnected,
         loading,
         isWorkerReady,
+        isTruckSpawned,
     ],
-    async ([hasJob, city, company, isConnected, isLoading, isWorkerReady]) => {
-        if (isLoading || !isWorkerReady) return;
-
-        if (!isConnected) {
+    async ([
+        hasJob,
+        city,
+        company,
+        isConnected,
+        isLoading,
+        isWorkerReady,
+        truckReady,
+    ]) => {
+        if (!truckCoords.value) return;
+        if (isLoading || !isWorkerReady || !isConnected || !truckReady) {
             currentJobKey.value = "";
-            return;
-        }
-
-        if (
-            !truckCoords.value ||
-            (truckCoords.value[0] === 0 && truckCoords.value[1] === 0)
-        ) {
             return;
         }
 
         const newJobKey = hasJob ? `${city}|${company}` : "";
 
+        if (hasJob && newJobKey === currentJobKey.value) return;
+
         if (routeTimer) clearTimeout(routeTimer);
 
-        routeTimer = setTimeout(async () => {
-            if (hasJob && newJobKey !== currentJobKey.value) {
-                if (!truckCoords.value) return;
-                const destCoords = findDestinationCoords(city, company);
+        if (hasJob && newJobKey !== currentJobKey.value) {
+            const destCoords = findDestinationCoords(city, company);
 
-                if (destCoords) {
-                    clearRouteState();
-                    isClickingEnabled.value = false;
-                    currentJobKey.value = newJobKey;
+            if (destCoords) {
+                currentJobKey.value = newJobKey;
+                clearRouteState();
+                isClickingEnabled.value = false;
 
-                    await handleRouteClick(
-                        destCoords,
-                        truckCoords.value,
-                        truckHeading.value,
-                        false,
-                    );
-                }
+                await handleRouteClick(
+                    destCoords,
+                    truckCoords.value,
+                    truckHeading.value,
+                    scale.value,
+                    false,
+                    averageSpeed.value,
+                );
             }
-        }, 500);
-
-        if (!hasJob && currentJobKey.value !== "") {
+        } else if (!hasJob && currentJobKey.value !== "") {
             clearRouteState();
             currentJobKey.value = "";
         }
@@ -176,21 +185,29 @@ watch(
 );
 
 watch(
-    [hasActiveJob, gameConnected, loading, isWorkerReady],
-    ([hasJob, isGameConnected, isLoading, isWorkerReady]) => {
-        if (!isLoading && isWorkerReady && isGameConnected && !hasJob) {
-            const destination = activeSettings.value.lastDestination;
+    [hasActiveJob, gameConnected, loading, isWorkerReady, isTruckSpawned],
+    ([hasJob, isGameConnected, isLoading, isWorkerReady, truckReady]) => {
+        if (!truckCoords.value) return;
+        if (
+            isLoading ||
+            !isWorkerReady ||
+            !isGameConnected ||
+            hasJob ||
+            !truckReady
+        )
+            return;
 
-            if (destination && truckCoords.value) {
-                clearRouteState();
+        const destination = activeSettings.value.lastDestination;
 
-                handleRouteClick(
-                    destination,
-                    truckCoords.value,
-                    truckHeading.value,
-                    true,
-                );
-            }
+        if (destination && !isRouteActive.value && !isCalculatingRoute.value) {
+            handleRouteClick(
+                destination,
+                truckCoords.value,
+                truckHeading.value,
+                scale.value,
+                true,
+                averageSpeed.value,
+            );
         }
     },
 );
@@ -285,11 +302,20 @@ onMounted(async () => {
             if (!gameConnected.value) return;
             if (!truckCoords.value) return;
 
+            const currentScale =
+                scale.value > 0
+                    ? scale.value
+                    : settings.value.selectedGame === "ats"
+                      ? 20
+                      : 19;
+
             await handleRouteClick(
                 [e.lngLat.lng, e.lngLat.lat],
                 truckCoords.value,
                 truckHeading.value,
+                currentScale,
                 true,
+                averageSpeed.value,
             );
         });
 
@@ -325,7 +351,12 @@ function onTelemetryUpdate() {
     followTruck(snappedCoords, truckHeading.value);
 
     if (isRouteActive.value) {
-        updateRouteProgress(truckCoords.value, truckHeading.value);
+        updateRouteProgress(
+            truckCoords.value,
+            truckHeading.value,
+            scale.value,
+            averageSpeed.value,
+        );
     }
 }
 

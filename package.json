@@ -33,12 +33,14 @@
         "rbush": "^4.0.1",
         "tailwindcss": "^4.2.0",
         "vue": "^3.5.24",
-        "vue-router": "^4.6.4"
+        "vue-router": "^4.6.4",
+        "ws": "^8.19.0"
     },
     "devDependencies": {
         "@types/electron": "^1.4.38",
         "@types/node": "^25.2.3",
         "@types/rbush": "^4.0.0",
+        "@types/ws": "^8.18.1",
         "electron": "^39.2.7",
         "npm-force-resolutions": "^0.0.10",
         "patch-package": "^8.0.1",

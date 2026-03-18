@@ -13,8 +13,8 @@
     "publish": null,
     "extraResources": [
         {
-            "from": "bin/telemetry-server",
-            "to": "telemetry-server",
+            "from": "bin",
+            "to": "bin",
             "filter": ["**/*"]
         }
     ],

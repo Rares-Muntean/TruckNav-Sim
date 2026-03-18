@@ -10,6 +10,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
     getLocalIP: () => ipcRenderer.invoke("get-local-ip"),
     getLocalPort: () => ipcRenderer.invoke("get-local-port"),
     openExternal: (url: string) => ipcRenderer.send("open-external", url),
+    selectGameFolder: (gameName: string) =>
+        ipcRenderer.invoke("select-game-folder", gameName),
+    checkPluginStatuses: () => ipcRenderer.invoke("check-plugin-statuses"),
 
     setWindowSize: (
         width: number,
@@ -24,7 +27,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
             maximize,
         }),
 
-    checkServerStatus: () => ipcRenderer.invoke("check-server-status"),
     manualStartServer: () => ipcRenderer.send("manual-start-server"),
-    fetchTelemetry: (ip: string) => ipcRenderer.invoke("fetch-telemetry", ip),
 });

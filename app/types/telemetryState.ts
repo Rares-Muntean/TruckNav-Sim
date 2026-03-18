@@ -9,12 +9,14 @@ export interface GameState {
     gameTime: string;
     gameConnected: boolean;
     hasInGameMarker: boolean;
+    scale: number;
 }
 
 export interface TruckState {
     truckCoords: [number, number] | null;
     truckHeading: number;
     truckSpeed: number;
+    averageSpeed: number;
 }
 
 export interface NavigationState {

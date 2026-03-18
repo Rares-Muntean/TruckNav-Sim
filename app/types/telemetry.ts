@@ -1,137 +1,188 @@
+/**
+ * CORE TELEMETRY PACKET
+ */
+export interface TelemetryPacket {
+    paused: boolean;
+    game: string;
+    gameVersion: string;
+    telemetryVersion: string;
+    common: CommonData;
+    truck: TruckData;
+    trailers: TrailerData[];
+    job: JobData;
+    navigation: NavigationData;
+    specialEvents: SpecialEvents;
+    gamePlayEvents: GamePlayEvents;
+}
+
+/**
+ * COMMON DATA CATEGORY
+ */
+export interface CommonData {
+    mapScale: number;
+    gameTime: string; // ISO Date String
+    nextRestStopMinutes: number;
+}
+
+/**
+ * TRUCK DATA CATEGORY
+ */
+export interface TruckData {
+    constants: TruckConstants;
+    current: TruckCurrent;
+    positioning: PositionData;
+}
+
+export interface TruckConstants {
+    fuelCapacity: number;
+    brand: string;
+    name: string;
+}
+
+export interface TruckCurrent {
+    dashboard: DashboardData;
+    lights: LightsData;
+    damage: TruckDamageData;
+    position: Vector3;
+    heading: number;
+    parkingBrake: boolean;
+}
+
+export interface DashboardData {
+    fuelAmount: number;
+    averageConsumption: number;
+    fuelRange: number;
+    fuelWarning: boolean;
+    currentGear: number;
+    speedKph: number;
+    speedMph: number;
+    cruiseControlSpeedKph: number;
+    cruiseControlSpeedMph: number;
+    cruiseControlActive: boolean;
+    rpm: number;
+    odometer: number;
+}
+
+export interface LightsData {
+    parking: boolean;
+    beamLow: boolean;
+    beamHigh: boolean;
+}
+
+export interface TruckDamageData {
+    engine: number;
+    transmission: number;
+    cabin: number;
+    chassis: number;
+    wheels: number;
+}
+
 export interface Vector3 {
     x: number;
     y: number;
     z: number;
 }
 
-export interface TelemetryData {
-    game: GameData;
-    truck: TruckData;
-    trailer: TrailerData;
-    job: JobData;
-    navigation: NavigationData;
+export interface PositionData {
+    // Reserved for future physics/camera data
 }
 
-export interface TruckData {
-    id: string;
-    make: string;
-    model: string;
-    speed: number;
-    cruiseControlSpeed: number;
-    cruiseControlOn: boolean;
-    odometer: number;
-    gear: number;
-    displayedGear: number;
-    forwardGears: number;
-    reverseGears: number;
-    shifterType: string;
-    engineRpm: number;
-    engineRpmMax: number;
-    fuel: number;
-    fuelCapacity: number;
-    fuelAverageConsumption: number;
-    fuelWarningFactor: number;
-    fuelWarningOn: boolean;
-    wearEngine: number;
-    wearTransmission: number;
-    wearCabin: number;
-    wearChassis: number;
-    wearWheels: number;
-    userSteer: number;
-    userThrottle: number;
-    userBrake: number;
-    userClutch: number;
-    gameSteer: number;
-    gameThrottle: number;
-    gameBrake: number;
-    gameClutch: number;
-    shifterSlot: number;
-    engineOn: boolean;
-    electricOn: boolean;
-    wipersOn: boolean;
-    retarderBrake: number;
-    retarderStepCount: number;
-    parkBrakeOn: boolean;
-    motorBrakeOn: boolean;
-    brakeTemperature: number;
-    adblue: number;
-    adblueCapacity: number;
-    adblueAverageConsumption: number;
-    adblueWarningOn: boolean;
-    airPressure: number;
-    airPressureWarningOn: boolean;
-    airPressureWarningValue: number;
-    airPressureEmergencyOn: boolean;
-    airPressureEmergencyValue: number;
-    oilTemperature: number;
-    oilPressure: number;
-    oilPressureWarningOn: boolean;
-    oilPressureWarningValue: number;
-    waterTemperature: number;
-    waterTemperatureWarningOn: boolean;
-    waterTemperatureWarningValue: number;
-    batteryVoltage: number;
-    batteryVoltageWarningOn: boolean;
-    batteryVoltageWarningValue: number;
-    lightsDashboardValue: number;
-    lightsDashboardOn: boolean;
-    blinkerLeftActive: boolean;
-    blinkerRightActive: boolean;
-    blinkerLeftOn: boolean;
-    blinkerRightOn: boolean;
-    lightsParkingOn: boolean;
-    lightsBeamLowOn: boolean;
-    lightsBeamHighOn: boolean;
-    lightsAuxFrontOn: boolean;
-    lightsAuxRoofOn: boolean;
-    lightsBeaconOn: boolean;
-    lightsBrakeOn: boolean;
-    lightsReverseOn: boolean;
-    placement: Placement;
-    acceleration: Vector3;
-    head: Vector3;
-    cabin: Vector3;
-    hook: Vector3;
-}
-
-export interface GameData {
-    connected: boolean;
-    gameName: string;
-    paused: boolean;
-    time: string;
-    timeScale: number;
-    nextRestStopTime: string;
-    version: string;
-    telemetryPluginVersion: string;
-}
-
+/**
+ * TRAILER DATA CATEGORY
+ */
 export interface TrailerData {
     attached: boolean;
-    id: string;
-    name: string;
-    mass: number;
-    wear: number;
-    placement: Placement;
-}
-
-export interface JobData {
-    income: number;
-    deadlineTime: string; // ISO date string
-    remainingTime: string; // ISO duration-like string
-    sourceCity: string;
-    sourceCompany: string;
-    destinationCity: string;
-    destinationCompany: string;
-}
-
-export interface NavigationData {
-    estimatedTime: string;
-    estimatedDistance: number;
-    speedLimit: number;
-}
-
-interface Placement extends Vector3 {
+    damage: TrailerDamageData;
+    position: Vector3;
     heading: number;
-    pitch: number;
-    roll: number;
+    brand: string;
+    name: string;
+}
+
+export interface TrailerDamageData {
+    cargo: number;
+    wheels: number;
+    chassis: number;
+}
+
+/**
+ * JOB DATA CATEGORY
+ */
+export interface JobData {
+    remainingDeliveryTime: string; // ISO Date String
+    cargoLoaded: boolean;
+    specialJob: boolean;
+    jobType: string;
+    cargo: CargoData;
+    cityDestinationId: string;
+    cityDestination: string;
+    companyDestinationId: string;
+    companyDestination: string;
+    citySourceId: string;
+    citySource: string;
+    companySourceId: string;
+    companySource: string;
+    income: number; // Per your C# class definition
+}
+
+export interface CargoData {
+    mass: number;
+    name: string;
+    cargoDamage: number;
+}
+
+/**
+ * NAVIGATION DATA CATEGORY
+ */
+export interface NavigationData {
+    distance: number;
+    time: number;
+    speedLimitKph: number;
+    speedLimitMph: number;
+}
+
+/**
+ * SPECIAL EVENTS DATA CATEGORY (Booleans for UI flags)
+ */
+export interface SpecialEvents {
+    onJob: boolean;
+    jobCancelled: boolean;
+    jobDelivered: boolean;
+    fined: boolean;
+    tollgate: boolean;
+    ferry: boolean;
+    train: boolean;
+}
+
+/**
+ * GAMEPLAY EVENTS DATA CATEGORY (Detailed event data)
+ */
+export interface GamePlayEvents {
+    ferryData: TransportEvent;
+    finedData: FinedEvent;
+    jobCancelledPenalty: number;
+    jobDelivered: Delivered;
+    tollgatePayment: number;
+    trainData: TransportEvent;
+}
+
+export interface TransportEvent {
+    payAmount: number;
+    sourceName: string;
+    targetName: string;
+}
+
+export interface FinedEvent {
+    payAmount: number;
+    offence: string;
+}
+
+export interface Delivered {
+    autoLoaded: boolean;
+    autoParker: boolean;
+    cargoDamage: number;
+    deliveryTime: string; // ISO Date String
+    distanceKm: number;
+    earnedXp: number;
+    revenue: number;
 }

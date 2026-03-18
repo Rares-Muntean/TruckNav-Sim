@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { isBridgeRunning } from "~/assets/utils/telemetry/helpers";
+import type { ets2Expansions } from "~/data/ets2/ets2Expansions";
 const props = defineProps<{ launchChooseGame: () => void }>();
 
 const { fetchIp, fetchPort, localIP, localPort } = useNetwork();
@@ -7,22 +9,15 @@ const { updateGlobal } = useSettings();
 const isServerRunning = ref(false);
 const polling = ref<any>(null);
 const isWindowOpened = ref(false);
+const etsActive = ref(false);
+const atsActive = ref(false);
 
 const checkStatus = async () => {
-    const processExists = await (window as any).electronAPI.checkServerStatus();
+    isServerRunning.value = await isBridgeRunning("127.0.0.1");
 
-    if (processExists) {
-        try {
-            const data = await (window as any).electronAPI.fetchTelemetry(
-                "127.0.0.1",
-            );
-            isServerRunning.value = !!data;
-        } catch {
-            isServerRunning.value = false;
-        }
-    } else {
-        isServerRunning.value = false;
-    }
+    const statuses = await (window as any).electronAPI.checkPluginStatuses();
+    etsActive.value = statuses.ets2;
+    atsActive.value = statuses.ats;
 };
 
 const handleLocalLaunch = async () => {
@@ -35,9 +30,7 @@ onMounted(async () => {
     await fetchPort();
 
     (window as any).electronAPI.setWindowSize(900, 600, false, false);
-
     checkStatus();
-
     const bootTimer = setInterval(async () => {
         if (isServerRunning.value) {
             clearInterval(bootTimer);
@@ -46,8 +39,21 @@ onMounted(async () => {
         }
 
         await checkStatus();
-    }, 500);
+    }, 1500);
 });
+
+const handleExplorerLaunch = async (gameName: string) => {
+    const result = await (window as any).electronAPI.selectGameFolder(gameName);
+
+    if (result.success) {
+        console.log("Plugin installed at:", result.path);
+        checkStatus();
+    } else {
+        if (result.message !== "Cancelled") {
+            alert("Error: " + result.message);
+        }
+    }
+};
 
 onUnmounted(() => {
     if (polling.value) clearInterval(polling.value);
@@ -56,7 +62,7 @@ onUnmounted(() => {
 const startRegularPolling = () => {
     polling.value = setInterval(async () => {
         await checkStatus();
-    }, 5000);
+    }, 7000);
 };
 
 const openLink = async (url: string) => {
@@ -76,7 +82,20 @@ const toggleWindow = () => {
         </div>
 
         <div class="content">
-            <h2 class="title">Welcome to TruckNav!</h2>
+            <div class="title-wrapper">
+                <h2 class="title">Welcome to TruckNav!</h2>
+                <Icon
+                    class="github-icon"
+                    name="mdi:github"
+                    size="30"
+                    @click.prevent="
+                        openLink(
+                            'https://github.com/Rares-Muntean/ets2-navigation-gps',
+                        )
+                    "
+                />
+            </div>
+
             <span class="subtitle"
                 >Below you’ll find instructions to set up the app on your
                 phone.</span
@@ -114,7 +133,7 @@ const toggleWindow = () => {
                             >{{
                                 isServerRunning
                                     ? "Connected"
-                                    : "Offline - try opening again."
+                                    : "Offline, try opening again."
                             }}</span
                         >
                     </div>
@@ -129,43 +148,64 @@ const toggleWindow = () => {
                             class="icon"
                         />
                         <span
-                            >Safe to close this window if connecting from
-                            TruckNav app!</span
-                        >
-                    </div>
-
-                    <div
-                        v-if="isServerRunning"
-                        class="status-indicator is-not-safe"
-                    >
-                        <Icon
-                            name="mdi:close-circle-outline"
-                            size="20"
-                            class="icon"
-                        />
-                        <span
-                            >Keep this window open if connecting from web
-                            browser!</span
-                        >
+                            >Telemetry is running.
+                            <strong>Minimize</strong> this window to keep the
+                            GPS active.
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="bottom">
-            <div class="github-link">
-                <Icon name="mdi:github" size="20" />
-                <span>
-                    GitHub Link:
-                    <a
-                        @click.prevent="
-                            openLink(
-                                'https://github.com/Rares-Muntean/ets2-navigation-gps',
-                            )
-                        "
-                        >TruckNav</a
-                    >
-                </span>
+            <div class="setup-games-sdk">
+                <div class="game-status">
+                    <span class="game-name">ETS2</span>
+                    <div class="icon-status-wrapper">
+                        <div
+                            class="label"
+                            :class="etsActive ? 'active' : 'missing'"
+                        >
+                            <span
+                                >Plugin
+                                {{ etsActive ? "Active" : "Missing" }}</span
+                            >
+                            <button
+                                @click.prevent="handleExplorerLaunch('ETS2')"
+                                class="folder-btn"
+                            >
+                                <Icon
+                                    name="mdi:folder-edit-outline"
+                                    size="20"
+                                />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-status">
+                    <span class="game-name">ATS</span>
+                    <div class="icon-status-wrapper">
+                        <span
+                            class="label"
+                            :class="atsActive ? 'active' : 'missing'"
+                        >
+                            <span
+                                >Plugin
+                                {{ atsActive ? "Active" : "Missing" }}</span
+                            >
+                            <button
+                                @click.prevent="handleExplorerLaunch('ATS')"
+                                class="folder-btn"
+                            >
+                                <Icon
+                                    name="mdi:folder-edit-outline"
+                                    size="20"
+                                />
+                            </button>
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <Transition name="panel-pop">

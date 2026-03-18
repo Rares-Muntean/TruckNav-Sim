@@ -1,34 +1,35 @@
 import { convertAtsToGeo, convertEts2ToGeo } from "../map/converters";
 import { getBearing } from "../map/maths";
-import type { GameType, TelemetryData } from "~/types";
-
-export const ATS_BRANDS = [
-    "freightliner",
-    "peterbilt",
-    "kenworth",
-    "westernstar",
-    "intl",
-    "mack",
-];
-const ETS2_BRANDS = ["scania", "man", "mercedes", "renault", "iveco", "daf"];
+import type { GameType, TelemetryPacket } from "~/types";
 
 export function getTruckState(
-    data: TelemetryData,
+    data: TelemetryPacket,
     lastPosition: [number, number] | null,
     selectedGame: GameType,
     currentHeadingOffset: number,
+    speedSamples: number[],
+    maxSamples: number,
 ) {
-    const { x, z } = data.truck.placement;
-    let truckCoords: [number, number] = [0, 0];
+    const { x, z } = data.truck.current.position;
+    let truckCoords: [number, number];
 
-    truckCoords =
-        selectedGame === "ets2"
-            ? convertEts2ToGeo(x, z)
-            : convertAtsToGeo(x, z);
+    if (Math.abs(x) < 0.001 && Math.abs(z) < 0.001) {
+        truckCoords = [0, 0];
+    } else {
+        truckCoords =
+            selectedGame === "ets2"
+                ? convertEts2ToGeo(x, z)
+                : convertAtsToGeo(x, z);
+    }
 
-    const truckSpeed = Math.max(0, Math.floor(data.truck.speed));
+    const truckSpeed = Math.max(
+        0,
+        Math.floor(data.truck.current.dashboard.speedKph),
+    );
 
-    const rawGameHeading = data.truck.placement.heading;
+    const avgSpeed = updateMovingAverage(truckSpeed, speedSamples, maxSamples);
+
+    const rawGameHeading = data.truck.current.heading;
     const { heading, newOffset } = getCorrectHeading(
         rawGameHeading,
         truckSpeed,
@@ -42,15 +43,20 @@ export function getTruckState(
         truckSpeed,
         truckHeading: heading,
         headingOffset: newOffset,
+        avgSpeed,
     };
 }
 
-export function getGameState(data: TelemetryData) {
-    const gameConnected = data.game.connected;
-    const hasInGameMarker =
-        data.navigation.estimatedDistance > 100 && data.job.income === 0;
+export function getGameState(data: TelemetryPacket) {
+    const name = data.game.toLowerCase();
+    const gameConnected = name === "ets2" || name === "ats";
 
-    const { formatted, raw } = convertTelemtryTime(data.game.time);
+    const scale = data.common.mapScale;
+
+    const hasInGameMarker =
+        data.navigation.distance > 100 && data.job.income === 0;
+
+    const { formatted, raw } = convertTelemtryTime(data.common.gameTime);
     const day = raw.toUTCString().slice(0, 3);
     const gameTime = `${day} ${formatted}`;
 
@@ -58,49 +64,65 @@ export function getGameState(data: TelemetryData) {
         gameConnected,
         hasInGameMarker,
         gameTime,
+        scale,
     };
 }
 
-export function getNavigationState(data: TelemetryData) {
-    const fuel = parseInt(data.truck.fuel.toFixed(1));
-    const speedLimit = data.navigation.speedLimit;
+export function getNavigationState(data: TelemetryPacket) {
+    const fuel = parseInt(data.truck.current.dashboard.fuelAmount.toFixed(1));
+    const speedLimit = Math.round(data.navigation.speedLimitKph);
 
-    const { formatted: restStoptime, raw } = convertTelemtryTime(
-        data.game.nextRestStopTime,
-    );
-    const restStopMinutes = raw.getUTCHours() * 60 + raw.getUTCMinutes();
+    const totalMinutes = data.common.nextRestStopMinutes;
+    const hours = Math.max(0, Math.floor(totalMinutes / 60));
+    const mins = Math.max(0, totalMinutes % 60);
 
-    return { fuel, speedLimit, restStoptime, restStopMinutes };
+    const restStoptime = `${hours.toString().padStart(2, "0")}:${mins
+        .toString()
+        .padStart(2, "0")}`;
+
+    return { fuel, speedLimit, restStoptime, restStopMinutes: totalMinutes };
 }
 
-export function getJobState(data: TelemetryData) {
-    const hasActiveJob = data.job.income > 0;
-    const destinationCity = data.job.destinationCity;
-    const destinationCompany = data.job.destinationCompany;
+export function getJobState(data: TelemetryPacket) {
+    const hasActiveJob = data.specialEvents.onJob;
+    const destinationCity = data.job.cityDestination;
+    const destinationCompany = data.job.companyDestinationId;
 
     return { hasActiveJob, destinationCity, destinationCompany };
 }
 
-export function verifyGameByTruck(
-    truckId: string,
-    truckModel: string,
-    reportedGame: string,
-): "ats" | "ets2" {
-    const id = truckId.toLowerCase();
-    const model = truckModel.toLowerCase();
+/**
+ * Checks if telemetry bridge is reachable
+ * @param ip Ip to get data from
+ * @param timeoutMs How long to wait before giving up
+ * @returns boolean - true if running, false if not
+ */
+export async function isBridgeRunning(
+    ip: string,
+    timeoutMs: number = 2000,
+): Promise<boolean> {
+    const wsUrl = `ws://${ip}:30001`;
 
-    if (ATS_BRANDS.some((brand) => id.includes(brand))) return "ats";
+    return new Promise((resolve) => {
+        const testSocket = new WebSocket(wsUrl);
 
-    if (ETS2_BRANDS.some((brand) => id.includes(brand))) return "ets2";
+        const timeoutId = setTimeout(() => {
+            testSocket.close();
+            resolve(false);
+        }, timeoutMs);
 
-    if (id.includes("volvo")) {
-        if (model.includes("vnl")) return "ats";
-        if (model.includes("fh")) return "ets2";
+        testSocket.onopen = () => {
+            clearTimeout(timeoutId);
+            testSocket.close();
+            resolve(true);
+        };
 
-        return "ets2";
-    }
-
-    return reportedGame.toLowerCase().includes("ats") ? "ats" : "ets2";
+        testSocket.onerror = () => {
+            clearTimeout(timeoutId);
+            testSocket.close();
+            resolve(false);
+        };
+    });
 }
 
 function getCorrectHeading(
@@ -148,4 +170,20 @@ function convertTelemtryTime(time: string) {
             .padStart(2, "0")}`,
         raw: date,
     };
+}
+
+function updateMovingAverage(
+    currentSpeed: number,
+    speedSamples: number[],
+    maxSamples: number,
+) {
+    if (currentSpeed > 10) {
+        speedSamples.push(currentSpeed);
+        if (speedSamples.length > maxSamples) speedSamples.shift();
+    }
+
+    if (speedSamples.length === 0) return 80;
+
+    const sum = speedSamples.reduce((a, b) => a + b, 0);
+    return sum / speedSamples.length;
 }

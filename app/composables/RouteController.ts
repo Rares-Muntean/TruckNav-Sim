@@ -225,6 +225,8 @@ export const useRouteController = (
         targetCoords: [number, number],
         projectedStartCoords: [number, number],
         ownedDlcs: number[],
+        sdkScale: number,
+        avgSpeed: number,
     ): Promise<any> {
         return new Promise((resolve) => {
             if (!worker) {
@@ -252,6 +254,8 @@ export const useRouteController = (
                     projectedStartCoords,
                     ownedDlcs,
                     selectedGame: settings.value.selectedGame,
+                    sdkScale,
+                    avgSpeed,
                 },
             });
         });
@@ -362,6 +366,8 @@ export const useRouteController = (
         truckHeading: number,
         startType: "road" | "yard",
         projectedStartCoords: [number, number],
+        sdkScale: number,
+        avgSpeed: number,
     ) {
         const SEARCH_RADII = [1, 2, 4, 8, 16, 32, 100, 300];
         const userDlcs = toRaw(activeSettings.value.ownedDlcs);
@@ -379,6 +385,8 @@ export const useRouteController = (
                 targetCoords,
                 projectedStartCoords,
                 userDlcs,
+                sdkScale,
+                avgSpeed,
             );
 
             if (result) {
@@ -479,7 +487,9 @@ export const useRouteController = (
         clickCoords: [number, number],
         truckCoords: [number, number],
         truckHeading: number,
+        sdkScale: number,
         createEndMarker: boolean,
+        avgSpeed: number,
     ) {
         if (adjacency.size === 0 || isCalculating.value || !isWorkerReady)
             return;
@@ -506,6 +516,8 @@ export const useRouteController = (
                 truckHeading,
                 startConfig.type as "road" | "yard",
                 startConfig.projectedCoords,
+                sdkScale,
+                avgSpeed,
             );
 
             if (result) {
@@ -554,6 +566,8 @@ export const useRouteController = (
     const updateRouteProgress = (
         truckCoords: [number, number],
         truckHeading: number,
+        sdkScale: number,
+        avgSpeed: number,
     ) => {
         if (!currentRoutePath.value || currentRoutePath.value.length < 2)
             return;
@@ -610,14 +624,16 @@ export const useRouteController = (
                     toRaw(savedDestination.value),
                     truckCoords,
                     truckHeading,
+                    sdkScale,
                     false,
+                    avgSpeed,
                 );
                 return;
             }
         }
 
         const distToEndSq = getSquaredDist(truckCoords, path[path.length - 1]!);
-        if (distToEndSq < 0.000005) {
+        if (distToEndSq < 0.00005) {
             clearRouteState();
             return;
         }

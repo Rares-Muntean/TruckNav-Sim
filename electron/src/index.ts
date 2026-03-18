@@ -16,8 +16,16 @@ import {
     setupReloadWatcher,
 } from "./setup";
 import path from "path";
-import { execSync, spawn } from "child_process";
-import { existsSync, writeFileSync } from "fs";
+import { spawn, spawnSync } from "child_process";
+import {
+    copyFileSync,
+    existsSync,
+    mkdirSync,
+    readFileSync,
+    writeFileSync,
+} from "fs";
+import * as dgram from "dgram";
+import * as registry from "native-reg";
 
 // Graceful handling of unhandled errors.
 unhandled();
@@ -73,6 +81,10 @@ if (electronIsDev) {
     // autoUpdater.checkForUpdatesAndNotify();
 })();
 
+app.on("before-quit", function () {
+    killTelemetry();
+});
+
 // Handle when all of our windows are close (platforms have their own expectations).
 app.on("window-all-closed", function () {
     // On OS X it is common for applications and their menu bar
@@ -91,15 +103,130 @@ app.on("activate", async function () {
     }
 });
 
+// --- Custom Functions ---
+
 /**
- * Custom Functions
+ * Retrieves the local Steam installation path.
+ * Defaults to the standard Program Files directory if the path cannot be located in the system registry.
+ * @returns {string} The normalized steam path (e.g "C:\Games\Steam")
  */
+async function getSteamPath() {
+    let steamPath = "C:\\Program Files (x86)\\Steam";
+
+    try {
+        // Steam usually stores the path inside HKCU for the current user
+        const key = registry.openKey(
+            registry.HKCU,
+            "Software\\Valve\\Steam",
+            registry.Access.READ,
+        );
+
+        if (key) {
+            const value = registry.getValue(key, null, "SteamPath");
+            if (typeof value === "string") {
+                // Ensure slashes are consistent with Windows standards
+                steamPath = value.replace(/\//g, "\\");
+            }
+
+            registry.closeKey(key);
+        }
+    } catch (e) {
+        return "C:\\Program Files (x86)\\Steam";
+    }
+
+    return steamPath;
+}
+
+ipcMain.handle("check-plugin-statuses", async () => {
+    const steamRoot = await getSteamPath();
+    const libraries = [steamRoot];
+    const dllName = "scs-telemetry.dll";
+
+    const vdfLocations = [
+        path.join(steamRoot, "config", "libraryfolders.vdf"),
+        path.join(steamRoot, "steamapps", "libraryfolders.vdf"),
+    ];
+
+    vdfLocations.forEach((vdfPath) => {
+        if (existsSync(vdfPath)) {
+            try {
+                const content = readFileSync(vdfPath, "utf8");
+                // Scan for matching paths. Find every line that has "path" + " " + "anything"
+                const matches = content.match(/"path"\s+"([^"]+)"/g);
+                if (matches) {
+                    matches.forEach((m) => {
+                        const match = m.match(/"path"\s+"([^"]+)"/);
+                        if (match && match[1]) {
+                            const cleanPath = match[1].replace(/\\\\/g, "\\");
+                            if (!libraries.includes(cleanPath)) {
+                                libraries.push(cleanPath);
+                            }
+                        }
+                    });
+                }
+            } catch (e) {}
+        }
+    });
+
+    const results = { ets2: false, ats: false };
+    const games = [
+        { key: "ets2", folder: "Euro Truck Simulator 2" },
+        { key: "ats", folder: "American Truck Simulator" },
+    ];
+
+    libraries.forEach((lib) => {
+        games.forEach((game) => {
+            const gameBinPath = path.join(
+                lib,
+                lib.toLowerCase().includes("steamapps") ? "" : "steamapps",
+                "common",
+                game.folder,
+                "bin",
+                "win_x64",
+            );
+
+            const pluginFolder = path.join(gameBinPath, "plugins");
+            const dllDest = path.join(pluginFolder, dllName);
+
+            if (existsSync(gameBinPath)) {
+                if (existsSync(dllDest)) {
+                    results[game.key as "ets2" | "ats"] = true;
+                } else {
+                    try {
+                        if (!existsSync(pluginFolder)) {
+                            mkdirSync(pluginFolder, { recursive: true });
+                        }
+
+                        const dllSource = app.isPackaged
+                            ? path.join(process.resourcesPath, "bin", dllName)
+                            : path.join(app.getAppPath(), "bin", dllName);
+
+                        if (existsSync(dllSource)) {
+                            copyFileSync(dllSource, dllDest);
+                            results[game.key as "ets2" | "ats"] = true;
+                        } else {
+                            throw new Error(`Source not found: ${dllSource}`);
+                        }
+                    } catch (err) {
+                        console.error(
+                            `[Auto-Install] Failed to copy to ${game.folder}:`,
+                            err,
+                        );
+                    }
+                }
+            }
+        });
+    });
+
+    return results;
+});
+
+const exeName = "TruckNavTelemetry.exe";
 async function startTelemetryServer() {
     try {
-        const exeName = "Ets2Telemetry.exe";
         const serverPath = app.isPackaged
-            ? path.join(process.resourcesPath, "telemetry-server", exeName)
-            : path.join(app.getAppPath(), "bin", "telemetry-server", exeName);
+            ? path.join(process.resourcesPath, "bin", exeName)
+            : path.join(app.getAppPath(), "bin", exeName);
 
         if (!existsSync(serverPath)) {
             dialog.showErrorBox(
@@ -109,7 +236,7 @@ async function startTelemetryServer() {
             return;
         }
 
-        killTelemetryServer();
+        killTelemetry();
 
         const serverDir = path.dirname(serverPath);
         const flagPath = path.join(
@@ -118,9 +245,7 @@ async function startTelemetryServer() {
         );
         const isFirstRun = !existsSync(flagPath);
 
-        const style = isFirstRun ? "Normal" : "Minimized";
-
-        const psCommand = `Start-Process -FilePath '${serverPath}' -WorkingDirectory '${serverDir}' -WindowStyle ${style}`;
+        const psCommand = `Start-Process -FilePath '${serverPath}' -WorkingDirectory '${serverDir}' -WindowStyle Hidden`;
 
         const logPath = path.join(
             app.getPath("userData"),
@@ -147,13 +272,15 @@ async function startTelemetryServer() {
     }
 }
 
-function killTelemetryServer() {
-    const exeName = "Ets2Telemetry.exe";
+const killTelemetry = () => {
+    console.log("[Telemetry] Cleaning up background processes...");
     try {
-        execSync(`taskkill /F /IM ${exeName} /T`, { stdio: "ignore" });
-        console.log("Telemetry server killed.");
+        spawnSync("taskkill", ["/F", "/IM", exeName, "/T"], {
+            stdio: "ignore",
+            windowsHide: true,
+        });
     } catch (e) {}
-}
+};
 
 const currentPort = { value: 0 };
 async function startWebServer() {
@@ -162,19 +289,6 @@ async function startWebServer() {
     const webDir = app.isPackaged
         ? path.join(process.resourcesPath, "app.asar", "app")
         : path.join(app.getAppPath(), "app");
-
-    server.get("/api/ets2", async (_req, res) => {
-        var response = await fetchTelemetry("localhost");
-        if (response) {
-            const wrappedResponse = {
-                connected: true,
-                telemetry: response,
-            };
-            res.json(wrappedResponse);
-        } else {
-            res.json({ connected: false, telemetry: null });
-        }
-    });
 
     server.use(express.static(webDir));
 
@@ -211,23 +325,6 @@ async function getAvailablePort(startingPort: number): Promise<number> {
     });
 }
 
-async function fetchTelemetry(ip: string | "localhost") {
-    try {
-        const response = await fetch(`http://${ip}:25555/api/ets2/telemetry`);
-        if (!response.ok) {
-            console.warn(
-                `Telemetry fetch failed with status ${response.status}: ${response.statusText}`,
-            );
-
-            return null;
-        }
-
-        return await response.json();
-    } catch {
-        return null;
-    }
-}
-
 /**
  * Ipc Handlers
  */
@@ -235,7 +332,39 @@ ipcMain.handle("get-local-port", () => {
     return currentPort.value;
 });
 
-const dgram = require("dgram");
+ipcMain.handle("select-game-folder", async (event, gameName: string) => {
+    const result = await dialog.showOpenDialog({
+        title: `Select the root folder for ${gameName}.exe`,
+        properties: ["openDirectory"],
+        buttonLabel: "Install Plugin",
+    });
+
+    if (result.canceled) {
+        return { success: false, message: "Cancelled" };
+    }
+
+    const selectedPath = result.filePaths[0];
+    const pluginPath = path.join(selectedPath, "plugins");
+
+    try {
+        if (!existsSync(pluginPath)) {
+            mkdirSync(pluginPath, { recursive: true });
+        }
+
+        const dllSource = app.isPackaged
+            ? path.join(process.resourcesPath, "bin", "scs-telemetry.dll")
+            : path.join(app.getAppPath(), "bin", "scs-telemetry.dll");
+
+        const dllDestination = path.join(pluginPath, "scs-telemetry.dll");
+
+        copyFileSync(dllSource, dllDestination);
+
+        return { success: true, path: selectedPath };
+    } catch (err: any) {
+        return { success: false, message: err.message };
+    }
+});
+
 ipcMain.handle("get-local-ip", async () => {
     return new Promise((resolve) => {
         const socket = dgram.createSocket("udp4");
@@ -256,10 +385,6 @@ ipcMain.handle("get-local-ip", async () => {
             resolve("127.0.0.1");
         });
     });
-});
-
-ipcMain.handle("fetch-telemetry", async (_event, ip) => {
-    return await fetchTelemetry(ip);
 });
 
 ipcMain.on("open-external", (_event, url) => {
@@ -284,20 +409,8 @@ ipcMain.on(
     },
 );
 
-ipcMain.handle("check-server-status", () => {
-    const exeName = "Ets2Telemetry.exe";
-
-    try {
-        const runningProcesses = execSync(
-            `tasklist /FI "IMAGENAME eq ${exeName}" /NH`,
-        ).toString();
-
-        return runningProcesses.includes(exeName);
-    } catch (err) {
-        return false;
-    }
-});
-
 ipcMain.on("manual-start-server", () => {
     startTelemetryServer();
 });
+
+//#endregion

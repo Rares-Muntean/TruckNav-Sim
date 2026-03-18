@@ -2,10 +2,7 @@ import {
     convertGeoToAts,
     convertGeoToEts2,
 } from "~/assets/utils/map/converters";
-import {
-    getScaleMultiplier,
-    type SimpleCityNode,
-} from "~/assets/utils/routing/algorithm";
+import { type SimpleCityNode } from "~/assets/utils/routing/algorithm";
 
 // --- Types ---
 interface GeoJsonProperties {
@@ -107,20 +104,9 @@ export function useCityData() {
         }
     }
 
-    function getScaleForLocation(
-        routeGameX: number,
-        routeGameZ: number,
-    ): number {
-        return getScaleMultiplier(
-            routeGameX,
-            routeGameZ,
-            optimizedCityNodes.value,
-        );
-    }
-
     function findDestinationCoords(
         targetCityName: string,
-        targetCompanyName: string,
+        targetCompanyId: string,
     ): [number, number] | null {
         if (!isLoaded.value || !companiesData.value) return null;
 
@@ -161,7 +147,7 @@ export function useCityData() {
             return null;
         }
 
-        const safeCompanyName = targetCompanyName.toLowerCase().trim();
+        const safeCompanyName = targetCompanyId.toLowerCase().trim();
         let vanillaId: string | undefined = undefined;
 
         if (realCompanyModData.value) {
@@ -181,14 +167,14 @@ export function useCityData() {
 
             return (
                 p.poiType === "company" &&
-                p.poiName &&
-                (p.poiName.toLowerCase().trim() === safeCompanyName ||
+                p.sprite &&
+                (p.sprite.toLowerCase().trim() === safeCompanyName ||
                     (vanillaId && p["sprite"].includes(vanillaId)))
             );
         });
 
         if (companyCandidates.length === 0) {
-            console.warn(`Company not found in data ${targetCompanyName}`);
+            console.warn(`Company not found in data ${targetCompanyId}`);
 
             return [cityCoords[0], cityCoords[1]];
         }
@@ -239,83 +225,27 @@ export function useCityData() {
         return null;
     }
 
-    function calculateGameRouteDetails(pathCoords: [number, number][]) {
-        let totalGameKm = 0;
-        let totalGameHours = 0;
-
-        for (let i = 0; i < pathCoords.length - 1; i++) {
-            let point1, point2;
-
-            point1 =
-                settings.value.selectedGame === "ets2"
-                    ? convertGeoToEts2(pathCoords[i]![0], pathCoords[i]![1])
-                    : convertGeoToAts(pathCoords[i]![0], pathCoords[i]![1]);
-            point2 =
-                settings.value.selectedGame === "ets2"
-                    ? convertGeoToEts2(
-                          pathCoords[i + 1]![0],
-                          pathCoords[i + 1]![1],
-                      )
-                    : convertGeoToAts(
-                          pathCoords[i + 1]![0],
-                          pathCoords[i + 1]![1],
-                      );
-
-            const dx = point2[0] - point1[0];
-            const dy = point2[1] - point1[1];
-            const rawSegmentLength = Math.sqrt(dx * dx + dy * dy);
-
-            const midX = (point1[0] + point2[0]) / 2;
-            const midZ = (point1[1] + point2[1]) / 2;
-
-            const multiplier = getScaleMultiplier(
-                midX,
-                midZ,
-                optimizedCityNodes.value,
-            );
-
-            const segmentKm = (rawSegmentLength * multiplier) / 1000;
-
-            totalGameKm += segmentKm;
-            let segmentSpeed = 70;
-
-            if (multiplier === 3) {
-                segmentSpeed = 35;
-            }
-
-            const segmentHours = segmentKm / segmentSpeed;
-
-            totalGameHours += segmentHours;
-        }
-
-        const h = Math.floor(totalGameHours);
-        const m = Math.round((totalGameHours - h) * 60);
-
-        return {
-            km: Math.round(totalGameKm),
-            time: `${h}h ${m}min`,
-        };
-    }
-
     const processCollection = (collection: GeoJsonCollection | null) => {
         const nodes: SimpleCityNode[] = [];
         if (!collection || !collection.features) return;
 
         for (const feature of collection.features) {
             const [lng, lat] = feature.geometry.coordinates;
-
-            let [gameX, gameZ] =
+            const [gameX, gameZ] =
                 settings.value.selectedGame === "ets2"
                     ? convertGeoToEts2(lng, lat)
                     : convertGeoToAts(lng, lat);
 
-            let radius = 900;
-            if (
-                feature.properties.scaleRank &&
-                feature.properties.scaleRank < 3
-            ) {
-                radius = 500;
-            }
+            const rank = feature.properties.scaleRank || 10;
+            const isCapital = feature.properties.capital === 1;
+
+            let radius = 350;
+
+            if (rank <= 2) radius = 1000;
+            else if (rank <= 4) radius = 750;
+            else if (rank <= 7) radius = 550;
+
+            if (isCapital) radius += 200;
 
             nodes.push({
                 x: gameX,
@@ -323,7 +253,6 @@ export function useCityData() {
                 radius: radius,
             });
         }
-
         return nodes;
     };
 
@@ -396,9 +325,7 @@ export function useCityData() {
     return {
         loadLocationData,
         getGameLocationName,
-        getScaleForLocation,
         getWorkerCityData,
-        calculateGameRouteDetails,
         findDestinationCoords,
     };
 }
