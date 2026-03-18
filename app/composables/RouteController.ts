@@ -544,7 +544,6 @@ export const useRouteController = (
                     nodeCoords,
                     adjacency,
                 );
-                console.log("Turn Instructions:", turnInstructions.value);
 
                 if (createEndMarker) addDestinationMarker(result.endId);
 
