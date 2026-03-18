@@ -11,6 +11,7 @@ import {
     deleteMapLibreData,
     setMapLibreData,
 } from "~/assets/utils/map/helpers";
+import { generateTurnInstructions, type TurnInstruction } from "~/assets/utils/routing/turnInstructions";
 
 export const useRouteController = (
     map: Ref<maplibregl.Map | null>,
@@ -21,6 +22,7 @@ export const useRouteController = (
     const { getClosestNodes } = useGraphSystem();
     const { settings, activeSettings, updateGlobal, updateProfile } =
         useSettings();
+
 
     const currentRoutePath = shallowRef<[number, number][] | null>(null);
     const routeStatsCache = shallowRef<Float32Array | null>(null);
@@ -45,6 +47,10 @@ export const useRouteController = (
 
     const currentRouteIndex = ref(0);
     const isWorkerReady = ref(false);
+
+    const turnInstructions = shallowRef<TurnInstruction[]>([]);
+    const nextTurns = shallowRef<{ instruction: TurnInstruction; distance: number }[]>([]);
+    const nextTurnIndex = ref(0);
 
     watch(
         () => activeSettings.value.themeColor,
@@ -523,7 +529,23 @@ export const useRouteController = (
                 const totalKm = cache[lastIdx]!;
                 const totalHours = cache[lastIdx + 1]!;
 
+                turnInstructions.value = generateTurnInstructions(
+                    result.rawPath,
+                    result.stats,
+                    nodeCoords,
+                    adjacency,
+                );
+                nextTurnIndex.value = 0;
+
                 drawRouteOnMap(result.displayPath);
+                turnInstructions.value = generateTurnInstructions(
+                    result.rawPath,
+                    result.stats,
+                    nodeCoords,
+                    adjacency,
+                );
+                console.log("Turn Instructions:", turnInstructions.value);
+
                 if (createEndMarker) addDestinationMarker(result.endId);
 
                 routeDistance.value = Math.round(totalKm);
@@ -628,8 +650,24 @@ export const useRouteController = (
         const totalKm = cache[lastIdx]!;
         const totalHours = cache[lastIdx + 1]!;
 
-        const currentKm = cache[currentIdx]!;
+        const currentKm = cache[currentIdx * 2];
         const currentHours = cache[currentIdx + 1]!;
+
+
+        const MIN_PASS_KM = 0.4; 
+        while (
+            nextTurnIndex.value < turnInstructions.value.length &&
+            currentKm - turnInstructions.value[nextTurnIndex.value].distance > 0.05
+        ) {
+            nextTurnIndex.value++;
+        }
+
+        nextTurns.value = turnInstructions.value
+            .slice(nextTurnIndex.value, nextTurnIndex.value + 2)
+            .map(instr => ({
+                instruction: instr,
+                distance: instr.distance - currentKm
+            }));
 
         const remKm = totalKm - currentKm;
         const remHours = totalHours - currentHours;
@@ -656,6 +694,7 @@ export const useRouteController = (
         currentRoutePath.value = null;
         savedDestination.value = null;
         isYardStart.value = false;
+        turnInstructions.value = [];
         updateProfile("lastDestination", null);
     }
 
@@ -677,5 +716,7 @@ export const useRouteController = (
         updateRouteProgress,
         getSnappedCoords,
         clearRouteState,
+        turnInstructions,
+        nextTurns,
     };
 };
