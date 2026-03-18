@@ -37,5 +37,5 @@ export interface JobState {
 }
 
 export interface TrailerState {
-    mass: number;
+    attached: boolean;
 }
