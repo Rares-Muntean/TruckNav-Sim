@@ -666,14 +666,12 @@ export const useRouteController = (
         const totalKm = cache[lastIdx]!;
         const totalHours = cache[lastIdx + 1]!;
 
-        const currentKm = cache[currentIdx * 2];
+        const currentKm = cache[currentIdx] || 0;
         const currentHours = cache[currentIdx + 1]!;
 
-
-        const MIN_PASS_KM = 0.4; 
         while (
             nextTurnIndex.value < turnInstructions.value.length &&
-            currentKm - turnInstructions.value[nextTurnIndex.value].distance > 0.05
+            turnInstructions.value[nextTurnIndex.value].distance - currentKm < 0.05
         ) {
             nextTurnIndex.value++;
         }
@@ -682,7 +680,7 @@ export const useRouteController = (
             .slice(nextTurnIndex.value, nextTurnIndex.value + 2)
             .map(instr => ({
                 instruction: instr,
-                distance: instr.distance - currentKm
+                distance: Math.max(instr.distance - currentKm, 0)
             }));
 
         const remKm = totalKm - currentKm;

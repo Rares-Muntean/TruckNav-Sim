@@ -7,8 +7,10 @@ export interface TurnInstruction {
     distance: number;
 }
 
-const minTurn = 15;
-const minSlightTurn = 45;
+const HARD_TURN = 45;
+const SLIGHT_TURN = 25;
+const STRAIGHT_RESET = 10;
+const POST_TURN_SUPPRESS_KM = 0.5;
 
 export function generateTurnInstructions(
     rawPath: [number, number][],
@@ -27,69 +29,116 @@ export function generateTurnInstructions(
 
     const instructions: TurnInstruction[] = [];
 
-    const formatCoordKey = (coord: [number, number]) => `${coord[0]},${coord[1]}`;
+    const key = (c: [number, number]) => `${c[0]},${c[1]}`;
+    const coordToNode = new Map<string, number>();
+    for (const [id, coord] of nodeCoords) coordToNode.set(key(coord), id);
 
-    const coordToNodeId = new Map<string, number>();
-    const nodeDegree = new Map<number, number>();
+    function tookStraightEdge(
+        prev: [number, number],
+        curr: [number, number],
+        next: [number, number],
+        currId: number
+    ): boolean {
+        const edges = adjacency.get(currId);
+        if (!edges || edges.length < 3) return true;
 
-    for (const [id, coord] of nodeCoords) {
-        coordToNodeId.set(formatCoordKey(coord), id);
-    }
+        const incoming = Math.atan2(curr[1] - prev[1], curr[0] - prev[0]);
 
-    for (const [from, neighbors] of adjacency) {
-        nodeDegree.set(from, (nodeDegree.get(from) ?? 0) + neighbors.length);
-        for (const edge of neighbors) {
-            nodeDegree.set(edge.to, (nodeDegree.get(edge.to) ?? 0) + 1);
+        let bestDot = -Infinity;
+        let takenDot = -Infinity;
+
+        for (const edge of edges) {
+            const to = nodeCoords.get(edge.to);
+            if (!to) continue;
+
+            const angle = Math.atan2(to[1] - curr[1], to[0] - curr[0]);
+            const dot = Math.cos(angle - incoming);
+
+            bestDot = Math.max(bestDot, dot);
+            if (to[0] === next[0] && to[1] === next[1]) takenDot = dot;
         }
+
+        return takenDot >= bestDot - 0.15;
     }
+
+    let activeAngle = 0;
+    let activeSign = 0;
+    let activeIndex = -1;
+    let activeDistance = 0;
 
     for (let i = 1; i < rawPath.length - 1; i++) {
         const prev = rawPath[i - 1]!;
         const curr = rawPath[i]!;
         const next = rawPath[i + 1]!;
 
-        const signedAngle = getSignedAngle(prev, curr, next);
-        const absAngle = Math.abs(signedAngle);
+        const angle = getSignedAngle(prev, curr, next);
+        const abs = Math.abs(angle);
+        const sign = Math.sign(angle);
+        const km = stats[i * 2]!;
 
-        const currId = coordToNodeId.get(formatCoordKey(curr));
-        const degree = currId !== undefined ? nodeDegree.get(currId) ?? 0 : 0;
-        const isIntersection = degree >= 3;
+        const currId = coordToNode.get(key(curr));
+        const degree = currId !== undefined ? (adjacency.get(currId)?.length ?? 0) : 0;
 
-        const effectiveMinTurn = isIntersection ? minTurn : 60;
+        const isTopologyTurn =
+            currId !== undefined &&
+            degree >= 3 &&
+            !tookStraightEdge(prev, curr, next, currId);
 
-        if (absAngle <= effectiveMinTurn) continue;
+        const isHardGeometryTurn = abs >= HARD_TURN;
+        const shouldStartTurn = isTopologyTurn || isHardGeometryTurn;
 
-        const lastInstruction = instructions[instructions.length - 1];
-        const currentKm = stats[i * 2]!;
+        // Emit accumulated turn if the road is straight-ish
+        if (!shouldStartTurn && abs < STRAIGHT_RESET) {
+            if (Math.abs(activeAngle) >= SLIGHT_TURN) {
+                let type: TurnInstruction['type'];
+                let word: string;
 
-        if (lastInstruction) {
-            const delta = currentKm - lastInstruction.distance;
-            if (delta < 0.2) continue;
+                if (Math.abs(activeAngle) >= HARD_TURN) {
+                    type = activeAngle < 0 ? 'left' : 'right';
+                    word = type;
+                } else {
+                    type = activeAngle < 0 ? 'slight-left' : 'slight-right';
+                    word = type === 'slight-left' ? 'slight left' : 'slight right';
+                }
+
+                const last = instructions[instructions.length - 1];
+                const suppress =
+                    last &&
+                    (last.type === 'left' || last.type === 'right') &&
+                    type.startsWith('slight') &&
+                    activeDistance - last.distance < POST_TURN_SUPPRESS_KM;
+
+                if (!suppress && (!last || activeDistance - last.distance >= 0.2)) {
+                    instructions.push({
+                        pathIndex: activeIndex,
+                        type,
+                        description: `Turn ${word}`,
+                        distance: activeDistance,
+                    });
+                }
+            }
+
+            activeAngle = 0;
+            activeSign = 0;
+            activeIndex = -1;
+            continue;
         }
 
-        let turnType: 'slight-left' | 'left' | 'slight-right' | 'right';
-        let turnWord: string;
-
-        if (signedAngle < -minSlightTurn) {
-            turnType = 'left';
-            turnWord = 'left';
-        } else if (signedAngle < -minTurn) {
-            turnType = 'slight-left';
-            turnWord = 'slight left';
-        } else if (signedAngle > minSlightTurn) {
-            turnType = 'right';
-            turnWord = 'right';
+        // Start a new turn
+        if (activeSign === 0) {
+            activeAngle = angle;
+            activeSign = sign;
+            activeIndex = i;
+            activeDistance = km;
+        } else if (sign === activeSign) {
+            activeAngle += angle;
         } else {
-            turnType = 'slight-right';
-            turnWord = 'slight right';
+            // sign flipped, treat as new maneuver
+            activeAngle = angle;
+            activeSign = sign;
+            activeIndex = i;
+            activeDistance = km;
         }
-
-        instructions.push({
-            pathIndex: i,
-            type: turnType,
-            description: `Turn ${turnWord}`,
-            distance: currentKm,
-        });
     }
 
     instructions.push({
