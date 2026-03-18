@@ -538,13 +538,6 @@ export const useRouteController = (
                 nextTurnIndex.value = 0;
 
                 drawRouteOnMap(result.displayPath);
-                turnInstructions.value = generateTurnInstructions(
-                    result.rawPath,
-                    result.stats,
-                    nodeCoords,
-                    adjacency,
-                );
-
                 if (createEndMarker) addDestinationMarker(result.endId);
 
                 routeDistance.value = Math.round(totalKm);
