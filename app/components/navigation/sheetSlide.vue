@@ -70,7 +70,7 @@ function onToggleSheet() {
                     <Icon name="lets-icons:road-finish-fill" size="22" />
                     <div class="right">
                         <span
-                            >{{ routeDistanceConverted }} {{ distanceUnit }},
+                            >{{ routeDistanceConverted.toFixed(2) }} {{ distanceUnit }},
                         </span>
                         <span>{{ routeEta }}</span>
                     </div>
@@ -84,7 +84,7 @@ function onToggleSheet() {
                     <div class="mini-stats">
                         <span class="eta">{{ routeEta }}</span>
                         <span class="dist"
-                            >({{ routeDistanceConverted }}
+                            >({{ routeDistanceConverted.toFixed(2) }}
                             {{ distanceUnit }})</span
                         >
                     </div>
