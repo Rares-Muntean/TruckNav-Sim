@@ -75,7 +75,7 @@ export function getNavigationState(data: TelemetryData) {
 
 export function getJobState(data: TelemetryData) {
     const hasActiveJob = data.job.income > 0;
-    const hasCargo = data.trailer.mass > 0;
+    const hasCargo = data.trailer.attached;
 
     const destinationCity = hasCargo ? data.job.destinationCity : data.job.sourceCity;
     const destinationCompany = hasCargo ? data.job.destinationCompany : data.job.sourceCompany;
