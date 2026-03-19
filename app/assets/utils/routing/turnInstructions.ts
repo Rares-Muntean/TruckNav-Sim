@@ -1,8 +1,9 @@
 import { getSignedAngle } from "~/assets/utils/map/maths";
+import type { Edge } from "./graphTypes";
 
 export interface TurnInstruction {
     pathIndex: number;
-    type: 'slight-left' | 'left' | 'slight-right' | 'right' | 'straight' | 'destination';
+    type: "slight-left" | "left" | "slight-right" | "right" | "destination";
     description: string;
     distance: number;
 }
@@ -15,23 +16,20 @@ const POST_TURN_SUPPRESS_KM = 0.5;
 export function generateTurnInstructions(
     rawPath: [number, number][],
     stats: Float32Array,
-    nodeCoords: Map<number, [number, number]>,
-    adjacency: Map<number, { to: number; weight: number; r: number }[]>,
+    pathNodeIds: number[],
+    adjacency: Map<number, Edge[]>,
+    nodeCoords: Map<number, [number, number]>
 ): TurnInstruction[] {
     if (rawPath.length < 3) {
         return [{
             pathIndex: rawPath.length - 1,
-            type: 'destination',
-            description: 'Arrive at destination',
+            type: "destination",
+            description: "Arrive at destination",
             distance: 0,
         }];
     }
 
     const instructions: TurnInstruction[] = [];
-
-    const key = (c: [number, number]) => `${c[0]},${c[1]}`;
-    const coordToNode = new Map<string, number>();
-    for (const [id, coord] of nodeCoords) coordToNode.set(key(coord), id);
 
     function tookStraightEdge(
         prev: [number, number],
@@ -42,7 +40,10 @@ export function generateTurnInstructions(
         const edges = adjacency.get(currId);
         if (!edges || edges.length < 3) return true;
 
-        const incoming = Math.atan2(curr[1] - prev[1], curr[0] - prev[0]);
+        const incoming = Math.atan2(
+            curr[1] - prev[1],
+            curr[0] - prev[0],
+        );
 
         let bestDot = -Infinity;
         let takenDot = -Infinity;
@@ -51,11 +52,17 @@ export function generateTurnInstructions(
             const to = nodeCoords.get(edge.to);
             if (!to) continue;
 
-            const angle = Math.atan2(to[1] - curr[1], to[0] - curr[0]);
-            const dot = Math.cos(angle - incoming);
+            const angle = Math.atan2(
+                to[1] - curr[1],
+                to[0] - curr[0],
+            );
 
+            const dot = Math.cos(angle - incoming);
             bestDot = Math.max(bestDot, dot);
-            if (to[0] === next[0] && to[1] === next[1]) takenDot = dot;
+
+            if (to[0] === next[0] && to[1] === next[1]) {
+                takenDot = dot;
+            }
         }
 
         return takenDot >= bestDot - 0.15;
@@ -76,8 +83,10 @@ export function generateTurnInstructions(
         const sign = Math.sign(angle);
         const km = stats[i * 2]!;
 
-        const currId = coordToNode.get(key(curr));
-        const degree = currId !== undefined ? (adjacency.get(currId)?.length ?? 0) : 0;
+        const currId = pathNodeIds[i];
+        const degree = currId !== undefined
+            ? adjacency.get(currId)?.length ?? 0
+            : 0;
 
         const isTopologyTurn =
             currId !== undefined &&
@@ -87,25 +96,22 @@ export function generateTurnInstructions(
         const isHardGeometryTurn = abs >= HARD_TURN;
         const shouldStartTurn = isTopologyTurn || isHardGeometryTurn;
 
-        // Emit accumulated turn if the road is straight-ish
         if (!shouldStartTurn && abs < STRAIGHT_RESET) {
             if (Math.abs(activeAngle) >= SLIGHT_TURN) {
-                let type: TurnInstruction['type'];
-                let word: string;
+                const hard = Math.abs(activeAngle) >= HARD_TURN;
+                const left = activeAngle < 0;
 
-                if (Math.abs(activeAngle) >= HARD_TURN) {
-                    type = activeAngle < 0 ? 'left' : 'right';
-                    word = type;
-                } else {
-                    type = activeAngle < 0 ? 'slight-left' : 'slight-right';
-                    word = type === 'slight-left' ? 'slight left' : 'slight right';
-                }
+                const type = hard
+                    ? (left ? "left" : "right")
+                    : (left ? "slight-left" : "slight-right");
+
+                const word = type.replace("-", " ");
 
                 const last = instructions[instructions.length - 1];
                 const suppress =
                     last &&
-                    (last.type === 'left' || last.type === 'right') &&
-                    type.startsWith('slight') &&
+                    (last.type === "left" || last.type === "right") &&
+                    type.startsWith("slight") &&
                     activeDistance - last.distance < POST_TURN_SUPPRESS_KM;
 
                 if (!suppress && (!last || activeDistance - last.distance >= 0.2)) {
@@ -124,7 +130,6 @@ export function generateTurnInstructions(
             continue;
         }
 
-        // Start a new turn
         if (activeSign === 0) {
             activeAngle = angle;
             activeSign = sign;
@@ -133,7 +138,6 @@ export function generateTurnInstructions(
         } else if (sign === activeSign) {
             activeAngle += angle;
         } else {
-            // sign flipped, treat as new maneuver
             activeAngle = angle;
             activeSign = sign;
             activeIndex = i;
@@ -143,8 +147,8 @@ export function generateTurnInstructions(
 
     instructions.push({
         pathIndex: rawPath.length - 1,
-        type: 'destination',
-        description: 'Arrived at destination',
+        type: "destination",
+        description: "Arrived at destination",
         distance: stats[(rawPath.length - 1) * 2]!,
     });
 
