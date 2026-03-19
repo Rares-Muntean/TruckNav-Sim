@@ -25,7 +25,7 @@ export function generateTurnInstructions(
     stats: Float32Array,
     pathNodeIds: number[],
     nodeCoords: Map<number, [number, number]>,
-    adjacency: Map<number, Edge[]>,
+    adjacency: Map<number, any[]>,
 ): TurnInstruction[] {
     if (rawPath.length < 2) return [{
         pathIndex: 0,
@@ -35,14 +35,17 @@ export function generateTurnInstructions(
     }];
 
     const maneuvers: Maneuver[] = [];
+    let skipUntil = 0;
 
     // Identify all turns and forks
     for (let i = 1; i < rawPath.length - 1; i++) {
+        if (i <= skipUntil) continue;
+
         const prev = rawPath[i - 1];
         const curr = rawPath[i];
         const next = rawPath[i + 1];
 
-        const angle = getSignedAngle(prev, curr, next);
+        const {angle, endIndex} = detectAngle(rawPath, i);
         const abs = Math.abs(angle);
 
         const currId = pathNodeIds[i];
@@ -52,12 +55,14 @@ export function generateTurnInstructions(
             const fork = detectFork(prev, curr, next, currId, adjacency, nodeCoords);
             if (fork) {
                 maneuvers.push({ kind: "fork", index: i, side: fork });
+                skipUntil = i + TOLERANCE_INDICES;
                 continue;
             }
         }
 
         if (abs >= SLIGHT_TURN) {
             maneuvers.push({ kind: "turn", index: i, angle });
+            skipUntil = endIndex;
         }
     }
 
@@ -156,4 +161,21 @@ export function detectFork(
     if (bestDot - chosenDot < FORK_MIN_DOT_DIFF) return null;
 
     return chosenAngle < 0 ? "keep-left" : "keep-right";
+}
+
+function detectAngle(rawPath: [number, number][], i: number): { angle: number; endIndex: number } {
+    let totalAngle = 0;
+    let j = i;
+
+    while (j < rawPath.length - 1) {
+        const a = getSignedAngle(rawPath[j - 1]!, rawPath[j]!, rawPath[j + 1]!);
+
+        if (Math.sign(a) !== Math.sign(totalAngle || a)) break;
+        if (Math.abs(a) < 5) break;
+
+        totalAngle += a;
+        j++;
+    }
+
+    return { angle: totalAngle, endIndex: j };
 }

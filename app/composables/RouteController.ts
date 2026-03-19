@@ -670,10 +670,6 @@ export const useRouteController = (
             nextTurnIndex.value < turnInstructions.value.length &&
             turnInstructions.value[nextTurnIndex.value]!.pathIndex * 2 < currentIdx
             ) {
-            console.log(
-                `Passed maneuver (idx):`,
-                turnInstructions.value[nextTurnIndex.value]!.pathIndex
-            )
             nextTurnIndex.value++
         }
 
@@ -683,7 +679,7 @@ export const useRouteController = (
                 instruction: instr,
                 distance: Math.max(instr.distance - currentKm, 0)
             }));
-        console.log("currentIdx:", currentIdx,"current Turn:", nextTurns.value[0]!.instruction.pathIndex,"next Turn:", nextTurns.value[1]!.instruction.pathIndex);
+            
         const remKm = totalKm - currentKm;
         const remHours = totalHours - currentHours;
 
