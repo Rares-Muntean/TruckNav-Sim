@@ -25,7 +25,8 @@ const nextUpcomingTurn = computed(() => props.nextTurns[1] ?? null)
           {{ currentTurn.instruction.description }}
         </div>
         <div class="distance">
-          in {{ kmToUserUnits(currentTurn.distance).toFixed(1) }} {{ distanceUnit }}
+          {{ currentTurn.instruction.description.includes("Continue")? "for": "in" }} 
+          {{ kmToUserUnits(currentTurn.distance).toFixed(1) }} {{ distanceUnit }}
         </div>
       </div>
     </div>
@@ -41,7 +42,8 @@ const nextUpcomingTurn = computed(() => props.nextTurns[1] ?? null)
       <div class="instruction-text">
         <div class="upcoming-text">
           {{ nextUpcomingTurn.instruction.description.replace('Turn ', '').toLowerCase() }}
-          in {{ kmToUserUnits(nextUpcomingTurn.distance).toFixed(1) }} {{ distanceUnit }}
+          {{ nextUpcomingTurn.instruction.description.includes("Continue")? "for": "in" }}  
+          {{ kmToUserUnits(nextUpcomingTurn.distance).toFixed(1) }} {{ distanceUnit }}
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ import {
     deleteMapLibreData,
     setMapLibreData,
 } from "~/assets/utils/map/helpers";
+import { getPathNodeIds } from "~/assets/utils/routing/helpers";
 import { generateTurnInstructions, type TurnInstruction } from "~/assets/utils/routing/turnInstructions";
 
 export const useRouteController = (
@@ -541,12 +542,16 @@ export const useRouteController = (
                 const totalKm = cache[lastIdx]!;
                 const totalHours = cache[lastIdx + 1]!;
 
+                const pathNodeIds = getPathNodeIds(currentRoutePath.value!, nodeCoords);
                 turnInstructions.value = generateTurnInstructions(
-                    result.rawPath,
-                    result.stats,
-                    nodeCoords,
-                    adjacency,
+                    result.rawPath, 
+                    result.stats, 
+                    pathNodeIds, 
+                    adjacency, 
+                    nodeCoords
                 );
+
+                console.log("Turn Instructions:", turnInstructions.value);
                 nextTurnIndex.value = 0;
 
                 drawRouteOnMap(result.displayPath);
@@ -663,9 +668,13 @@ export const useRouteController = (
 
         while (
             nextTurnIndex.value < turnInstructions.value.length &&
-            turnInstructions.value[nextTurnIndex.value].distance - currentKm < 0.05
-        ) {
-            nextTurnIndex.value++;
+            turnInstructions.value[nextTurnIndex.value]!.pathIndex * 2 < currentIdx
+            ) {
+            console.log(
+                `Passed maneuver (idx):`,
+                turnInstructions.value[nextTurnIndex.value]!.pathIndex
+            )
+            nextTurnIndex.value++
         }
 
         nextTurns.value = turnInstructions.value
@@ -674,7 +683,7 @@ export const useRouteController = (
                 instruction: instr,
                 distance: Math.max(instr.distance - currentKm, 0)
             }));
-
+        console.log("currentIdx:", currentIdx,"current Turn:", nextTurns.value[0]!.instruction.pathIndex,"next Turn:", nextTurns.value[1]!.instruction.pathIndex);
         const remKm = totalKm - currentKm;
         const remHours = totalHours - currentHours;
 
