@@ -67,9 +67,17 @@ self.onmessage = async (e: MessageEvent) => {
 
         if (result && result.path) {
             let fullPath = [...result.path];
+            let turnInstructions= [...result.turnInstructions];
 
             if (projectedStartCoords) {
                 fullPath = [projectedStartCoords, ...fullPath];
+
+                turnInstructions = turnInstructions.map((t) => ({
+                    ...t,
+                    pathIndex: t.type === "destination"
+                        ? fullPath.length - 1
+                        : t.pathIndex + 1,
+                }));
             }
 
             let displayPath = mergeClosePoints(fullPath, 600);
@@ -84,6 +92,11 @@ self.onmessage = async (e: MessageEvent) => {
                 avgSpeed,
             );
 
+            turnInstructions = turnInstructions.map((t) => ({
+                ...t,
+                distance: statsCache[t.pathIndex * 2] ?? 0,
+            }));
+
             self.postMessage(
                 {
                     type: "RESULT",
@@ -92,6 +105,7 @@ self.onmessage = async (e: MessageEvent) => {
                         rawPath: fullPath,
                         displayPath: displayPath,
                         stats: statsCache,
+                        turnInstructions: turnInstructions,
                     },
                 },
                 [statsCache.buffer],

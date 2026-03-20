@@ -5,7 +5,9 @@ import {
     getSignedAngle,
 } from "~/assets/utils/map/maths";
 import { convertGeoToAts, convertGeoToEts2 } from "../map/converters";
+import { evaluateJunction } from "./turnInstructions";
 import type { GameType } from "~/types";
+import type { TurnInstruction } from "./turnInstructions";
 
 const MAX_NODES = 900000;
 
@@ -95,7 +97,7 @@ export const calculateRoute = (
     startType: "road" | "yard" = "road",
     ownedDlcs: number[],
     targetLocation?: [number, number],
-): { path: [number, number][]; endId: number } | null => {
+): { path: [number, number][]; endId: number, pathNodeIds: number[], turnInstructions: TurnInstruction[] } | null => {
     ensureCoordCache(nodeCoords);
     const flatCoords = cache_flatCoords!;
 
@@ -305,15 +307,44 @@ export const calculateRoute = (
     if (foundEndId === null) return null;
 
     const path: [number, number][] = [];
+    const pathNodeIds: number[] = [];
+    const turnInstructions: Omit<TurnInstruction, "distance" & { distance: number }>[] = [];
     let curr: number = foundEndId;
+    let nextId: number = -1;
 
     while (curr !== -1) {
+        const prevId = cache_previous[curr]!;
+ 
+        if (nextId !== -1 && prevId !== -1) {
+            const instruction = evaluateJunction(
+                prevId,
+                curr,
+                nextId,
+                path.length,
+                adjacency,
+                flatCoords,
+            );
+            
+            if (instruction) {
+                turnInstructions.push({ ...instruction, distance: 0 });
+            }
+        }
+
         path.unshift([flatCoords[curr * 2]!, flatCoords[curr * 2 + 1]!]);
+        pathNodeIds.unshift(curr);
+        nextId = curr;
         curr = cache_previous[curr]!;
         if (path.length > 20000) break;
     }
 
-    return { path, endId: foundEndId };
+    turnInstructions.push({
+        pathIndex: path.length - 1,
+        type: "destination",
+        description: "Arrived at destination",
+        distance: 0,
+    });
+
+    return { path, endId: foundEndId, pathNodeIds, turnInstructions };
 };
 
 export const mergeClosePoints = (

@@ -11,8 +11,7 @@ import {
     deleteMapLibreData,
     setMapLibreData,
 } from "~/assets/utils/map/helpers";
-import { getPathNodeIds } from "~/assets/utils/routing/helpers";
-import { generateTurnInstructions, type TurnInstruction } from "~/assets/utils/routing/turnInstructions";
+import type { TurnInstruction } from "~/assets/utils/routing/turnInstructions";
 
 export const useRouteController = (
     map: Ref<maplibregl.Map | null>,
@@ -541,15 +540,8 @@ export const useRouteController = (
                 const lastIdx = (result.rawPath.length - 1) * 2;
                 const totalKm = cache[lastIdx]!;
                 const totalHours = cache[lastIdx + 1]!;
-
-                const pathNodeIds = getPathNodeIds(currentRoutePath.value!, nodeCoords);
-                turnInstructions.value = generateTurnInstructions(
-                    result.rawPath, 
-                    result.stats, 
-                    pathNodeIds, 
-                    adjacency, 
-                    nodeCoords
-                );
+                
+                turnInstructions.value = result.turnInstructions;
 
                 console.log("Turn Instructions:", turnInstructions.value);
                 nextTurnIndex.value = 0;
@@ -679,7 +671,7 @@ export const useRouteController = (
                 instruction: instr,
                 distance: Math.max(instr.distance - currentKm, 0)
             }));
-            
+
         const remKm = totalKm - currentKm;
         const remHours = totalHours - currentHours;
 
