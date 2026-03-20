@@ -11,6 +11,7 @@ import {
     deleteMapLibreData,
     setMapLibreData,
 } from "~/assets/utils/map/helpers";
+import type { TurnInstruction } from "~/assets/utils/routing/turnInstructions";
 
 export const useRouteController = (
     map: Ref<maplibregl.Map | null>,
@@ -21,6 +22,7 @@ export const useRouteController = (
     const { getClosestNodes } = useGraphSystem();
     const { settings, activeSettings, updateGlobal, updateProfile } =
         useSettings();
+
 
     const currentRoutePath = shallowRef<[number, number][] | null>(null);
     const routeStatsCache = shallowRef<Float32Array | null>(null);
@@ -45,6 +47,10 @@ export const useRouteController = (
 
     const currentRouteIndex = ref(0);
     const isWorkerReady = ref(false);
+
+    const turnInstructions = shallowRef<TurnInstruction[]>([]);
+    const nextTurns = shallowRef<{ instruction: TurnInstruction; distance: number }[]>([]);
+    const nextTurnIndex = ref(0);
 
     watch(
         () => activeSettings.value.themeColor,
@@ -534,6 +540,9 @@ export const useRouteController = (
                 const lastIdx = (result.rawPath.length - 1) * 2;
                 const totalKm = cache[lastIdx]!;
                 const totalHours = cache[lastIdx + 1]!;
+                
+                turnInstructions.value = result.turnInstructions;
+                nextTurnIndex.value = 0;
 
                 drawRouteOnMap(result.displayPath);
                 if (createEndMarker) addDestinationMarker(result.endId);
@@ -644,8 +653,22 @@ export const useRouteController = (
         const totalKm = cache[lastIdx]!;
         const totalHours = cache[lastIdx + 1]!;
 
-        const currentKm = cache[currentIdx]!;
+        const currentKm = cache[currentIdx] || 0;
         const currentHours = cache[currentIdx + 1]!;
+
+        while (
+            nextTurnIndex.value < turnInstructions.value.length &&
+            turnInstructions.value[nextTurnIndex.value]!.pathIndex * 2 < currentIdx
+            ) {
+            nextTurnIndex.value++
+        }
+
+        nextTurns.value = turnInstructions.value
+            .slice(nextTurnIndex.value, nextTurnIndex.value + 2)
+            .map(instr => ({
+                instruction: instr,
+                distance: Math.max(instr.distance - currentKm, 0)
+            }));
 
         const remKm = totalKm - currentKm;
         const remHours = totalHours - currentHours;
@@ -672,6 +695,7 @@ export const useRouteController = (
         currentRoutePath.value = null;
         savedDestination.value = null;
         isYardStart.value = false;
+        turnInstructions.value = [];
         updateProfile("lastDestination", null);
     }
 
@@ -693,5 +717,7 @@ export const useRouteController = (
         updateRouteProgress,
         getSnappedCoords,
         clearRouteState,
+        turnInstructions,
+        nextTurns,
     };
 };

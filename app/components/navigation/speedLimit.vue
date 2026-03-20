@@ -18,11 +18,11 @@ const speedLimitConverted = computed(() => kmToUserUnits(props.speedLimit));
                 v-if="truckSpeed > speedLimit + 5"
                 class="speed-limit-circle-over-limit"
             >
-                <div class="over-limit">{{ truckSpeedConverted }}</div>
+                <div class="over-limit">{{ truckSpeedConverted.toFixed(0) }}</div>
             </div>
         </Transition>
         <div class="speed-limit">
-            {{ speedLimitConverted }}
+            {{ speedLimitConverted.toFixed(0) }}
         </div>
     </div>
 </template>

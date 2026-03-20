@@ -80,3 +80,11 @@
     align-items: flex-end;
     gap: 0.8rem;
 }
+
+.turn-navigation-overlay {
+    position: absolute;
+    top: calc(20px + $game-info-bar-height);
+    left: 55px;
+    display: flex;
+    flex-direction: column;
+}

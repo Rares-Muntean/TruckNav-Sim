@@ -21,7 +21,7 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
         <div class="truck-info">
             <div class="truck-speed-div">
                 <div class="road-perspective"></div>
-                <p class="truck-speed">{{ truckSpeedConverted }}</p>
+                <p class="truck-speed">{{ truckSpeedConverted.toFixed(0) }}</p>
                 <p class="km-h">{{ speedUnit }}</p>
             </div>
         </div>
@@ -34,8 +34,8 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
                         :class="{ 'pulse-red': fuel < 100 }"
                     />
                     <p>
-                        {{ fuelConverted
-                        }}<span class="liters">{{ fuelUnit }}</span>
+                        {{ fuelConverted.toFixed(0) }}
+                        <span class="liters">{{ fuelUnit }}</span>
                     </p>
                 </div>
 
