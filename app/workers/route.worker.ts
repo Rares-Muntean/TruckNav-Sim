@@ -8,6 +8,7 @@ import {
     smoothPath,
     type SimpleCityNode,
 } from "~/assets/utils/routing/algorithm";
+import { cleanInstructions } from "~/assets/utils/routing/turnInstructions";
 
 let cityNodes: SimpleCityNode[] | null = null;
 
@@ -72,12 +73,8 @@ self.onmessage = async (e: MessageEvent) => {
             if (projectedStartCoords) {
                 fullPath = [projectedStartCoords, ...fullPath];
 
-                turnInstructions = turnInstructions.map((t) => ({
-                    ...t,
-                    pathIndex: t.type === "destination"
-                        ? fullPath.length - 1
-                        : t.pathIndex + 1,
-                }));
+                const dest = turnInstructions[turnInstructions.length - 1]!;
+                dest.pathIndex = fullPath.length - 1;
             }
 
             let displayPath = mergeClosePoints(fullPath, 600);
@@ -96,6 +93,8 @@ self.onmessage = async (e: MessageEvent) => {
                 ...t,
                 distance: statsCache[t.pathIndex * 2] ?? 0,
             }));
+            
+            turnInstructions = cleanInstructions(turnInstructions);
 
             self.postMessage(
                 {

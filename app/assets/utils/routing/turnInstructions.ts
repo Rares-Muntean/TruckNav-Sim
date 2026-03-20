@@ -36,10 +36,10 @@ export function evaluateJunction(
     adjacency: Map<number, { to: number; weight: number; r: number; dlc: number }[]>,
     flatCoords: Float64Array,
 ): Omit<TurnInstruction, "distance"> | null {
-
     const edges = adjacency.get(currId);
-    if (!edges || edges.length < 3) return null;
-
+    if (!edges || edges.length < 3) {
+        return null;
+    }
     const inBearing  = bearingBetween(flatCoords, prevId, currId);
     const outBearing = bearingBetween(flatCoords, currId, nextId);
     const chosenDeg  = signedAngleDiff(inBearing, outBearing) * -1;
@@ -69,8 +69,10 @@ export function evaluateJunction(
         return null; 
     }
 
-    if (chosenAbs < SLIGHT_DEG) return null;
-    
+    if (chosenAbs < SLIGHT_DEG) {
+        return { pathIndex, type: "continue", description: "Continue straight" };
+    }
+
     if (bestAltAbs < chosenAbs - FORK_ADVANTAGE_DEG || chosenAbs >= HARD_DEG) {
         const abs  = Math.abs(chosenDeg);
         const type: TurnInstruction["type"] =
@@ -81,4 +83,23 @@ export function evaluateJunction(
     }
 
     return null;
+}
+
+export function cleanInstructions(instructions: TurnInstruction[]): TurnInstruction[] {
+    let result = instructions.filter((t, i) => {
+        if (t.type === "continue") {
+            const next = instructions[i + 1];
+            if (next && next.type === "continue") return false;
+        }
+        return true;
+    });
+
+    const result2: TurnInstruction[] = [];
+    for (const t of result) {
+        const prev = result2[result2.length - 1];
+        if (prev && t.pathIndex - prev.pathIndex <= 1 && t.type !== "destination") continue;
+        result2.push(t);
+    }
+
+    return result2;
 }

@@ -542,8 +542,6 @@ export const useRouteController = (
                 const totalHours = cache[lastIdx + 1]!;
                 
                 turnInstructions.value = result.turnInstructions;
-
-                console.log("Turn Instructions:", turnInstructions.value);
                 nextTurnIndex.value = 0;
 
                 drawRouteOnMap(result.displayPath);
