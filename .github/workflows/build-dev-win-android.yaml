@@ -72,10 +72,7 @@ jobs:
                   npx nuxi generate
 
             - name: Sync Capacitor Android
-              run: |
-                  npm install @capacitor/android
-                  npx cap add android || true
-                  npx cap sync android
+              run: npx cap sync android
 
             - name: Build Android APK
               run: |
