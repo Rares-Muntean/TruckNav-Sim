@@ -62,6 +62,7 @@ export const useRouteController = (
             }
         },
     );
+
     watch(
         () => activeSettings.value.routeColor,
         (newColor) => {
@@ -71,6 +72,37 @@ export const useRouteController = (
                     "line-color",
                     newColor,
                 );
+            }
+        },
+    );
+
+    watch(
+        () => settings.value.hasTurnNavigation,
+        (hasGuidedNavigation) => {
+            if (!map.value) return;
+
+            if (hasGuidedNavigation) {
+                if (isRouteActive.value && currentRoutePath.value) {
+                    drawTurnArrows(
+                        fullRouteDirections.value,
+                        currentRoutePath.value,
+                    );
+                }
+            } else {
+                const lineSource = map.value.getSource(
+                    "turn-arrows-line-source",
+                ) as maplibregl.GeoJSONSource;
+                const headSource = map.value.getSource(
+                    "turn-arrows-head-source",
+                ) as maplibregl.GeoJSONSource;
+
+                const emptyData: any = {
+                    type: "FeatureCollection",
+                    features: [],
+                };
+
+                if (lineSource) lineSource.setData(emptyData);
+                if (headSource) headSource.setData(emptyData);
             }
         },
     );

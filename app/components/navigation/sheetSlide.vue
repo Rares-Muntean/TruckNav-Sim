@@ -110,11 +110,7 @@ const onToggleSheetHidden = () => {
 
                     <button
                         class="start-btn nav-btn"
-                        @click.prevent="
-                            isNavigating
-                                ? onToggleSheetHidden()
-                                : onStartNavigation()
-                        "
+                        @click.prevent="onStartNavigation"
                     >
                         <Icon name="tabler:navigation-check" size="24" />
                         <span>{{

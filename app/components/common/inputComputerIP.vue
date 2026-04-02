@@ -6,7 +6,7 @@ const { selectedGame, commitSelection } = useGameSelection();
 const { settings, updateGlobal } = useSettings();
 
 const connectionError = ref("Disconnected");
-const ipInput = ref("");
+const ipInput = ref(settings.value.savedIP || "");
 const isConnecting = ref(false);
 const isConnected = ref(false);
 
@@ -51,14 +51,14 @@ const handleConnect = async () => {
         isConnected.value = true;
         commitSelection();
 
+        emit("connected");
+
         setTimeout(() => {
             isConnecting.value = false;
         }, 500);
     } catch (error) {
         isConnected.value = false;
-        console.error("Connection failed:", error);
-        connectionError.value =
-            "Could not connect to TruckNav. Is the server running and on the same Wi-Fi?";
+        connectionError.value = "Could not connect...";
         isConnecting.value = false;
     }
 };
