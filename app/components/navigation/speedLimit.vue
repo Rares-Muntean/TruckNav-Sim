@@ -7,7 +7,6 @@ const props = defineProps<{
 const { kmToUserUnits } = useUnitConversion();
 
 const truckSpeedConverted = computed(() => kmToUserUnits(props.truckSpeed));
-
 const speedLimitConverted = computed(() => kmToUserUnits(props.speedLimit));
 </script>
 
@@ -21,6 +20,7 @@ const speedLimitConverted = computed(() => kmToUserUnits(props.speedLimit));
                 <div class="over-limit">{{ truckSpeedConverted }}</div>
             </div>
         </Transition>
+
         <div class="speed-limit">
             {{ speedLimitConverted }}
         </div>

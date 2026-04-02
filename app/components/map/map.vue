@@ -16,7 +16,6 @@ const isSettingsPanelOpened = ref(false);
 const isClickingEnabled = ref(true);
 
 // UI STATE
-const isSheetExpanded = ref(false);
 const isSheetHidden = ref(false);
 
 // JOB STATE
@@ -73,12 +72,15 @@ const { loading, progress, adjacency, nodeCoords, initializeGraphData } =
 // Maplibre Camera
 const {
     isCameraLocked,
+    isAutoFollowEnabled,
+    isNavigating,
     initCameraListeners,
     followTruck,
     startNavigationMode,
-    lockCamera,
+    stopNavigationMode,
     initMarker,
     updateMarkerImage,
+    toggleAutoFollow,
 } = useMapCamera(map);
 
 //
@@ -100,7 +102,7 @@ const {
     routeFound,
     fullRouteDirections,
     nextTurnDistance,
-} = useRouteController(map, adjacency, nodeCoords);
+} = useRouteController(map, adjacency, nodeCoords, stopNavigationMode);
 
 //
 //
@@ -172,6 +174,7 @@ watch(
             }
         } else if (!hasJob && currentJobKey.value !== "") {
             clearRouteState();
+            stopNavigationMode();
             currentJobKey.value = "";
         }
     },
@@ -357,13 +360,11 @@ function onStartNavigation() {
 
     startNavigationMode(truckCoords.value, truckHeading.value);
 
-    isSheetExpanded.value = false;
     isSheetHidden.value = true;
 }
 
 function onSheetClosed() {
     isSheetHidden.value = false;
-    isSheetExpanded.value = false;
 }
 
 function toggleEnableClicking() {
@@ -402,6 +403,11 @@ const onToggleFullscreen = async () => {
 
 const toggleSettingsPanel = () => {
     isSettingsPanelOpened.value = !isSettingsPanelOpened.value;
+};
+
+const onCancelRoute = () => {
+    clearRouteState();
+    stopNavigationMode();
 };
 </script>
 
@@ -442,7 +448,7 @@ const toggleSettingsPanel = () => {
                     </div>
 
                     <ManeuverCard
-                        v-if="isRouteActive && fullRouteDirections.length > 0"
+                        v-show="isNavigating"
                         :upcoming-turns="fullRouteDirections"
                         :distance-to-next-turn="nextTurnDistance"
                         :next-instruction="
@@ -481,8 +487,13 @@ const toggleSettingsPanel = () => {
                             :onClick="onResetNorth"
                         />
                         <HudButton
-                            icon-name="fe:target"
-                            :onClick="lockCamera"
+                            :class="isAutoFollowEnabled ? 'green-icon' : ''"
+                            :icon-name="
+                                isAutoFollowEnabled
+                                    ? 'material-symbols:my-location'
+                                    : 'material-symbols:location-searching'
+                            "
+                            :onClick="toggleAutoFollow"
                         />
                         <HudButton
                             :class="
@@ -498,14 +509,6 @@ const toggleSettingsPanel = () => {
                     </div>
 
                     <SpeedLimit
-                        :class="{
-                            'pos-default': !isRouteActive || isSheetHidden,
-                            'pos-expanded': isSheetExpanded && isRouteActive,
-                            'pos-collapsed':
-                                !isSheetExpanded &&
-                                isRouteActive &&
-                                !isSheetHidden,
-                        }"
                         :truck-speed="truckSpeed"
                         :speed-limit="speedLimit"
                     />
@@ -527,11 +530,10 @@ const toggleSettingsPanel = () => {
                     <Transition name="sheet-slide" @after-leave="onSheetClosed">
                         <SheetSlide
                             v-if="isRouteActive"
-                            :clear-route-state="clearRouteState"
-                            :has-active-job="hasActiveJob"
+                            :on-stop-navigation="onCancelRoute"
+                            :is-navigating="isNavigating"
                             :on-start-navigation="onStartNavigation"
                             :destination-name="destinationName"
-                            v-model:is-sheet-expanded="isSheetExpanded"
                             v-model:is-sheet-hidden="isSheetHidden"
                             :route-distance="routeDistance"
                             :route-eta="routeEta"

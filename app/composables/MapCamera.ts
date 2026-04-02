@@ -7,6 +7,7 @@ const PADDING_FREE = { top: 0, bottom: 0, left: 0, right: 0 };
 
 export const useMapCamera = (map: Ref<Map | null>) => {
     const isCameraLocked = ref(false);
+    const isAutoFollowEnabled = ref(true);
     const isNavigating = ref(false);
 
     let targetCoords: [number, number] | null = null;
@@ -22,6 +23,8 @@ export const useMapCamera = (map: Ref<Map | null>) => {
     let animationFrameId: number | null = null;
     let isEasing = false;
     let easeTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    let autoLockTimer: ReturnType<typeof setTimeout> | null = null;
 
     let markerEl: HTMLDivElement | null = null;
 
@@ -74,9 +77,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             if (isCameraLocked.value && !isEasing && !isTargetAtOrigin) {
                 map.value.jumpTo({
                     center: [currentTruckCoords[0], currentTruckCoords[1]],
-                    bearing: isNavigating.value
-                        ? currentTruckHeading
-                        : map.value.getBearing(),
+                    bearing: currentTruckHeading,
                     padding: isNavigating.value ? PADDING_NAV : PADDING_FREE,
                 });
             }
@@ -108,26 +109,69 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         }
     };
 
-    const breakLockEvents = [
-        "pointerdown",
-        "mousedown",
-        "touchstart",
-        "wheel",
-        "pitchstart",
-        "boxzoomstart",
-    ];
-
     const initCameraListeners = () => {
         if (!map.value) return;
-
         startRenderLoop();
 
+        const breakLockEvents = ["mousedown", "touchstart", "wheel"];
+
         breakLockEvents.forEach((event) => {
-            map.value!.on(event, () => {
-                if (isEasing) return;
-                if (isCameraLocked.value) isCameraLocked.value = false;
+            map.value!.on(event, (e) => {
+                if (e.originalEvent && !isEasing) {
+                    isCameraLocked.value = false;
+                    if (autoLockTimer) clearTimeout(autoLockTimer);
+
+                    if (isAutoFollowEnabled.value) {
+                        autoLockTimer = setTimeout(() => {
+                            resumeCameraLock();
+                        }, 1500);
+                    }
+                }
             });
         });
+
+        map.value.on("move", (e) => {
+            if (e.originalEvent && !isCameraLocked.value && !isEasing) {
+                if (autoLockTimer) clearTimeout(autoLockTimer);
+
+                if (isAutoFollowEnabled.value) {
+                    autoLockTimer = setTimeout(() => {
+                        resumeCameraLock();
+                    }, 1500);
+                }
+            }
+        });
+    };
+
+    const resumeCameraLock = () => {
+        if (!map.value || !currentTruckCoords) return;
+        isAutoFollowEnabled.value = true;
+        isCameraLocked.value = true;
+        isEasing = true;
+
+        if (easeTimeout) clearTimeout(easeTimeout);
+        easeTimeout = setTimeout(() => {
+            isEasing = false;
+        }, 500);
+
+        map.value.easeTo({
+            center: currentTruckCoords,
+            bearing: currentTruckHeading,
+            pitch: isNavigating.value ? 38 : map.value.getPitch(),
+            duration: 350,
+            padding: isNavigating.value ? PADDING_NAV : PADDING_FREE,
+        });
+    };
+
+    const toggleAutoFollow = () => {
+        isAutoFollowEnabled.value = !isAutoFollowEnabled.value;
+
+        if (isAutoFollowEnabled.value) {
+            resumeCameraLock();
+        } else {
+            isCameraLocked.value = false;
+            if (autoLockTimer) clearTimeout(autoLockTimer);
+        }
     };
 
     const followTruck = (coords: [number, number], heading: number) => {
@@ -162,6 +206,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         if (!map.value) return;
         isNavigating.value = true;
         isCameraLocked.value = true;
+        isAutoFollowEnabled.value = true;
         targetCoords = coords;
         targetHeading = heading;
 
@@ -177,9 +222,16 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             bearing: isNavigating.value ? heading : 0,
             zoom: 11,
             pitch: 38,
-            duration: 300,
+            duration: 350,
             padding: PADDING_NAV,
         });
+    };
+
+    const stopNavigationMode = () => {
+        if (!map.value || !currentTruckCoords) return;
+        isNavigating.value = false;
+
+        resumeCameraLock();
     };
 
     onUnmounted(() => {
@@ -191,10 +243,14 @@ export const useMapCamera = (map: Ref<Map | null>) => {
     return {
         isCameraLocked,
         isNavigating,
+        isAutoFollowEnabled,
         initMarker,
         updateMarkerImage,
         initCameraListeners,
         followTruck,
+        stopNavigationMode,
+        resumeCameraLock,
+        toggleAutoFollow,
         lockCamera,
         startNavigationMode,
     };

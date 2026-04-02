@@ -1,14 +1,13 @@
 <script lang="ts" setup>
 const props = defineProps<{
-    isSheetExpanded: boolean;
     isSheetHidden: boolean;
     truckSpeed: number;
     speedLimit: number;
     destinationName: string;
     routeEta: string;
     routeDistance: number;
-    hasActiveJob: boolean;
-    clearRouteState: () => void;
+    isNavigating: boolean;
+    onStopNavigation: () => void;
     onStartNavigation: () => void;
 }>();
 
@@ -26,41 +25,11 @@ const emit = defineEmits<{
 const onToggleSheetHidden = () => {
     emit("update:isSheetHidden", !props.isSheetHidden);
 };
-
-function onToggleSheet() {
-    emit("update:isSheetExpanded", !props.isSheetExpanded);
-}
 </script>
 
 <template>
-    <div
-        class="bottom-sheet"
-        :class="{ 'is-expanded': isSheetExpanded, 'is-hidden': isSheetHidden }"
-    >
-        <div class="sheet-header" @click="onToggleSheet">
-            <div class="drag-pill"></div>
-        </div>
-
+    <div class="bottom-sheet" :class="{ 'is-hidden': isSheetHidden }">
         <div class="sheet-body">
-            <div class="hide-sheet">
-                <button
-                    v-if="!isSheetExpanded"
-                    @click.prevent="onToggleSheetHidden"
-                    class="hide-sheet-btn nav-btn"
-                >
-                    <Icon
-                        :name="
-                            isSheetHidden
-                                ? 'bxs:chevron-up'
-                                : 'bxs:chevron-down'
-                        "
-                        class="chevron-icon"
-                        size="18"
-                    />
-                    {{ isSheetHidden ? "" : "Hide" }}
-                </button>
-            </div>
-
             <Transition name="compact-slide">
                 <div
                     v-if="isSheetHidden"
@@ -77,29 +46,29 @@ function onToggleSheet() {
                 </div>
             </Transition>
 
-            <div class="top-row">
-                <div class="trip-info" @click="onToggleSheet">
+            <div class="sheet-content">
+                <div class="top-row">
                     <h2 class="dest-name">{{ destinationName }}</h2>
 
-                    <div class="mini-stats">
-                        <span class="eta">{{ routeEta }}</span>
-                        <span class="dist"
-                            >({{ routeDistanceConverted }}
-                            {{ distanceUnit }})</span
+                    <div class="hide-sheet">
+                        <button
+                            @click.prevent="onToggleSheetHidden"
+                            class="hide-sheet-btn nav-btn"
                         >
+                            <Icon
+                                :name="
+                                    isSheetHidden
+                                        ? 'bxs:chevron-up'
+                                        : 'bxs:chevron-down'
+                                "
+                                class="chevron-icon"
+                                size="18"
+                            />
+                            {{ isSheetHidden ? "" : "Hide" }}
+                        </button>
                     </div>
                 </div>
 
-                <button
-                    v-if="!hasActiveJob"
-                    class="cancel-btn nav-btn"
-                    @click.stop="clearRouteState"
-                >
-                    <Icon name="material-symbols:close-rounded" size="24" />
-                </button>
-            </div>
-
-            <div class="expanded-content">
                 <div class="separator"></div>
 
                 <div class="full-stats">
@@ -130,10 +99,27 @@ function onToggleSheet() {
                     </div>
                 </div>
 
-                <div class="action-buttons" @click.prevent="onStartNavigation">
-                    <button class="start-btn nav-btn">
+                <div class="action-buttons">
+                    <button
+                        v-show="isNavigating"
+                        class="stop-btn nav-btn"
+                        @click.prevent="onStopNavigation"
+                    >
+                        <span>Stop</span>
+                    </button>
+
+                    <button
+                        class="start-btn nav-btn"
+                        @click.prevent="
+                            isNavigating
+                                ? onToggleSheetHidden()
+                                : onStartNavigation()
+                        "
+                    >
                         <Icon name="tabler:navigation-check" size="24" />
-                        <span>Start Navigation</span>
+                        <span>{{
+                            isNavigating ? "Resume" : "Start Navigation"
+                        }}</span>
                     </button>
                 </div>
             </div>

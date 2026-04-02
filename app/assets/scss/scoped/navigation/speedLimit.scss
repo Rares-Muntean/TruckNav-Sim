@@ -35,30 +35,7 @@ $speed-limit-height: 72px;
     display: flex;
     justify-content: center;
     align-items: center;
-
-    &.pos-default {
-        bottom: 25px;
-    }
-
-    &.pos-collapsed {
-        @media (orientation: landscape) {
-            bottom: 90px;
-        }
-
-        @media (orientation: portrait) {
-            bottom: 108px;
-        }
-    }
-
-    &.pos-expanded {
-        @media (orientation: landscape) {
-            bottom: 226px;
-        }
-
-        @media (orientation: portrait) {
-            bottom: 254px;
-        }
-    }
+    bottom: 25px;
 }
 
 .speed-limit-circle-over-limit {

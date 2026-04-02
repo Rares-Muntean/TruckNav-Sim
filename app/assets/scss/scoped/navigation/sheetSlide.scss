@@ -5,14 +5,20 @@
 
 $compact-bar-height: 35px;
 
-.cancel-btn {
-    background-color: $secondaryColor;
-    padding: 3px 3px;
-}
+.action-buttons {
+    display: flex;
+    gap: 1.2rem;
 
-.start-btn {
-    width: 100%;
-    padding: 8px 12px;
+    .start-btn {
+        width: 100%;
+        padding: 6px 12px;
+    }
+
+    .stop-btn {
+        background-color: $red-color;
+        padding-left: 10px;
+        padding: 6px 18px;
+    }
 }
 
 .sheet-header {
@@ -32,74 +38,20 @@ $compact-bar-height: 35px;
 }
 
 .sheet-body {
-    padding: 0 20px 10px 20px;
+    padding: 10px 20px 18px 20px;
 }
 
 .top-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
 }
 
-.trip-info {
-    opacity: 1;
-    flex: 1;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    padding-right: 1.2rem;
-    align-items: center;
-    font-size: 1.8rem;
-
-    transition: 0.4s ease;
-
-    .dest-name {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: $white-font-text;
-
-        @media (orientation: landscape) {
-            font-size: 2rem;
-        }
-    }
-
-    .mini-stats {
-        max-height: 200px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        gap: 8px;
-        font-size: 1.8rem;
-        transition: opacity 0.3s cubic-bezier(0.165, 0.84, 0.44, 1),
-            max-height 0.1s ease-in;
-
-        .eta {
-            color: #2ecc71;
-            font-weight: 600;
-        }
-
-        .dist {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        @media (orientation: landscape) {
-            font-size: 2rem;
-        }
-    }
-
-    @media (orientation: landscape) {
-        padding-right: 2.4rem;
-    }
-
-    @media (orientation: portrait) {
-        flex-direction: column;
-        justify-content: start;
-        align-items: start;
-        gap: 2px;
-    }
+.dest-name {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: $white-font-text;
 }
 
 .bottom-sheet {
@@ -122,23 +74,6 @@ $compact-bar-height: 35px;
     flex-direction: column;
     transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 
-    &.is-expanded {
-        .expanded-content {
-            max-height: 300px;
-            opacity: 1;
-            margin-top: 10px;
-            transition: 1s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-
-        .mini-stats {
-            opacity: 0;
-        }
-
-        .drag-pill {
-            background-color: var(--theme-color);
-        }
-    }
-
     &.is-hidden {
         transform: translateY(100%);
         border-color: transparent;
@@ -149,6 +84,7 @@ $compact-bar-height: 35px;
         }
 
         .hide-sheet {
+            position: absolute;
             top: -46px;
             right: 6px;
             z-index: 9;
@@ -161,21 +97,11 @@ $compact-bar-height: 35px;
     }
 }
 
-.expanded-content {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
 .chevron-icon {
     color: $white-font-text;
 }
 
 .hide-sheet {
-    position: absolute;
-    top: -40px;
-    right: 15px;
     transition: 0.4s ease;
 
     .hide-sheet-btn {
@@ -224,7 +150,7 @@ $compact-bar-height: 35px;
         gap: 12px;
 
         .icon-eta {
-            color: #2ecc71;
+            color: var(--theme-color);
         }
 
         .icon-dist {

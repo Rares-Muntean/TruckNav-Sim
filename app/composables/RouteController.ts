@@ -19,6 +19,7 @@ export const useRouteController = (
     map: Ref<maplibregl.Map | null>,
     adjacency: Map<number, any>,
     nodeCoords: Map<number, [number, number]>,
+    stopNavigationMode: () => void,
 ) => {
     const { getGameLocationName, getWorkerCityData } = useCityData();
     const { getClosestNodes } = useGraphSystem();
@@ -874,6 +875,7 @@ export const useRouteController = (
         isYardStart.value = false;
         fullRouteDirections.value = [];
         updateProfile("lastDestination", null);
+        stopNavigationMode();
 
         nextTurnDistance.value = 0;
         lastMathPos.value = null;
