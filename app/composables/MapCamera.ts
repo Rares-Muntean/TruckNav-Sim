@@ -7,7 +7,7 @@ const PADDING_FREE = { top: 0, bottom: 0, left: 0, right: 0 };
 
 export const useMapCamera = (map: Ref<Map | null>) => {
     const isCameraLocked = ref(false);
-    const isAutoFollowEnabled = ref(true);
+    const isAutoFollowEnabled = ref(false);
     const isNavigating = ref(false);
 
     let targetCoords: [number, number] | null = null;
@@ -77,7 +77,9 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             if (isCameraLocked.value && !isEasing && !isTargetAtOrigin) {
                 map.value.jumpTo({
                     center: [currentTruckCoords[0], currentTruckCoords[1]],
-                    bearing: currentTruckHeading,
+                    bearing: isAutoFollowEnabled.value
+                        ? currentTruckHeading
+                        : 0,
                     padding: isNavigating.value ? PADDING_NAV : PADDING_FREE,
                 });
             }
@@ -143,9 +145,9 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         });
     };
 
-    const resumeCameraLock = () => {
+    const resumeCameraLock = (isFollowButtonEnabled?: boolean) => {
         if (!map.value || !currentTruckCoords) return;
-        isAutoFollowEnabled.value = true;
+        isAutoFollowEnabled.value = isFollowButtonEnabled ?? true;
         isCameraLocked.value = true;
         isEasing = true;
 
@@ -231,7 +233,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         if (!map.value || !currentTruckCoords) return;
         isNavigating.value = false;
 
-        resumeCameraLock();
+        resumeCameraLock(false);
     };
 
     onUnmounted(() => {
