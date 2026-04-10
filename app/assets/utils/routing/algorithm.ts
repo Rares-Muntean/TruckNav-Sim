@@ -21,10 +21,11 @@ let cache_flatCoords: Float64Array | null = null;
 let isEdgesMapped = false;
 let globalNextEdgeId = 0;
 
-export interface SimpleCityNode {
-    x: number; // Game X (Converted from Lng)
-    z: number; // Game Z (Converted from Lat)
-    radius: number; // calculated from scaleRank
+export interface WorkerCityArea {
+    minX: number;
+    maxX: number;
+    minZ: number;
+    maxZ: number;
 }
 
 function ensureCoordCache(nodeCoords: Map<number, [number, number]>) {
@@ -59,22 +60,31 @@ function ensureEdgesMapped(adjacency: Map<number, any[]>) {
 export function getScaleMultiplier(
     gameX: number,
     gameZ: number,
-    cities: SimpleCityNode[] | null,
+    cityAreas: WorkerCityArea[] | null,
     selectedGame: string | null,
 ): number {
-    if (!cities) return selectedGame === "ats" ? 20 : 19;
+    let highwayScale = selectedGame === "ats" ? 20 : 19;
 
-    for (let i = 0; i < cities.length; i++) {
-        const city = cities[i]!;
-        const dx = gameX - city.x;
-        const dy = gameZ - city.z;
+    if (selectedGame === "ets2" && gameX < -31100 && gameZ < -5500) {
+        highwayScale = 15;
+    }
 
-        if (dx * dx + dy * dy < city.radius * city.radius) {
+    if (!cityAreas || cityAreas.length === 0) return highwayScale;
+
+    for (let i = 0; i < cityAreas.length; i++) {
+        const area = cityAreas[i]!;
+
+        if (
+            gameX >= area.minX &&
+            gameX <= area.maxX &&
+            gameZ >= area.minZ &&
+            gameZ <= area.maxZ
+        ) {
             return 3;
         }
     }
 
-    return selectedGame === "ats" ? 20 : 19;
+    return highwayScale;
 }
 
 function fastDistKm(
@@ -411,14 +421,13 @@ export const mergeClosePoints = (
 
 export function buildRouteStatsCache(
     pathCoords: [number, number][],
-    cities: SimpleCityNode[] | null,
+    cities: WorkerCityArea[] | null,
     selectedGame: GameType,
     sdkScale: number = 0,
     avgSpeed: number,
 ) {
     const cache = new Float32Array(pathCoords.length * 2);
     const isAts = selectedGame === "ats";
-    const highwayScale = isAts ? 20 : 19;
 
     const baseHighway = isAts ? 105 : 82;
     const highwaySpeed =
@@ -447,18 +456,12 @@ export function buildRouteStatsCache(
         const dz = z2 - z1;
         const rawLength = Math.sqrt(dx * dx + dz * dz);
 
-        let multiplier = getScaleMultiplier(
+        const multiplier = getScaleMultiplier(
             (x1 + x2) / 2,
             (z1 + z2) / 2,
             cities,
             selectedGame,
         );
-
-        if (i < 5 && sdkScale > 0) {
-            multiplier = sdkScale;
-        } else if (multiplier !== 3) {
-            multiplier = highwayScale;
-        }
 
         const segmentKm = (rawLength * multiplier) / 1000;
         const segmentSpeed = multiplier === 3 ? speeds.city : speeds.highway;

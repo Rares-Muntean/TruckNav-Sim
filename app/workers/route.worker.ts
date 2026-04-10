@@ -4,12 +4,12 @@ let nodeCoords: Map<number, [number, number]> | null = null;
 import {
     buildRouteStatsCache,
     calculateRoute,
-    type SimpleCityNode,
+    type WorkerCityArea,
     simplifyPath,
     smoothPath,
 } from "~/assets/utils/routing/algorithm";
 
-let cityNodes: SimpleCityNode[] | null = null;
+let cityNodes: WorkerCityArea[] | null = null;
 let geometryF32: Float32Array | null = null;
 
 self.onmessage = async (e: MessageEvent) => {

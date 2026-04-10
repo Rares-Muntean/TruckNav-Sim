@@ -90,12 +90,12 @@ export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
 
     const hasActiveJob = data.specialEvents.onJob;
 
-    const destinationCity = data.job.cityDestination;
+    const destinationCity = data.job.cityDestinationId;
     const destinationCompany = data.job.companyDestinationId;
 
     const jobType = data.job.jobType;
 
-    const sourceCity = data.job.citySource;
+    const sourceCity = data.job.citySourceId;
     const sourceCompany = data.job.companySourceId;
 
     if (data.trailers[0]) {
