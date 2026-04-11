@@ -48,16 +48,76 @@ const jobState = reactive<JobState>({
 
 let lastPosition: [number, number] | null = null;
 let headingOffset = 0;
-
 let socket: WebSocket | null = null;
+
+// TruckersMP time sync
+let tmpGameTimeInterval: ReturnType<typeof setInterval> | null = null;
+let tickInterval: ReturnType<typeof setInterval> | null = null;
+let tmpGameTimeMinutes: number | null = null;
+
+function updateDisplayTime() {
+    if (tmpGameTimeMinutes === null) return;
+    tmpGameTimeMinutes++;
+    const totalMins = tmpGameTimeMinutes % 1440;
+    const hours = (Math.floor(totalMins / 60) + 2) % 24;
+    const mins = totalMins % 60;
+    gameState.gameTime = `MP ${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+}
 
 export function useEtsTelemetry() {
     const { settings } = useSettings();
-
     const isCapacitor = Capacitor.isNativePlatform();
-
     let speedSamples: number[] = [];
     const maxSamples = 120;
+
+    async function fetchTruckersmpTime() {
+        try {
+            let calculatedTime: string | null = null;
+
+            if (isCapacitor) {
+                // On Android, call directly — Capacitor native HTTP bypasses CORS
+                const res = await fetch("https://api.truckyapp.com/v2/truckersmp/time", {
+                    headers: {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    }
+                });
+                const json = await res.json();
+                calculatedTime = json.response?.calculated_game_time ?? null;
+            } else {
+                const json = await $fetch<{ response: { calculated_game_time: string } }>("/api/truckersmp-time");
+                calculatedTime = json.response?.calculated_game_time ?? null;
+            }
+
+            if (calculatedTime) {
+                const date = new Date(calculatedTime);
+                tmpGameTimeMinutes = date.getUTCHours() * 60 + date.getUTCMinutes();
+                tmpGameTimeMinutes += 1;
+                updateDisplayTime();
+            }
+        } catch {
+            tmpGameTimeMinutes = null;
+        }
+    }
+
+    function startTruckersmpTimeSync() {
+        fetchTruckersmpTime();
+        // Re-sync from API every 30 seconds
+        tmpGameTimeInterval = setInterval(fetchTruckersmpTime, 30000);
+        // Tick every 10 real seconds = 1 game minute
+        tickInterval = setInterval(updateDisplayTime, 10000);
+    }
+
+    function stopTruckersmpTimeSync() {
+        if (tmpGameTimeInterval) {
+            clearInterval(tmpGameTimeInterval);
+            tmpGameTimeInterval = null;
+        }
+        if (tickInterval) {
+            clearInterval(tickInterval);
+            tickInterval = null;
+        }
+        tmpGameTimeMinutes = null;
+    }
 
     function startTelemetry(onUpdate?: (data: TelemetryUpdate) => void) {
         if (socket) return;
@@ -76,7 +136,6 @@ export function useEtsTelemetry() {
         socket.onmessage = (event) => {
             try {
                 const rawData = JSON.parse(event.data);
-
                 const data = rawData as TelemetryPacket;
 
                 if (data.game.toLowerCase() !== settings.value.selectedGame) {
@@ -114,7 +173,8 @@ export function useEtsTelemetry() {
             getGameState(data);
 
         Object.assign(gameState, {
-            gameTime: gameTime,
+            // Only use telemetry time if TruckersMP sync hasn't kicked in yet
+            gameTime: tmpGameTimeMinutes !== null ? gameState.gameTime : gameTime,
             gameConnected: gameConnected,
             hasInGameMarker: hasInGameMarker,
             scale: scale,
@@ -226,5 +286,7 @@ export function useEtsTelemetry() {
         ...toRefs(jobState),
         startTelemetry,
         stopTelemetry,
+        startTruckersmpTimeSync,
+        stopTruckersmpTimeSync,
     };
 }

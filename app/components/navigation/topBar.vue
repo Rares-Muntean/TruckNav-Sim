@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 const props = defineProps<{
-    truckSpeed: number;
     gameConnected: boolean;
     fuel: number;
     restStopMinutes: number;
@@ -9,23 +8,12 @@ const props = defineProps<{
     isWeb: boolean;
 }>();
 
-const { kmToUserUnits, literToUserUnits, speedUnit, fuelUnit } =
-    useUnitConversion();
-
-const truckSpeedConverted = computed(() => kmToUserUnits(props.truckSpeed));
+const { literToUserUnits, fuelUnit } = useUnitConversion();
 const fuelConverted = computed(() => literToUserUnits(props.fuel));
 </script>
 
 <template>
     <div class="game-information" :class="{ 'is-native': !isWeb }">
-        <div class="truck-info">
-            <div class="truck-speed-div">
-                <div class="road-perspective"></div>
-                <p class="truck-speed">{{ truckSpeedConverted }}</p>
-                <p class="km-h">{{ speedUnit }}</p>
-            </div>
-        </div>
-
         <div v-if="gameConnected" class="gas-sleep-time">
             <div class="gas-sleep">
                 <div class="fuel-amount">

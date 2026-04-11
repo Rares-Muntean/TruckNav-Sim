@@ -6,6 +6,7 @@ import { usePlatform } from "~/composables/Platform";
 import eruda from "eruda";
 import { blendWithBg, lightenColor } from "~/assets/utils/shared/colors";
 import { generateTruckIcon } from "~/assets/utils/map/markers";
+import { usePoiSearch } from '~/composables/PoiSearch';
 
 defineProps<{ goHome: () => void }>();
 
@@ -27,7 +28,7 @@ const clickingNotificationTrigger = ref(0);
 //
 //
 //// ======> COMPOSABLES <======
-
+const { findNearest } = usePoiSearch();
 //
 //
 // Telemetry Data
@@ -49,6 +50,8 @@ const {
     scale,
     averageSpeed,
     destinationCompany,
+    startTruckersmpTimeSync,
+    stopTruckersmpTimeSync,
 } = useEtsTelemetry();
 
 //
@@ -102,6 +105,9 @@ const {
     routeFound,
     fullRouteDirections,
     nextTurnDistance,
+    waypointQueue,
+    addWaypoint,
+    clearWaypointMarkers,
 } = useRouteController(map, adjacency, nodeCoords, stopNavigationMode);
 
 //
@@ -265,6 +271,7 @@ onMounted(async () => {
     if (isElectron.value) {
         (window as any).electronAPI.setWindowSize(900, 600, true, true);
     }
+    startTruckersmpTimeSync();
 
     try {
         const mapInstance = await initializeMap(mapEl.value);
@@ -294,6 +301,10 @@ onMounted(async () => {
                 layers: ["destination-layer"],
             });
             if (features.length > 0) return;
+            if (!isClickingEnabled.value) return;
+            if (!gameConnected.value) return;
+            if (!truckCoords.value) return;
+            const currentScale = scale.value > 0 ? scale.value : settings.value.selectedGame === "ats" ? 20 : 19;
 
             console.log(
                 ` ${e.lngLat.lat.toFixed(5)}, ${e.lngLat.lng.toFixed(5)}`,
@@ -302,19 +313,11 @@ onMounted(async () => {
             if (!gameConnected.value) return;
             if (!truckCoords.value) return;
 
-            const currentScale =
-                scale.value > 0
-                    ? scale.value
-                    : settings.value.selectedGame === "ats"
-                      ? 20
-                      : 19;
-
-            await handleRouteClick(
+            await addWaypoint(
                 [e.lngLat.lng, e.lngLat.lat],
                 truckCoords.value,
                 truckHeading.value,
                 currentScale,
-                true,
                 averageSpeed.value,
             );
         });
@@ -330,6 +333,7 @@ onMounted(async () => {
 onUnmounted(() => {
     stopTelemetry();
     destroyWorker();
+    stopTruckersmpTimeSync();
 
     if (routeTimer) clearTimeout(routeTimer);
     if (uiTimer) clearTimeout(uiTimer);
@@ -351,6 +355,7 @@ function onTelemetryUpdate() {
             truckHeading.value,
             scale.value,
             averageSpeed.value,
+
         );
     }
 }
@@ -371,6 +376,21 @@ function toggleEnableClicking() {
     isClickingEnabled.value = !isClickingEnabled.value;
 
     clickingNotificationTrigger.value++;
+}
+
+async function routeToNearest(type: 'gas' | 'service' | 'parking') {
+    if (!truckCoords.value || !gameConnected.value) return;
+    const dest = findNearest(type, truckCoords.value);
+    if (!dest) return;
+
+    await handleRouteClick(
+        dest,
+        truckCoords.value,
+        truckHeading.value,
+        scale.value > 0 ? scale.value : 19,
+        true,
+        averageSpeed.value,
+    );
 }
 
 const onResetNorth = () => {
@@ -406,6 +426,8 @@ const toggleSettingsPanel = () => {
 };
 
 const onCancelRoute = () => {
+    waypointQueue.value = [];
+    clearWaypointMarkers();
     clearRouteState();
     stopNavigationMode();
 };
@@ -427,13 +449,12 @@ const onCancelRoute = () => {
                     </Transition>
 
                     <TopBar
-                        :fuel="fuel"
-                        :game-connected="gameConnected"
-                        :game-time="gameTime"
-                        :rest-stop-minutes="restStopMinutes"
-                        :rest-stop-time="restStoptime"
-                        :truck-speed="truckSpeed"
-                        :is-web="isWeb"
+                      :fuel="fuel"
+                      :game-connected="gameConnected"
+                      :game-time="gameTime"
+                      :rest-stop-minutes="restStopMinutes"
+                      :rest-stop-time="restStoptime"
+                      :is-web="isWeb"
                     />
 
                     <div class="left-buttons">
@@ -506,12 +527,16 @@ const onCancelRoute = () => {
                             "
                             :onClick="toggleEnableClicking"
                         />
+                        <!-- NEW POI buttons -->
+                        <HudButton icon-name="bi:fuel-pump-fill" :onClick="() => routeToNearest('gas')" />
+                        <HudButton icon-name="material-symbols:car-repair" :onClick="() => routeToNearest('service')" />
+                        <HudButton icon-name="material-symbols:local-parking"
+                            :onClick="() => routeToNearest('parking')" />
                     </div>
 
-                    <SpeedLimit
-                        v-show="speedLimit > 0"
-                        :truck-speed="truckSpeed"
-                        :speed-limit="speedLimit"
+                    <Speedometer
+                       :truck-speed="truckSpeed"
+                       :speed-limit="speedLimit"
                     />
 
                     <div class="warnings">

@@ -1,5 +1,5 @@
 import maplibregl from "maplibre-gl";
-import { generateDestinationIcon } from "~/assets/utils/map/markers";
+import { generateDestinationIcon, generateWaypointIcon } from "~/assets/utils/map/markers";
 import {
     getBearing,
     getSqDistToSegment,
@@ -15,6 +15,8 @@ import {
     type DirectionStep,
 } from "~/assets/utils/routing/directions";
 
+const MAX_WAYPOINTS = 5;
+
 export const useRouteController = (
     map: Ref<maplibregl.Map | null>,
     adjacency: Map<number, any>,
@@ -25,6 +27,11 @@ export const useRouteController = (
     const { getClosestNodes } = useGraphSystem();
     const { settings, activeSettings, updateGlobal, updateProfile } =
         useSettings();
+    const waypointQueue = ref<[number, number][]>([]);
+    const lastKnownTruckCoords = ref<[number, number] | null>(null);
+    const lastKnownTruckHeading = ref<number>(0);
+    const lastKnownScale = ref<number>(19);
+    const lastKnownAvgSpeed = ref<number>(80);
 
     const currentRoutePath = shallowRef<[number, number][] | null>(null);
     const routeStatsCache = shallowRef<Float32Array | null>(null);
@@ -52,6 +59,105 @@ export const useRouteController = (
 
     const fullRouteDirections = ref<DirectionStep[]>([]);
     const nextTurnDistance = ref<number>(0);
+
+    async function addWaypoint(
+    coords: [number, number],
+    truckCoords: [number, number],
+    truckHeading: number,
+    sdkScale: number,
+    avgSpeed: number,
+) {
+    if (waypointQueue.value.length >= MAX_WAYPOINTS) return;
+
+    waypointQueue.value = [...waypointQueue.value, coords];
+
+    // If no route active, start routing to first waypoint
+    if (!isRouteActive.value) {
+        await routeToNextWaypoint(truckCoords, truckHeading, sdkScale, avgSpeed);
+    }
+    // Otherwise just add marker — will auto-route when current leg completes
+    await refreshWaypointMarkers();
+}
+
+    async function routeToNextWaypoint(
+        truckCoords: [number, number],
+        truckHeading: number,
+        sdkScale: number,
+        avgSpeed: number,
+    ) {
+        if (waypointQueue.value.length === 0) return;
+        const next = waypointQueue.value[0]!;
+        await handleRouteClick(next, truckCoords, truckHeading, sdkScale, false, avgSpeed);
+        await refreshWaypointMarkers();
+    }
+
+    async function refreshWaypointMarkers() {
+        if (!map.value) return;
+        const themeColor = activeSettings.value.themeColor;
+
+        // Remove old waypoint sources/layers
+        for (let i = 1; i <= MAX_WAYPOINTS; i++) {
+            const sourceId = `waypoint-source-${i}`;
+            const layerId = `waypoint-layer-${i}`;
+            if (map.value.getLayer(layerId)) map.value.removeLayer(layerId);
+            if (map.value.getSource(sourceId)) map.value.removeSource(sourceId);
+        }
+
+        // Draw remaining waypoints (skip index 0 — that's the active destination)
+        for (let i = 1; i < waypointQueue.value.length; i++) {
+            const coords = waypointQueue.value[i]!;
+            const sourceId = `waypoint-source-${i}`;
+            const layerId = `waypoint-layer-${i}`;
+            const imageId = `waypoint-icon-${i}`;
+
+            if (!map.value.hasImage(imageId)) {
+                const img = await generateWaypointIcon(i + 1, themeColor);
+                map.value.addImage(imageId, img, { pixelRatio: 2.5 });
+            }
+
+            map.value.addSource(sourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'Feature',
+                    geometry: { type: 'Point', coordinates: coords },
+                    properties: {}
+                }
+            });
+
+            map.value.addLayer({
+                id: layerId,
+                type: 'symbol',
+                source: sourceId,
+                layout: {
+                    'icon-image': imageId,
+                    'icon-anchor': 'bottom',
+                    'icon-allow-overlap': true,
+                    'icon-ignore-placement': true,
+                }
+            });
+            map.value.on("click", layerId, () => {
+                // Remove this waypoint from the queue
+                waypointQueue.value = waypointQueue.value.filter((_, idx) => idx !== i);
+                refreshWaypointMarkers();
+            });
+            map.value.on("mouseenter", layerId, () => {
+                map.value!.getCanvas().style.cursor = "pointer";
+            });
+            map.value.on("mouseleave", layerId, () => {
+                map.value!.getCanvas().style.cursor = "";
+            });
+        }
+    }
+
+    function clearWaypointMarkers() {
+        if (!map.value) return;
+        for (let i = 1; i <= MAX_WAYPOINTS; i++) {
+            const sourceId = `waypoint-source-${i}`;
+            const layerId = `waypoint-layer-${i}`;
+            if (map.value.getLayer(layerId)) map.value.removeLayer(layerId);
+            if (map.value.getSource(sourceId)) map.value.removeSource(sourceId);
+        }
+    }
 
     watch(
         () => activeSettings.value.themeColor,
@@ -557,7 +663,18 @@ export const useRouteController = (
             });
 
             map.value.on("click", "destination-layer", () => {
-                clearRouteState();
+                if (waypointQueue.value.length > 1) {
+                    waypointQueue.value = waypointQueue.value.slice(1);
+                    clearRouteState(
+                        lastKnownTruckCoords.value ?? undefined,
+                        lastKnownTruckHeading.value,
+                        lastKnownScale.value,
+                        lastKnownAvgSpeed.value,
+                    );
+                } else {
+                    waypointQueue.value = [];
+                    clearRouteState();
+                }
             });
             map.value.on("mouseenter", "destination-layer", () => {
                 map.value!.getCanvas().style.cursor = "pointer";
@@ -663,6 +780,11 @@ export const useRouteController = (
         createEndMarker: boolean,
         avgSpeed: number,
     ) {
+
+        lastKnownTruckCoords.value = truckCoords;
+        lastKnownTruckHeading.value = truckHeading;
+        lastKnownScale.value = sdkScale;
+        lastKnownAvgSpeed.value = avgSpeed;
         if (adjacency.size === 0 || isCalculating.value || !isWorkerReady)
             return;
 
@@ -806,7 +928,7 @@ export const useRouteController = (
 
         const distToEndSq = getSquaredDist(truckCoords, path[path.length - 1]!);
         if (distToEndSq < 0.00005) {
-            clearRouteState();
+            clearRouteState(truckCoords, truckHeading, sdkScale, avgSpeed);
             return;
         }
 
@@ -900,7 +1022,12 @@ export const useRouteController = (
         }
     };
 
-    function clearRouteState() {
+    function clearRouteState(
+        truckCoords?: [number, number],
+        truckHeading?: number,
+        sdkScale?: number,
+        avgSpeed?: number,
+    ) {
         if (!map.value) return;
 
         deleteMapLibreData(map.value, "route-line");
@@ -914,11 +1041,21 @@ export const useRouteController = (
         savedDestination.value = null;
         isYardStart.value = false;
         fullRouteDirections.value = [];
-        updateProfile("lastDestination", null);
-        stopNavigationMode();
-
         nextTurnDistance.value = 0;
         lastMathPos.value = null;
+
+        // Pop the completed waypoint and route to next if any
+        if (waypointQueue.value.length > 0) {
+            waypointQueue.value = waypointQueue.value.slice(1);
+            if (waypointQueue.value.length > 0 && truckCoords && sdkScale && avgSpeed) {
+                routeToNextWaypoint(truckCoords, truckHeading ?? 0, sdkScale, avgSpeed);
+                return; // don't update lastDestination yet
+            }
+        }
+
+        clearWaypointMarkers();
+        updateProfile("lastDestination", null);
+        stopNavigationMode();
     }
 
     return {
@@ -940,5 +1077,8 @@ export const useRouteController = (
         findBestStartConfiguration,
         updateRouteProgress,
         clearRouteState,
+        waypointQueue,
+        addWaypoint,
+        clearWaypointMarkers,
     };
 };
