@@ -104,6 +104,11 @@ const toggleWindow = () => {
                 <ol>
                     <li>Make sure ETS2 / ATS is running on your PC.</li>
                     <li>
+                        If the plugin is missing, click the folder icon and
+                        select the game's executable folder: <br />
+                        <code>C:\...\Euro Truck Simulator 2\bin\win_x64</code>
+                    </li>
+                    <li>
                         Ensure your phone is connected to the same network as
                         your PC.
                     </li>
