@@ -12,7 +12,7 @@ const props = defineProps<{
 }>();
 
 const displayTurns = computed(() => {
-    return props.upcomingTurns.slice(1, 4);
+    return props.upcomingTurns.slice(1, 3);
 });
 
 const { kmToUserUnits, distanceUnit } = useUnitConversion();

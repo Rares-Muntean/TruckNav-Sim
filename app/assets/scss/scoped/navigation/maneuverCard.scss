@@ -10,8 +10,8 @@
 
     color: $white-font-text;
 
-    width: 65%;
-    height: 118px;
+    width: 53%;
+    height: 95px;
 
     background-color: rgb(38, 52, 68, 0.95);
     border: 1px solid $secondaryColor;
@@ -41,7 +41,7 @@
     align-items: center;
     gap: 2.1rem;
     width: 100%;
-    padding: 0.8rem 1.6rem;
+    padding: 0.6rem 1.6rem;
     background-color: rgba($color: #000000, $alpha: 0.15);
 }
 
@@ -52,7 +52,7 @@
 
 .turn-info {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     line-height: 1.23;
     margin-bottom: 0.4rem;
     padding: 0.6rem 1.4rem;
