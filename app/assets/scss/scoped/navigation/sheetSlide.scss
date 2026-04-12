@@ -16,6 +16,7 @@ $compact-bar-height: 35px;
 
     .stop-btn {
         background-color: $red-color;
+        color: $white-font-text;
         padding-left: 10px;
         padding: 6px 18px;
     }
@@ -98,7 +99,7 @@ $compact-bar-height: 35px;
 }
 
 .chevron-icon {
-    color: $white-font-text;
+    color: var(--main-text-color);
 }
 
 .hide-sheet {

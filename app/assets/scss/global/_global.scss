@@ -56,7 +56,7 @@ input {
     font-family: inherit;
     font-weight: 700;
     font-size: 1.6rem;
-    color: $white-font-text;
+    color: var(--main-text-color);
 
     height: fit-content;
     border: none;

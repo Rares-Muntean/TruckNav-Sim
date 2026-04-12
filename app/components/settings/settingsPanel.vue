@@ -8,6 +8,9 @@ const props = defineProps<{ closePanel: () => void }>();
 
 const isDlcPanelOpened = ref(false);
 const isMetric = computed(() => activeSettings.value.units === "metric");
+const isTextThemeLight = computed(
+    () => activeSettings.value.textColor === "light",
+);
 const hasGuidedNavigation = computed(
     () => settings.value.hasTurnNavigation === true,
 );
@@ -21,6 +24,10 @@ const selectedExpansion = computed(() => {
 const toggleDlcPanel = () => {
     isDlcPanelOpened.value = !isDlcPanelOpened.value;
 };
+
+function toggleTextColor() {
+    updateProfile("textColor", isTextThemeLight.value ? "dark" : "light");
+}
 
 function toggleUnits() {
     updateProfile("units", isMetric.value ? "imperial" : "metric");
@@ -39,7 +46,7 @@ function toggleGuidedNavigation() {
             </div>
 
             <div class="title-icon">
-                <Icon name="flowbite:cog-outline" size="38" />
+                <Icon name="lucide:settings" size="38" />
 
                 <div>
                     <p class="panel-title">Settings</p>
@@ -51,18 +58,6 @@ function toggleGuidedNavigation() {
         </div>
 
         <div class="separator"></div>
-
-        <ColorOption
-            option-title="Theme"
-            icon-name="solar:pallete-2-linear"
-            color-element="themeColor"
-        />
-
-        <ColorOption
-            option-title="Route"
-            icon-name="material-symbols:route-outline"
-            color-element="routeColor"
-        />
 
         <div class="option setting">
             <div class="option-title">
@@ -76,6 +71,41 @@ function toggleGuidedNavigation() {
                 >
                     {{ activeSettings.ownedDlcs.length }} /
                     {{ Object.keys(selectedExpansion).length }} active
+                </button>
+            </div>
+        </div>
+
+        <ColorOption
+            option-title="Theme"
+            icon-name="lucide:palette"
+            color-element="themeColor"
+        />
+
+        <ColorOption
+            option-title="Route"
+            icon-name="lucide:route"
+            color-element="routeColor"
+        />
+
+        <div class="option setting">
+            <div class="option-title">
+                <Icon name="lucide:type-outline" size="24" />
+                <p>Text Theme</p>
+            </div>
+
+            <div class="segmented-control" @click="toggleTextColor">
+                <button
+                    class="segment-btn"
+                    :class="{ active: isTextThemeLight }"
+                >
+                    <span class="label">Light</span>
+                </button>
+
+                <button
+                    class="segment-btn"
+                    :class="{ active: !isTextThemeLight }"
+                >
+                    <span class="label">Dark</span>
                 </button>
             </div>
         </div>
@@ -99,10 +129,7 @@ function toggleGuidedNavigation() {
 
         <div class="option setting">
             <div class="option-title">
-                <Icon
-                    name="material-symbols:roundabout-right-rounded"
-                    size="24"
-                />
+                <Icon name="lucide:navigation-2" size="24" />
                 <p>Guided Navigation</p>
             </div>
 

@@ -2,9 +2,11 @@ import { AppSettings } from "~/constants/appSettings";
 import type { GameType } from "~/types";
 
 export type UnitSystem = "metric" | "imperial";
+export type TextTheme = "light" | "dark";
 
 export interface GameProfile {
     themeColor: string;
+    textColor: TextTheme;
     routeColor: string;
     units: UnitSystem;
     ownedDlcs: number[];
@@ -23,6 +25,7 @@ export interface AppSettingsState {
 
 const DEFAULT_PROFILE: GameProfile = {
     themeColor: AppSettings.theme.defaultColor,
+    textColor: "light",
     routeColor: "#22d3ee",
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
@@ -60,6 +63,13 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--theme-color",
             activeSettings.value.themeColor,
+        );
+
+        const isLight = activeSettings.value.textColor === "light";
+
+        document.documentElement.style.setProperty(
+            "--main-text-color",
+            isLight ? "#f2f2f2" : "#333",
         );
     };
 
