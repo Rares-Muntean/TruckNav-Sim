@@ -145,6 +145,11 @@ Reported issues will be addressed as time permits.
 
 # Credits & Acknowledgements
 
+### [@truckermudgeon](https://github.com/truckermudgeon)
+Special thanks for the **['maps'](https://github.com/truckermudgeon/maps)** repository.
+*   This provided the essential starting point for map parsing and was the **catalyst that turned the idea into a reality**.
+*   The logic for converting internal game coordinates to a usable format (WGS84) was invaluable for getting the map rendered correctly.
+
 ### [@RenCloud](https://github.com/RenCloud)
 Thanks for the **[scs-sdk-plugin](https://github.com/RenCloud/scs-sdk-plugin)**.
 *   This tool is the bridge that allows the browser to communicate with the game engine. It's core functionality is refined and implemented seamlessly inside TruckNav.
