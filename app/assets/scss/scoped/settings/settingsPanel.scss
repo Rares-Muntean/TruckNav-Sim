@@ -8,6 +8,20 @@
 
     padding-top: 1.8rem;
     font-weight: 600;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-wrapper {
+    overflow-y: auto;
+
+    /* Hide scrollbar for browsers */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .setting {

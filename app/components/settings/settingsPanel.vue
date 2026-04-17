@@ -63,109 +63,111 @@ function toggleGuidedNavigation() {
 
         <div class="separator"></div>
 
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:map-plus" size="24" />
-                <p>Owned DLCs</p>
+        <div class="settings-wrapper">
+            <div class="option setting">
+                <div class="option-title">
+                    <Icon name="lucide:map-plus" size="24" />
+                    <p>Owned DLCs</p>
+                </div>
+                <div class="owned-dlcs">
+                    <button
+                        @click.prevent="toggleDlcPanel"
+                        class="nav-btn settings-btn"
+                    >
+                        {{ activeSettings.ownedDlcs.length }} /
+                        {{ Object.keys(selectedExpansion).length }} active
+                    </button>
+                </div>
             </div>
-            <div class="owned-dlcs">
+
+            <ColorOption
+                option-title="Theme"
+                icon-name="lucide:palette"
+                color-element="themeColor"
+            />
+
+            <ColorOption
+                option-title="Route"
+                icon-name="lucide:route"
+                color-element="routeColor"
+            />
+
+            <div class="option setting">
+                <div class="option-title">
+                    <Icon name="lucide:type-outline" size="24" />
+                    <p>Text Theme</p>
+                </div>
+
+                <div class="segmented-control" @click="toggleTextColor">
+                    <button
+                        class="segment-btn"
+                        :class="{ active: isTextThemeLight }"
+                    >
+                        <span class="label">Light</span>
+                    </button>
+
+                    <button
+                        class="segment-btn"
+                        :class="{ active: !isTextThemeLight }"
+                    >
+                        <span class="label">Dark</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="option setting">
+                <div class="option-title">
+                    <Icon name="lucide:ruler" size="24" />
+                    <p>Units</p>
+                </div>
+
+                <div class="segmented-control" @click="toggleUnits">
+                    <button class="segment-btn" :class="{ active: isMetric }">
+                        <span class="label">Metric</span>
+                    </button>
+
+                    <button class="segment-btn" :class="{ active: !isMetric }">
+                        <span class="label">Imperial</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="option setting">
+                <div class="option-title">
+                    <Icon name="lucide:navigation-2" size="24" />
+                    <p>Guided Navigation</p>
+                </div>
+
+                <div class="segmented-control" @click="toggleGuidedNavigation">
+                    <button
+                        class="segment-btn"
+                        :class="{ active: hasGuidedNavigation }"
+                    >
+                        <span class="label">On</span>
+                    </button>
+
+                    <button
+                        class="segment-btn"
+                        :class="{ activeOff: !hasGuidedNavigation }"
+                    >
+                        <span class="label">Off</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="option setting">
+                <div class="option-title">
+                    <Icon name="lucide:rotate-ccw" size="24" />
+                    <p>Reset to Defaults</p>
+                </div>
+
                 <button
-                    @click.prevent="toggleDlcPanel"
-                    class="nav-btn settings-btn"
+                    @click.prevent="resetSettings"
+                    class="nav-btn settings-btn default-color"
                 >
-                    {{ activeSettings.ownedDlcs.length }} /
-                    {{ Object.keys(selectedExpansion).length }} active
+                    Reset
                 </button>
             </div>
-        </div>
-
-        <ColorOption
-            option-title="Theme"
-            icon-name="lucide:palette"
-            color-element="themeColor"
-        />
-
-        <ColorOption
-            option-title="Route"
-            icon-name="lucide:route"
-            color-element="routeColor"
-        />
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:type-outline" size="24" />
-                <p>Text Theme</p>
-            </div>
-
-            <div class="segmented-control" @click="toggleTextColor">
-                <button
-                    class="segment-btn"
-                    :class="{ active: isTextThemeLight }"
-                >
-                    <span class="label">Light</span>
-                </button>
-
-                <button
-                    class="segment-btn"
-                    :class="{ active: !isTextThemeLight }"
-                >
-                    <span class="label">Dark</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:ruler" size="24" />
-                <p>Units</p>
-            </div>
-
-            <div class="segmented-control" @click="toggleUnits">
-                <button class="segment-btn" :class="{ active: isMetric }">
-                    <span class="label">Metric</span>
-                </button>
-
-                <button class="segment-btn" :class="{ active: !isMetric }">
-                    <span class="label">Imperial</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:navigation-2" size="24" />
-                <p>Guided Navigation</p>
-            </div>
-
-            <div class="segmented-control" @click="toggleGuidedNavigation">
-                <button
-                    class="segment-btn"
-                    :class="{ active: hasGuidedNavigation }"
-                >
-                    <span class="label">On</span>
-                </button>
-
-                <button
-                    class="segment-btn"
-                    :class="{ activeOff: !hasGuidedNavigation }"
-                >
-                    <span class="label">Off</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:rotate-ccw" size="24" />
-                <p>Reset to Defaults</p>
-            </div>
-
-            <button
-                @click.prevent="resetSettings"
-                class="nav-btn settings-btn default-color"
-            >
-                Reset
-            </button>
         </div>
 
         <Transition name="panel-pop">
