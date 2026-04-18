@@ -22,7 +22,18 @@ const selectedExpansion = computed(() => {
         : atsExpansions;
 });
 
-const items = ref(["Quicksand", "Roboto", "Overpass", "Montserrat"]);
+const items = ref([
+    "Quicksand",
+    "Roboto",
+    "Exo-2",
+    "Montserrat",
+    "Oxanium",
+    "Rubik",
+    "Open-Sans",
+    "Nunito",
+    "Karla",
+    "Commissioner",
+]);
 
 function toggleDlcPanel() {
     isDlcPanelOpened.value = !isDlcPanelOpened.value;
