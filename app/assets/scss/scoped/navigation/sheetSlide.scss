@@ -10,8 +10,32 @@ $compact-bar-height: 35px;
     gap: 1.2rem;
 
     .start-btn {
+        flex: 1;
         width: 100%;
         padding: 6px 12px;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: var(--progress, 0%);
+
+            background-color: rgba(0, 0, 0, 0.2);
+
+            z-index: 0;
+        }
+
+        span,
+        i,
+        svg,
+        .icon {
+            position: relative;
+            z-index: 1;
+        }
     }
 
     .stop-btn {

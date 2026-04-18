@@ -144,11 +144,6 @@ $button-padding: 8px 10px;
         color: $white-font-text;
     }
 
-    &.red-color {
-        background-color: $red-color;
-        color: #222;
-    }
-
     &.increase-decrease {
         display: flex;
         padding: 0;
@@ -165,6 +160,10 @@ $button-padding: 8px 10px;
         opacity: 0.5;
         transform: translateY(1px);
     }
+}
+
+.cancel-timer-icon {
+    color: $red-color;
 }
 
 .actual-truck-preview {

@@ -13,6 +13,9 @@ const props = defineProps<{
 
 const { kmToUserUnits, distanceUnit } = useUnitConversion();
 
+const countdown = ref(5);
+const progress = ref(100);
+
 const routeDistanceConverted = computed(() =>
     kmToUserUnits(props.routeDistance),
 );
@@ -25,6 +28,51 @@ const emit = defineEmits<{
 const onToggleSheetHidden = () => {
     emit("update:isSheetHidden", !props.isSheetHidden);
 };
+
+const cancelAutoStart = () => {
+    if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+    }
+    countdown.value = 0;
+    progress.value = 0;
+};
+
+let rafId: number | null = null;
+const startSmoothTimer = () => {
+    const duration = 5000;
+    const startTime = Date.now();
+
+    const frame = () => {
+        const timePassed = Date.now() - startTime;
+        const remaining = Math.max(0, duration - timePassed);
+
+        countdown.value = Math.ceil(remaining / 1000);
+        progress.value = (remaining / duration) * 100;
+
+        if (remaining > 0) {
+            rafId = requestAnimationFrame(frame);
+        } else {
+            cancelAutoStart();
+            props.onStartNavigation();
+        }
+    };
+
+    rafId = requestAnimationFrame(frame);
+};
+
+onMounted(() => {
+    if (!props.isNavigating) {
+        startSmoothTimer();
+    }
+});
+
+watch(
+    () => props.isNavigating,
+    (navigating) => {
+        if (navigating) cancelAutoStart();
+    },
+);
 </script>
 
 <template>
@@ -98,12 +146,27 @@ const onToggleSheetHidden = () => {
 
                     <button
                         class="start-btn nav-btn"
+                        :style="{ '--progress': progress + `%` }"
                         @click.prevent="onStartNavigation"
                     >
                         <Icon name="lucide:map-pin-check" size="24" />
                         <span>{{
                             isNavigating ? "Resume" : "Start Navigation"
                         }}</span>
+                        <span
+                            v-if="countdown > 0 && !isNavigating"
+                            style="margin-left: 5px; opacity: 0.8"
+                        >
+                            ({{ countdown }}s)
+                        </span>
+                    </button>
+
+                    <button v-show="countdown > 0" @click="cancelAutoStart">
+                        <Icon
+                            name="lucide:x"
+                            size="28"
+                            class="cancel-timer-icon"
+                        />
                     </button>
                 </div>
             </div>
