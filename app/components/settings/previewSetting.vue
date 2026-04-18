@@ -3,7 +3,7 @@ const props = defineProps<{ height: number }>();
 </script>
 
 <template>
-    <div class="preview" :style="{ height: `${height}px` }">
+    <div class="preview" :style="{ 'min-height': `${height}px` }">
         <slot />
     </div>
 </template>

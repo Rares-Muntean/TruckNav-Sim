@@ -16,12 +16,10 @@ $button-padding: 8px 10px;
 }
 
 .settings-wrapper {
-    /* Hide scrollbar for browsers */
-    &::-webkit-scrollbar {
-        display: none;
-    }
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .setting {
@@ -33,13 +31,23 @@ $button-padding: 8px 10px;
 }
 
 .menu-list {
+    overflow-y: auto;
+
     display: flex;
+
     flex-direction: column;
     gap: 1.6rem;
 
     &.main {
         gap: 2.6rem;
     }
+
+    /* Hide scrollbar for browsers */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .selector {
@@ -113,6 +121,7 @@ $button-padding: 8px 10px;
     height: 1px;
     width: 90%;
     align-self: center;
+    flex-shrink: 0;
     background-color: $secondaryColor;
     opacity: 0.7;
     border-radius: 3px;

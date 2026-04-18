@@ -1,0 +1,32 @@
+.compact-trip-progress {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: -100px;
+    right: -2px;
+    padding: 4px 12px 4px 12px;
+
+    display: flex;
+    gap: 1.4rem;
+
+    font-size: var(--compact-trip-size);
+    color: $white-font-text;
+
+    border: 1.5px solid var(--theme-color);
+    border-right: none;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+
+    background-color: $primaryColor;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    .icon-btn {
+        flex: 1;
+        padding: 0;
+    }
+
+    &.preview {
+        position: static;
+        margin: 0;
+    }
+}

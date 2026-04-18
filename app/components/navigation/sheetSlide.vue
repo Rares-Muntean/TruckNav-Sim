@@ -31,19 +31,14 @@ const onToggleSheetHidden = () => {
     <div class="bottom-sheet" :class="{ 'is-hidden': isSheetHidden }">
         <div class="sheet-body">
             <Transition name="compact-slide">
-                <div
+                <CompactTrip
                     v-if="isSheetHidden"
                     v-on:click="onToggleSheetHidden"
                     class="compact-trip-progress"
-                >
-                    <Icon name="lets-icons:road-finish-fill" size="22" />
-                    <div class="right">
-                        <span
-                            >{{ routeDistanceConverted }} {{ distanceUnit }},
-                        </span>
-                        <span>{{ routeEta }}</span>
-                    </div>
-                </div>
+                    :route-distance-converted="routeDistanceConverted"
+                    :distance-unit="distanceUnit"
+                    :route-eta="routeEta"
+                />
             </Transition>
 
             <div class="sheet-content">
@@ -52,19 +47,16 @@ const onToggleSheetHidden = () => {
 
                     <div class="hide-sheet">
                         <button
+                            v-show="!isSheetHidden"
                             @click.prevent="onToggleSheetHidden"
                             class="hide-sheet-btn nav-btn"
                         >
                             <Icon
-                                :name="
-                                    isSheetHidden
-                                        ? 'bxs:chevron-up'
-                                        : 'bxs:chevron-down'
-                                "
+                                name="bxs:chevron-down"
                                 class="chevron-icon"
                                 size="18"
                             />
-                            {{ isSheetHidden ? "" : "Hide" }}
+                            Hide
                         </button>
                     </div>
                 </div>

@@ -27,18 +27,18 @@ const isAtMinValue = computed(
 );
 
 function updateSize(mode: "+" | "-") {
+    const currentVal = settings.value[props.settingName] as number;
+    let nextValue =
+        mode === "-" ? currentVal - props.amount : currentVal + props.amount;
+
+    nextValue = Math.round(nextValue * 100) / 100;
+
     if (mode === "-") {
         if (isAtMinValue.value) return;
-        updateGlobal(
-            props.settingName,
-            (settings.value[props.settingName] as number) - props.amount,
-        );
+        updateGlobal(props.settingName, nextValue);
     } else {
         if (isAtMaxValue.value) return;
-        updateGlobal(
-            props.settingName,
-            (settings.value[props.settingName] as number) + props.amount,
-        );
+        updateGlobal(props.settingName, nextValue);
     }
 }
 

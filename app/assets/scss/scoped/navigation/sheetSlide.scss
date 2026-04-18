@@ -112,28 +112,6 @@ $compact-bar-height: 35px;
     }
 }
 
-.compact-trip-progress {
-    position: absolute;
-    top: -50px;
-    right: -2px;
-    padding: 4px 48px 4px 12px;
-
-    display: flex;
-    gap: 1.4rem;
-    height: $compact-bar-height;
-
-    font-size: 1.8rem;
-    color: $white-font-text;
-
-    border: 1.5px solid var(--theme-color);
-    border-right: none;
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-
-    background-color: $primaryColor;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
 .separator {
     height: 1px;
     background: rgba(255, 255, 255, 0.1);

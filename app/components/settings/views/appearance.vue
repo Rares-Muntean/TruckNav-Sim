@@ -137,5 +137,22 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                 }"
             ></div>
         </PreviewSetting>
+
+        <IncreaseOption
+            option-title="Compact Trip Size"
+            icon-name="lucide:circle-plus"
+            setting-name="compactTripFontSize"
+            :max-value="2.5"
+            :min-value="1.2"
+            :amount="0.1"
+        />
+        <PreviewSetting :height="100">
+            <CompactTrip
+                class="compact-trip-progress preview"
+                :route-distance-converted="999"
+                distance-unit="mi"
+                route-eta="9h 59min"
+            />
+        </PreviewSetting>
     </div>
 </template>

@@ -24,6 +24,7 @@ export interface AppSettingsState {
     };
     hudBtnSize: number;
     truckMarkerSize: number;
+    compactTripFontSize: number;
 }
 
 const DEFAULT_PROFILE: GameProfile = {
@@ -51,6 +52,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     },
     hudBtnSize: 30,
     truckMarkerSize: 40,
+    compactTripFontSize: 1.8,
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -86,6 +88,11 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--hud-btn-size",
             `${settings.value.hudBtnSize}px`,
+        );
+
+        document.documentElement.style.setProperty(
+            "--compact-trip-size",
+            `${settings.value.compactTripFontSize}rem`,
         );
     };
 
