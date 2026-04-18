@@ -1,7 +1,7 @@
 $small-screens: 900px;
 $tablets: 650px;
 $phones: 420px;
-$narrow-phones: 420px;
+$narrow-phones: 360px;
 
 @mixin for-phone {
     @media (max-width: $phones) {

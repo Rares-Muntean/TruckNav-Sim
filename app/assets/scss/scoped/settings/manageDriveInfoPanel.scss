@@ -1,0 +1,48 @@
+.manage-drive-info-wrapper {
+    color: $white-font-text;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+}
+
+.component {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+
+    padding: 8px 12px;
+
+    border-radius: 6px;
+
+    &.is-active {
+        outline: 2px solid var(--theme-color);
+    }
+
+    .icon {
+        width: 24px;
+        height: 24px;
+
+        &.is-active {
+            color: var(--theme-color);
+        }
+    }
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+
+    .title {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+
+        font-size: 2rem;
+    }
+
+    .description {
+        opacity: 0.6;
+        font-size: 1.4rem;
+        max-width: 90%;
+    }
+}

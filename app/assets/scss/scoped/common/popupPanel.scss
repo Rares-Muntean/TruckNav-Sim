@@ -1,0 +1,65 @@
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.32);
+}
+
+.popup-window {
+    width: 85vw;
+    height: 70vh;
+
+    position: relative;
+
+    overflow-y: auto;
+
+    color: $white-font-text;
+    background-color: $primaryColor;
+    border: 2px solid $secondaryColor;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    padding: 1.5rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+
+    .popup-header {
+        font-size: 2.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .close-icon {
+            display: flex;
+        }
+    }
+}
+
+.popup-content {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}

@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import { generateTruckIcon } from "~/assets/utils/map/markers";
 
-const { settings, activeSettings, updateProfile } = useSettings();
+const { settings, activeSettings, updateProfile, DEFAULT_SETTINGS } =
+    useSettings();
+
 const truckImgSrc = ref("");
+const isDriveInfoOpened = ref(false);
 
 const isTextThemeLight = computed(
     () => activeSettings.value.textColor === "light",
@@ -32,6 +35,10 @@ function toggleTextColor() {
 
 function updateFont(val: string) {
     updateProfile("fontFamily", val);
+}
+
+function toggleDriveInfoPanel() {
+    isDriveInfoOpened.value = !isDriveInfoOpened.value;
 }
 
 watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
@@ -154,5 +161,32 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                 route-eta="9h 59min"
             />
         </PreviewSetting>
+
+        <div class="option setting">
+            <div class="option-title">
+                <Icon name="lucide:circle-gauge" size="24" />
+                <p>Driving Info</p>
+            </div>
+            <div class="owned-dlcs">
+                <button
+                    @click.prevent="toggleDriveInfoPanel"
+                    class="nav-btn settings-btn"
+                >
+                    {{ settings.activeUiComponents.length }} /
+                    {{ DEFAULT_SETTINGS.activeUiComponents.length }}
+                    active
+                </button>
+            </div>
+        </div>
+
+        <Transition name="panel-pop">
+            <PopupPanel
+                v-if="isDriveInfoOpened"
+                title="Select Components"
+                @close="toggleDriveInfoPanel"
+            >
+                <ManageDriveInfoPanel />
+            </PopupPanel>
+        </Transition>
     </div>
 </template>

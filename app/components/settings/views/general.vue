@@ -76,10 +76,13 @@ function toggleDlcPanel() {
         </div>
 
         <Transition name="panel-pop">
-            <ManageDlcsWindow
+            <PopupPanel
                 v-if="isDlcPanelOpened"
-                :close-panel="toggleDlcPanel"
-            />
+                title="Choose DLCs"
+                @close="toggleDlcPanel"
+            >
+                <ManageDlcsWindow />
+            </PopupPanel>
         </Transition>
     </div>
 </template>

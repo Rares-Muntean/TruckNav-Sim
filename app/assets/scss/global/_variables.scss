@@ -18,7 +18,7 @@ $blue-color: #7dd3fc;
 $ats-color: #d32f2f;
 $ets2-color: #fbc02d;
 
-$game-info-bar-height: 40px;
+$game-info-bar-height: var(--top-bar-height);
 
 $expanded-sheet-height: 215px;
 $collapsed-sheet-height: 90px;

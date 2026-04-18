@@ -459,6 +459,7 @@ const onCancelRoute = () => {
                     </Transition>
 
                     <TopBar
+                        v-show="settings.activeUiComponents.includes('topBar')"
                         :fuel="fuel"
                         :game-connected="gameConnected"
                         :game-time="gameTime"
@@ -539,7 +540,10 @@ const onCancelRoute = () => {
                     </div>
 
                     <SpeedLimit
-                        v-show="speedLimit > 0"
+                        v-show="
+                            speedLimit > 0 &&
+                            settings.activeUiComponents.includes('speedLimit')
+                        "
                         :truck-speed="truckSpeed"
                         :speed-limit="speedLimit"
                     />
