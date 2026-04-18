@@ -52,9 +52,9 @@ const onToggleSheetHidden = () => {
                             class="hide-sheet-btn nav-btn"
                         >
                             <Icon
-                                name="bxs:chevron-down"
+                                name="lucide:chevron-down"
                                 class="chevron-icon"
-                                size="18"
+                                size="20"
                             />
                             Hide
                         </button>
@@ -66,7 +66,7 @@ const onToggleSheetHidden = () => {
                 <div class="full-stats">
                     <div class="stat-block">
                         <Icon
-                            name="tabler:clock-filled"
+                            name="lucide:clock-check"
                             size="26"
                             class="icon-eta"
                         />
@@ -77,11 +77,7 @@ const onToggleSheetHidden = () => {
                     </div>
 
                     <div class="stat-block">
-                        <Icon
-                            name="tabler:ruler-2"
-                            size="26"
-                            class="icon-dist"
-                        />
+                        <Icon name="lucide:ruler" size="26" class="icon-dist" />
                         <div>
                             <div class="value">
                                 {{ routeDistanceConverted }} {{ distanceUnit }}
@@ -104,7 +100,7 @@ const onToggleSheetHidden = () => {
                         class="start-btn nav-btn"
                         @click.prevent="onStartNavigation"
                     >
-                        <Icon name="tabler:navigation-check" size="24" />
+                        <Icon name="lucide:map-pin-check" size="24" />
                         <span>{{
                             isNavigating ? "Resume" : "Start Navigation"
                         }}</span>

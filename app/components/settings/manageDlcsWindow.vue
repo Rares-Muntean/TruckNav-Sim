@@ -77,14 +77,10 @@ const toggleDlc = (id: number) => {
                 >
                     <Icon
                         v-if="activeSettings.ownedDlcs.includes(Number(id))"
-                        name="ic:round-check-circle"
+                        name="lucide:circle-check"
                         size="26"
                     />
-                    <Icon
-                        v-else
-                        name="ic:round-radio-button-unchecked"
-                        size="26"
-                    />
+                    <Icon v-else name="lucide:circle" size="26" />
                 </div>
             </div>
         </div>

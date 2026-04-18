@@ -32,9 +32,9 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
             <div class="gas-sleep">
                 <div v-show="settings.activeUiComponents.includes('fuel')"" class="fuel-amount">
                     <Icon
-                        name="bi:fuel-pump-fill"
+                        name="lucide:fuel"
                         :class="{ 'pulse-red': fuel < 100 }"
-                        size="21"
+                        size="22"   
                     />
                     <p>
                         {{ fuelConverted
@@ -47,7 +47,7 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
                     class="sleep-div"
                 >
                     <Icon
-                        name="icon-park-outline:sleep-two"
+                        name="lucide:bed-double"
                         class="sleep-icon"
                         size="22"
                         :class="{ 'pulse-blue': restStopMinutes < 90 }"
@@ -67,7 +67,7 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
         <div v-else class="disconnected-div">
             <p class="disconnected-message">Game Offline</p>
             <Icon
-                name="streamline-ultimate:link-disconnected-bold"
+                name="lucide:wifi-off"
                 class="disconnected-icon"
             />
         </div>

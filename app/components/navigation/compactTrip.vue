@@ -8,13 +8,13 @@ const props = defineProps<{
 
 <template>
     <div>
-        <Icon name="lets-icons:road-finish-fill" size="22" />
+        <Icon name="lucide:flag-triangle-right" size="22" />
         <div class="right">
             <span>{{ routeDistanceConverted }} {{ distanceUnit }}, </span>
             <span>{{ routeEta }}</span>
         </div>
         <button class="nav-btn icon-btn">
-            <Icon name="bxs:chevron-up" />
+            <Icon name="lucide:chevron-up" />
         </button>
     </div>
 </template>

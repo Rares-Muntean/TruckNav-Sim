@@ -471,11 +471,11 @@ const onCancelRoute = () => {
 
                     <div class="left-buttons">
                         <HudButton
-                            icon-name="material-symbols:arrow-back-rounded"
+                            icon-name="lucide:arrow-left"
                             :onClick="goHome"
                         />
                         <HudButton
-                            icon-name="flowbite:cog-outline"
+                            icon-name="lucide:settings"
                             :onClick="toggleSettingsPanel"
                         />
                     </div>
@@ -494,8 +494,8 @@ const onCancelRoute = () => {
                     <NotificationGeneral
                         :icon-name="
                             isClickingEnabled
-                                ? 'i-tabler:hand-click'
-                                : 'i-tabler:hand-click-off'
+                                ? 'lucide:pointer'
+                                : 'lucide:pointer-off'
                         "
                         :trigger="clickingNotificationTrigger"
                         :text="
@@ -514,24 +514,24 @@ const onCancelRoute = () => {
                     <div class="hud-buttons">
                         <HudButton
                             v-if="isWeb"
-                            icon-name="gridicons:fullscreen"
+                            icon-name="lucide:fullscreen"
                             :onClick="onToggleFullscreen"
                         />
                         <HudButton
-                            icon-name="ix:navigation"
+                            icon-name="lucide:compass"
                             :onClick="onResetNorth"
                         />
                         <HudButton
                             :is-active="isAutoFollowEnabled"
-                            icon-name="material-symbols:location-searching"
-                            active-icon-name="material-symbols:my-location"
+                            icon-name="lucide:locate"
+                            active-icon-name="lucide:locate-fixed"
                             :class="{ 'green-icon': isAutoFollowEnabled }"
                             :onClick="toggleAutoFollow"
                         />
                         <HudButton
                             :is-active="isClickingEnabled"
-                            icon-name="i-tabler:hand-click"
-                            active-icon-name="i-tabler:hand-click-off"
+                            icon-name="lucide:pointer"
+                            active-icon-name="lucide:pointer-off"
                             :class="
                                 isClickingEnabled ? 'red-icon' : 'green-icon'
                             "

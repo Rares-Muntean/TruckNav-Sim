@@ -30,11 +30,13 @@ const onToggleExpanded = () => {
             v-on:click="onToggleExpanded"
         >
             <Icon
-                :name="isExpanded ? 'bxs:chevron-right' : 'bxs:chevron-left'"
+                :name="
+                    isExpanded ? 'lucide:chevron-right' : 'lucide:chevron-left'
+                "
                 size="22"
             />
             <div class="warning-message">
-                <Icon name="ant-design:warning-filled" size="22" />
+                <Icon name="lucide:triangle-alert" size="22" />
 
                 <div class="text-content">
                     <span class="text-nowrap">{{ text }}</span>

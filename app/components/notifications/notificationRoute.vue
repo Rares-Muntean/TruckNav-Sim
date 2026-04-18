@@ -8,9 +8,9 @@ const { isWeb } = usePlatform();
 
 const iconName = computed(() => {
     if (props.isRouteFound === true) {
-        return "ic:outline-check";
+        return "lucide:map-pin-check-inside";
     } else if (props.isRouteFound === false) {
-        return "ic:outline-close";
+        return "lucide:map-pin-x-inside";
     }
 
     return "svg-spinners:ring-resize";

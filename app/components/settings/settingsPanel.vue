@@ -22,7 +22,7 @@ function handleBack() {
     <div class="settings-panel">
         <div class="settings-title">
             <div class="icon-btn" v-on:click="handleBack">
-                <Icon name="material-symbols:arrow-back-rounded" size="26" />
+                <Icon name="lucide:arrow-left" size="26" />
             </div>
 
             <div class="title-icon">
