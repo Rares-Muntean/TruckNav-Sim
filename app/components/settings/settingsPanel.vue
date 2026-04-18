@@ -22,9 +22,11 @@ const selectedExpansion = computed(() => {
         : atsExpansions;
 });
 
-const toggleDlcPanel = () => {
+const items = ref(["Quicksand", "Roboto", "Overpass", "Montserrat"]);
+
+function toggleDlcPanel() {
     isDlcPanelOpened.value = !isDlcPanelOpened.value;
-};
+}
 
 function toggleTextColor() {
     updateProfile("textColor", isTextThemeLight.value ? "dark" : "light");
@@ -39,6 +41,10 @@ function toggleGuidedNavigation() {
         "hasTurnNavigation",
         hasGuidedNavigation.value ? false : true,
     );
+}
+
+function updateFont(val: string) {
+    updateProfile("fontFamily", val);
 }
 </script>
 
@@ -157,13 +163,40 @@ function toggleGuidedNavigation() {
 
             <div class="option setting">
                 <div class="option-title">
+                    <Icon name="lucide:type" size="24" />
+                    <p>App Font</p>
+                </div>
+
+                <USelect
+                    :model-value="activeSettings.fontFamily"
+                    @update:model-value="(val) => updateFont(val)"
+                    :items="items"
+                    variant="none"
+                    class="selector"
+                    :ui="{
+                        trailingIcon: 'shrink-0 size-[20px] text-white !px-6',
+                        content: 'bg-[#222e3c] shadow-xl rounded-md',
+                        item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#3d546e] rounded cursor-pointer transition-colors',
+                        itemTrailingIcon: 'text-white',
+                    }"
+                >
+                    <template #item="{ item }">
+                        <span :style="{ fontFamily: item }">
+                            {{ item }}
+                        </span>
+                    </template>
+                </USelect>
+            </div>
+
+            <div class="option setting">
+                <div class="option-title">
                     <Icon name="lucide:rotate-ccw" size="24" />
                     <p>Reset to Defaults</p>
                 </div>
 
                 <button
                     @click.prevent="resetSettings"
-                    class="nav-btn settings-btn default-color"
+                    class="nav-btn settings-btn red-color"
                 >
                     Reset
                 </button>

@@ -45,10 +45,15 @@
 }
 
 .btn {
-    width: 50%;
+    width: 55%;
     align-self: center;
     border-radius: 4px;
 
     transition: 0.2s ease-out;
     margin-bottom: 3.2rem;
+    color: var(--main-text-color);
+
+    &:focus {
+        outline: none;
+    }
 }

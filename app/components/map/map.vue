@@ -224,6 +224,27 @@ watch(
     },
 );
 
+// We check each time the text font changes to udate to the settings text font
+watch(
+    () => activeSettings.value.fontFamily,
+    (newFont) => {
+        if (!map.value) return;
+
+        const textLayers = [
+            "village-labels",
+            "city-labels",
+            "capital-major-labels",
+            "country-labels",
+        ];
+
+        textLayers.forEach((layerId) => {
+            if (map.value!.getLayer(layerId)) {
+                map.value!.setLayoutProperty(layerId, "text-font", [newFont]);
+            }
+        });
+    },
+);
+
 // We set the routeFound back to null with a delay if its true / false.
 watch(routeFound, (newVal) => {
     if (newVal !== null) {

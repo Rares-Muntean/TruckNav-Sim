@@ -1,3 +1,5 @@
+$button-padding: 8px 10px;
+
 /**
  * GENERAL
  */
@@ -30,6 +32,22 @@
     color: $white-font-text;
 
     font-size: 1.8rem;
+}
+
+.selector {
+    min-width: 150px;
+    max-width: 200px;
+
+    background: $default-background-color-dark;
+    border-radius: 5px;
+
+    padding: $button-padding;
+
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: $white-font-text;
+
+    cursor: pointer;
 }
 
 .settings-title {
@@ -86,12 +104,17 @@
     transition: 0s;
     font-weight: 700;
     box-shadow: none;
-    padding: 6px 10px;
+    padding: $button-padding;
     font-size: 1.6rem;
 
     &.default-color {
         background-color: $default-background-color-dark;
         color: $white-font-text;
+    }
+
+    &.red-color {
+        background-color: $red-color;
+        color: #222;
     }
 }
 

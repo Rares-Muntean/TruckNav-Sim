@@ -12,6 +12,7 @@ export interface GameProfile {
     ownedDlcs: number[];
     lastDestination: [number, number] | null;
     hasTurnNavigation: boolean;
+    fontFamily: string;
 }
 
 export interface AppSettingsState {
@@ -31,6 +32,7 @@ const DEFAULT_PROFILE: GameProfile = {
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
     lastDestination: null,
     hasTurnNavigation: true,
+    fontFamily: "Quicksand",
 };
 
 const DEFAULT_SETTINGS: AppSettingsState = {
@@ -70,6 +72,11 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--main-text-color",
             isLight ? "#f2f2f2" : "#333",
+        );
+
+        document.documentElement.style.setProperty(
+            "--app-font",
+            activeSettings.value.fontFamily,
         );
     };
 
