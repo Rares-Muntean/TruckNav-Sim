@@ -510,22 +510,18 @@ const onCancelRoute = () => {
                             :onClick="onResetNorth"
                         />
                         <HudButton
-                            :class="isAutoFollowEnabled ? 'green-icon' : ''"
-                            :icon-name="
-                                isAutoFollowEnabled
-                                    ? 'material-symbols:my-location'
-                                    : 'material-symbols:location-searching'
-                            "
+                            :is-active="isAutoFollowEnabled"
+                            icon-name="material-symbols:location-searching"
+                            active-icon-name="material-symbols:my-location"
+                            :class="{ 'green-icon': isAutoFollowEnabled }"
                             :onClick="toggleAutoFollow"
                         />
                         <HudButton
+                            :is-active="isClickingEnabled"
+                            icon-name="i-tabler:hand-click"
+                            active-icon-name="i-tabler:hand-click-off"
                             :class="
                                 isClickingEnabled ? 'red-icon' : 'green-icon'
-                            "
-                            :icon-name="
-                                isClickingEnabled
-                                    ? 'i-tabler:hand-click-off'
-                                    : 'i-tabler:hand-click'
                             "
                             :onClick="toggleEnableClicking"
                         />

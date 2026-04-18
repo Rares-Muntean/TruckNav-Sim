@@ -16,8 +16,6 @@ $button-padding: 8px 10px;
 }
 
 .settings-wrapper {
-    overflow-y: auto;
-
     /* Hide scrollbar for browsers */
     &::-webkit-scrollbar {
         display: none;
@@ -32,6 +30,16 @@ $button-padding: 8px 10px;
     color: $white-font-text;
 
     font-size: 1.8rem;
+}
+
+.menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+
+    &.main {
+        gap: 2.6rem;
+    }
 }
 
 .selector {
@@ -52,7 +60,6 @@ $button-padding: 8px 10px;
 
 .settings-title {
     padding-left: 2rem;
-    margin-bottom: 1.8rem;
 
     font-size: 1.4rem;
 
@@ -96,6 +103,18 @@ $button-padding: 8px 10px;
     height: 2px;
     width: 100%;
     background-color: $secondaryColor;
+    border-radius: 3px;
+
+    margin-bottom: 1.8rem;
+    margin-top: 1.8rem;
+}
+
+.small-separator {
+    height: 1px;
+    width: 90%;
+    align-self: center;
+    background-color: $secondaryColor;
+    opacity: 0.7;
     border-radius: 3px;
 }
 
@@ -142,8 +161,6 @@ $button-padding: 8px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    margin-top: 3.6rem;
 }
 
 .option-title {

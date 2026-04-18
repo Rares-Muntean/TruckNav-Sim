@@ -7,6 +7,10 @@ export default defineNuxtConfig({
 
     css: ["~/assets/css/main.css", "~/assets/scss/global/_transitions.scss"],
 
+    icon: {
+        mode: "css",
+    },
+
     vite: {
         css: {
             preprocessorOptions: {
