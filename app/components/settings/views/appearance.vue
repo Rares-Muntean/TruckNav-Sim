@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-const { activeSettings, updateProfile } = useSettings();
+import { generateTruckIcon } from "~/assets/utils/map/markers";
+
+const { settings, activeSettings, updateProfile } = useSettings();
+const truckImgSrc = ref("");
 
 const isTextThemeLight = computed(
     () => activeSettings.value.textColor === "light",
@@ -18,6 +21,11 @@ const items = ref([
     "Commissioner",
 ]);
 
+async function updatePreviewIcon() {
+    const img = await generateTruckIcon(activeSettings.value.themeColor);
+    truckImgSrc.value = img.src;
+}
+
 function toggleTextColor() {
     updateProfile("textColor", isTextThemeLight.value ? "dark" : "light");
 }
@@ -25,6 +33,10 @@ function toggleTextColor() {
 function updateFont(val: string) {
     updateProfile("fontFamily", val);
 }
+
+watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
+    immediate: true,
+});
 </script>
 
 <template>
@@ -105,6 +117,25 @@ function updateFont(val: string) {
         />
         <PreviewSetting :height="70">
             <HudButton v-on:click="null" icon-name="lucide:star" />
+        </PreviewSetting>
+
+        <IncreaseOption
+            option-title="Truck Marker Size"
+            icon-name="lucide:map-pin-plus"
+            setting-name="truckMarkerSize"
+            :max-value="70"
+            :min-value="25"
+            :amount="1"
+        />
+        <PreviewSetting :height="70">
+            <div
+                class="actual-truck-preview"
+                :style="{
+                    width: settings.truckMarkerSize + 'px',
+                    height: settings.truckMarkerSize + 'px',
+                    backgroundImage: `url('${truckImgSrc}')`,
+                }"
+            ></div>
         </PreviewSetting>
     </div>
 </template>

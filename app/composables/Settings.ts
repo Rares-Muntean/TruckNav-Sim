@@ -23,6 +23,7 @@ export interface AppSettingsState {
         ats: GameProfile;
     };
     hudBtnSize: number;
+    truckMarkerSize: number;
 }
 
 const DEFAULT_PROFILE: GameProfile = {
@@ -49,6 +50,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
         },
     },
     hudBtnSize: 30,
+    truckMarkerSize: 40,
 };
 
 const STORAGE_KEY = "truck-nav-settings";

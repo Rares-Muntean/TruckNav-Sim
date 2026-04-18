@@ -79,6 +79,7 @@ const {
     startNavigationMode,
     stopNavigationMode,
     initMarker,
+    updateMarkerSize,
     updateMarkerImage,
     toggleAutoFollow,
 } = useMapCamera(map);
@@ -224,6 +225,16 @@ watch(
     },
 );
 
+// We check each time the truck marker size changes to update the map libre truck marker elemeent size
+watch(
+    () => settings.value.truckMarkerSize,
+    (newSize) => {
+        if (newSize) {
+            updateMarkerSize(newSize);
+        }
+    },
+);
+
 // We check each time the text font changes to udate to the settings text font
 watch(
     () => activeSettings.value.fontFamily,
@@ -296,7 +307,7 @@ onMounted(async () => {
             activeSettings.value.themeColor,
         );
         map.value.on("load", async () => {
-            initMarker(initialTruckImg.src);
+            initMarker(initialTruckImg.src, settings.value.truckMarkerSize);
             const graphData = await initializeGraphData();
             if (!graphData) return;
 
