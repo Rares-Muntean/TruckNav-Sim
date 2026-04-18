@@ -126,6 +126,8 @@ $button-padding: 8px 10px;
     padding: $button-padding;
     font-size: 1.6rem;
 
+    transition: 0.2s ease all;
+
     &.default-color {
         background-color: $default-background-color-dark;
         color: $white-font-text;
@@ -134,6 +136,23 @@ $button-padding: 8px 10px;
     &.red-color {
         background-color: $red-color;
         color: #222;
+    }
+
+    &.increase-decrease {
+        display: flex;
+        padding: 0;
+
+        font-size: 2rem;
+        width: 3.2rem;
+        height: 3.2rem;
+
+        align-items: center;
+        justify-content: center;
+    }
+
+    &:active {
+        opacity: 0.5;
+        transform: translateY(1px);
     }
 }
 
@@ -167,11 +186,22 @@ $button-padding: 8px 10px;
     display: flex;
     gap: 0.8rem;
     align-items: center;
+
+    span {
+        width: 24px;
+        height: 24px;
+    }
 }
 
 .color-options {
     display: flex;
     gap: 1rem;
+    align-items: center;
+}
+
+.increase-option {
+    display: flex;
+    gap: 1.2rem;
     align-items: center;
 }
 

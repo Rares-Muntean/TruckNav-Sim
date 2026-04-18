@@ -92,5 +92,19 @@ function updateFont(val: string) {
                 </template>
             </USelect>
         </div>
+
+        <div class="small-separator"></div>
+
+        <IncreaseOption
+            option-title="Hud Button Size"
+            icon-name="lucide:square-plus"
+            setting-name="hudBtnSize"
+            :max-value="40"
+            :min-value="20"
+            :amount="1"
+        />
+        <PreviewSetting :height="70">
+            <HudButton v-on:click="null" icon-name="lucide:star" />
+        </PreviewSetting>
     </div>
 </template>

@@ -69,7 +69,7 @@ input {
 
     cursor: pointer;
 
-    transition: 0.1s ease;
+    transition: 0.1s ease all;
 
     &:active {
         filter: brightness(0.8);

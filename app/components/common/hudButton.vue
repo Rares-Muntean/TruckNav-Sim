@@ -9,11 +9,11 @@ defineProps<{
 
 <template>
     <button class="option-btn" @click.prevent="onClick">
-        <Icon v-if="!activeIconName" :name="iconName" size="28" />
+        <Icon v-if="!activeIconName" class="icon" :name="iconName" />
 
         <template v-else>
-            <Icon v-show="isActive" :name="activeIconName" size="28" />
-            <Icon v-show="!isActive" :name="iconName" size="28" />
+            <Icon v-show="isActive" class="icon" :name="activeIconName" />
+            <Icon v-show="!isActive" class="icon" :name="iconName" />
         </template>
     </button>
 </template>

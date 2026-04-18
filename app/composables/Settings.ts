@@ -22,6 +22,7 @@ export interface AppSettingsState {
         ets2: GameProfile;
         ats: GameProfile;
     };
+    hudBtnSize: number;
 }
 
 const DEFAULT_PROFILE: GameProfile = {
@@ -47,6 +48,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
             units: "imperial",
         },
     },
+    hudBtnSize: 30,
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -77,6 +79,11 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--app-font",
             activeSettings.value.fontFamily,
+        );
+
+        document.documentElement.style.setProperty(
+            "--hud-btn-size",
+            `${settings.value.hudBtnSize}px`,
         );
     };
 
