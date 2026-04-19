@@ -17,6 +17,7 @@ body {
     background-color: $primaryColor;
     -webkit-tap-highlight-color: transparent;
     padding-top: env(safe-area-inset-top);
+    color: $white-font-text;
 }
 
 html,
