@@ -79,6 +79,7 @@ const {
     startNavigationMode,
     stopNavigationMode,
     initMarker,
+    updateMarkerSize,
     updateMarkerImage,
     toggleAutoFollow,
 } = useMapCamera(map);
@@ -224,6 +225,37 @@ watch(
     },
 );
 
+// We check each time the truck marker size changes to update the map libre truck marker elemeent size
+watch(
+    () => settings.value.truckMarkerSize,
+    (newSize) => {
+        if (newSize) {
+            updateMarkerSize(newSize);
+        }
+    },
+);
+
+// We check each time the text font changes to udate to the settings text font
+watch(
+    () => activeSettings.value.fontFamily,
+    (newFont) => {
+        if (!map.value) return;
+
+        const textLayers = [
+            "village-labels",
+            "city-labels",
+            "capital-major-labels",
+            "country-labels",
+        ];
+
+        textLayers.forEach((layerId) => {
+            if (map.value!.getLayer(layerId)) {
+                map.value!.setLayoutProperty(layerId, "text-font", [newFont]);
+            }
+        });
+    },
+);
+
 // We set the routeFound back to null with a delay if its true / false.
 watch(routeFound, (newVal) => {
     if (newVal !== null) {
@@ -275,7 +307,7 @@ onMounted(async () => {
             activeSettings.value.themeColor,
         );
         map.value.on("load", async () => {
-            initMarker(initialTruckImg.src);
+            initMarker(initialTruckImg.src, settings.value.truckMarkerSize);
             const graphData = await initializeGraphData();
             if (!graphData) return;
 
@@ -427,6 +459,7 @@ const onCancelRoute = () => {
                     </Transition>
 
                     <TopBar
+                        v-show="settings.activeUiComponents.includes('topBar')"
                         :fuel="fuel"
                         :game-connected="gameConnected"
                         :game-time="gameTime"
@@ -437,14 +470,13 @@ const onCancelRoute = () => {
                     />
 
                     <div class="left-buttons">
-                        <HudButton
-                            icon-name="material-symbols:arrow-back-rounded"
-                            :onClick="goHome"
-                        />
-                        <HudButton
-                            icon-name="flowbite:cog-outline"
-                            :onClick="toggleSettingsPanel"
-                        />
+                        <HudButton :onClick="goHome">
+                            <Icon name="lucide:arrow-left" class="icon" />
+                        </HudButton>
+
+                        <HudButton :onClick="toggleSettingsPanel">
+                            <Icon name="lucide:settings" class="icon" />
+                        </HudButton>
                     </div>
 
                     <ManeuverCard
@@ -459,19 +491,31 @@ const onCancelRoute = () => {
                     />
 
                     <NotificationGeneral
-                        :icon-name="
-                            isClickingEnabled
-                                ? 'i-tabler:hand-click'
-                                : 'i-tabler:hand-click-off'
-                        "
                         :trigger="clickingNotificationTrigger"
                         :text="
                             isClickingEnabled
                                 ? 'Tapping Enabled'
                                 : 'Tapping Disabled'
                         "
-                        :icon-color="isClickingEnabled ? '#4caf50' : '#dd4a34'"
-                    />
+                    >
+                        <template #icon>
+                            <Icon
+                                v-if="isClickingEnabled"
+                                class="notification-icon"
+                                name="lucide:pointer"
+                                size="24"
+                                :style="{ color: '#4caf50' }"
+                            />
+
+                            <Icon
+                                v-else
+                                class="notification-icon"
+                                name="lucide:pointer-off"
+                                size="24"
+                                :style="{ color: '#dd4a34' }"
+                            />
+                        </template>
+                    </NotificationGeneral>
 
                     <NotificationRoute
                         :is-route-found="routeFound"
@@ -479,39 +523,52 @@ const onCancelRoute = () => {
                     />
 
                     <div class="hud-buttons">
+                        <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
+                            <Icon name="lucide:fullscreen" class="icon" />
+                        </HudButton>
+
+                        <HudButton :onClick="onResetNorth">
+                            <Icon name="lucide:compass" class="icon" />
+                        </HudButton>
+
                         <HudButton
-                            v-if="isWeb"
-                            icon-name="gridicons:fullscreen"
-                            :onClick="onToggleFullscreen"
-                        />
-                        <HudButton
-                            icon-name="ix:navigation"
-                            :onClick="onResetNorth"
-                        />
-                        <HudButton
-                            :class="isAutoFollowEnabled ? 'green-icon' : ''"
-                            :icon-name="
-                                isAutoFollowEnabled
-                                    ? 'material-symbols:my-location'
-                                    : 'material-symbols:location-searching'
-                            "
+                            :is-active="isAutoFollowEnabled"
+                            :class="{ 'green-icon': isAutoFollowEnabled }"
                             :onClick="toggleAutoFollow"
-                        />
+                        >
+                            <Icon
+                                v-if="isAutoFollowEnabled"
+                                name="lucide:locate-fixed"
+                                class="icon"
+                            />
+                            <Icon v-else name="lucide:locate" class="icon" />
+                        </HudButton>
+
                         <HudButton
+                            :is-active="isClickingEnabled"
                             :class="
-                                isClickingEnabled ? 'red-icon' : 'green-icon'
-                            "
-                            :icon-name="
-                                isClickingEnabled
-                                    ? 'i-tabler:hand-click-off'
-                                    : 'i-tabler:hand-click'
+                                isClickingEnabled ? 'green-icon' : 'red-icon'
                             "
                             :onClick="toggleEnableClicking"
-                        />
+                        >
+                            <Icon
+                                v-if="isClickingEnabled"
+                                name="lucide:pointer"
+                                class="icon"
+                            />
+                            <Icon
+                                v-else
+                                name="lucide:pointer-off"
+                                class="icon"
+                            />
+                        </HudButton>
                     </div>
 
                     <SpeedLimit
-                        v-show="speedLimit > 0"
+                        v-show="
+                            speedLimit > 0 &&
+                            settings.activeUiComponents.includes('speedLimit')
+                        "
                         :truck-speed="truckSpeed"
                         :speed-limit="speedLimit"
                     />

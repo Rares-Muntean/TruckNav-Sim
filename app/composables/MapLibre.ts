@@ -51,7 +51,7 @@ export async function initializeMap(
         },
 
         sprite: `${baseUrl}/sprites/${settings.value.selectedGame}/sprites`,
-        glyphs: `${baseUrl}/fonts/{fontstack}/{range}.pbf`,
+        glyphs: `${baseUrl}/glyphs/{fontstack}/{range}.pbf`,
 
         layers: [
             {
@@ -79,8 +79,8 @@ export async function initializeMap(
             center: [10, 50],
             zoom: 6,
             minZoom: 5,
-            maxZoom: 11.5,
-            maxPitch: 45,
+            maxZoom: 13,
+            maxPitch: 60,
             fadeDuration: 0,
             attributionControl: false,
             collectResourceTiming: false,
@@ -96,8 +96,8 @@ export async function initializeMap(
             center: [-115, 40],
             zoom: 6,
             minZoom: 5,
-            maxZoom: 11.5,
-            maxPitch: 45,
+            maxZoom: 13,
+            maxPitch: 60,
             fadeDuration: 0,
             attributionControl: false,
             collectResourceTiming: false,
@@ -191,6 +191,8 @@ export async function initializeMap(
                     2,
                     10,
                     6,
+                    11,
+                    9,
                 ],
                 "line-opacity": 1,
             },
@@ -269,7 +271,7 @@ export async function initializeMap(
             "source-layer": "ets2villages",
             layout: {
                 "text-field": ["get", "name"],
-                "text-font": ["Quicksand regular"],
+                "text-font": [activeSettings.value.fontFamily],
                 "text-size": 13,
                 "text-anchor": "center",
                 "text-offset": [0, 0],
@@ -380,7 +382,7 @@ export async function initializeMap(
             filter: ["!=", ["get", "capital"], 2],
             layout: {
                 "text-field": ["get", "name"],
-                "text-font": ["Quicksand Regular"],
+                "text-font": [activeSettings.value.fontFamily],
                 "text-size": 15,
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],
@@ -407,7 +409,7 @@ export async function initializeMap(
             layout: {
                 "text-field": ["get", "name"],
                 "text-size": 18,
-                "text-font": ["Quicksand Regular"],
+                "text-font": [activeSettings.value.fontFamily],
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],
                 "text-allow-overlap": true,
@@ -432,7 +434,7 @@ export async function initializeMap(
             layout: {
                 "text-field": ["get", "name"],
                 "text-size": 20,
-                "text-font": ["Quicksand Regular"],
+                "text-font": [activeSettings.value.fontFamily],
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],
                 "text-allow-overlap": true,

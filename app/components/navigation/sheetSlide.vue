@@ -13,6 +13,9 @@ const props = defineProps<{
 
 const { kmToUserUnits, distanceUnit } = useUnitConversion();
 
+const countdown = ref(5);
+const progress = ref(100);
+
 const routeDistanceConverted = computed(() =>
     kmToUserUnits(props.routeDistance),
 );
@@ -25,25 +28,65 @@ const emit = defineEmits<{
 const onToggleSheetHidden = () => {
     emit("update:isSheetHidden", !props.isSheetHidden);
 };
+
+const cancelAutoStart = () => {
+    if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+    }
+    countdown.value = 0;
+    progress.value = 0;
+};
+
+let rafId: number | null = null;
+const startSmoothTimer = () => {
+    const duration = 5000;
+    const startTime = Date.now();
+
+    const frame = () => {
+        const timePassed = Date.now() - startTime;
+        const remaining = Math.max(0, duration - timePassed);
+
+        countdown.value = Math.ceil(remaining / 1000);
+        progress.value = (remaining / duration) * 100;
+
+        if (remaining > 0) {
+            rafId = requestAnimationFrame(frame);
+        } else {
+            cancelAutoStart();
+            props.onStartNavigation();
+        }
+    };
+
+    rafId = requestAnimationFrame(frame);
+};
+
+onMounted(() => {
+    if (!props.isNavigating) {
+        startSmoothTimer();
+    }
+});
+
+watch(
+    () => props.isNavigating,
+    (navigating) => {
+        if (navigating) cancelAutoStart();
+    },
+);
 </script>
 
 <template>
     <div class="bottom-sheet" :class="{ 'is-hidden': isSheetHidden }">
         <div class="sheet-body">
             <Transition name="compact-slide">
-                <div
+                <CompactTrip
                     v-if="isSheetHidden"
                     v-on:click="onToggleSheetHidden"
                     class="compact-trip-progress"
-                >
-                    <Icon name="lets-icons:road-finish-fill" size="22" />
-                    <div class="right">
-                        <span
-                            >{{ routeDistanceConverted }} {{ distanceUnit }},
-                        </span>
-                        <span>{{ routeEta }}</span>
-                    </div>
-                </div>
+                    :route-distance-converted="routeDistanceConverted"
+                    :distance-unit="distanceUnit"
+                    :route-eta="routeEta"
+                />
             </Transition>
 
             <div class="sheet-content">
@@ -52,19 +95,16 @@ const onToggleSheetHidden = () => {
 
                     <div class="hide-sheet">
                         <button
+                            v-show="!isSheetHidden"
                             @click.prevent="onToggleSheetHidden"
                             class="hide-sheet-btn nav-btn"
                         >
                             <Icon
-                                :name="
-                                    isSheetHidden
-                                        ? 'bxs:chevron-up'
-                                        : 'bxs:chevron-down'
-                                "
+                                name="lucide:chevron-down"
                                 class="chevron-icon"
-                                size="18"
+                                size="20"
                             />
-                            {{ isSheetHidden ? "" : "Hide" }}
+                            Hide
                         </button>
                     </div>
                 </div>
@@ -74,7 +114,7 @@ const onToggleSheetHidden = () => {
                 <div class="full-stats">
                     <div class="stat-block">
                         <Icon
-                            name="tabler:clock-filled"
+                            name="lucide:clock-check"
                             size="26"
                             class="icon-eta"
                         />
@@ -85,11 +125,7 @@ const onToggleSheetHidden = () => {
                     </div>
 
                     <div class="stat-block">
-                        <Icon
-                            name="tabler:ruler-2"
-                            size="26"
-                            class="icon-dist"
-                        />
+                        <Icon name="lucide:ruler" size="26" class="icon-dist" />
                         <div>
                             <div class="value">
                                 {{ routeDistanceConverted }} {{ distanceUnit }}
@@ -110,12 +146,27 @@ const onToggleSheetHidden = () => {
 
                     <button
                         class="start-btn nav-btn"
+                        :style="{ '--progress': progress + `%` }"
                         @click.prevent="onStartNavigation"
                     >
-                        <Icon name="tabler:navigation-check" size="24" />
+                        <Icon name="lucide:map-pin-check" size="24" />
                         <span>{{
                             isNavigating ? "Resume" : "Start Navigation"
                         }}</span>
+                        <span
+                            v-if="countdown > 0 && !isNavigating"
+                            style="margin-left: 5px; opacity: 0.8"
+                        >
+                            ({{ countdown }}s)
+                        </span>
+                    </button>
+
+                    <button v-show="countdown > 0" @click="cancelAutoStart">
+                        <Icon
+                            name="lucide:x"
+                            size="28"
+                            class="cancel-timer-icon"
+                        />
                     </button>
                 </div>
             </div>

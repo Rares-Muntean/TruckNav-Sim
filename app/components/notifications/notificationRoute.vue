@@ -6,16 +6,6 @@ const props = defineProps<{
 
 const { isWeb } = usePlatform();
 
-const iconName = computed(() => {
-    if (props.isRouteFound === true) {
-        return "ic:outline-check";
-    } else if (props.isRouteFound === false) {
-        return "ic:outline-close";
-    }
-
-    return "svg-spinners:ring-resize";
-});
-
 const notificationName = computed(() => {
     if (props.isRouteFound === true) {
         return "Route Found";
@@ -24,16 +14,6 @@ const notificationName = computed(() => {
     }
 
     return "Locating Route";
-});
-
-const iconClass = computed(() => {
-    if (props.isRouteFound === true) {
-        return "found";
-    } else if (props.isRouteFound === false) {
-        return "failed";
-    }
-
-    return "loading";
 });
 
 const isVisible = computed(() => {
@@ -52,9 +32,21 @@ const isVisible = computed(() => {
                     >
                         <span>{{ notificationName }}</span>
                         <Icon
-                            class="notification-icon"
-                            :name="iconName"
-                            :class="iconClass"
+                            v-if="isRouteFound === true"
+                            name="lucide:map-pin-check-inside"
+                            class="notification-icon found"
+                            size="24"
+                        />
+                        <Icon
+                            v-else-if="isRouteFound === false"
+                            name="lucide:map-pin-x-inside"
+                            class="notification-icon failed"
+                            size="24"
+                        />
+                        <Icon
+                            v-else
+                            name="svg-spinners:ring-resize"
+                            class="notification-icon loading"
                             size="24"
                         />
                     </div>

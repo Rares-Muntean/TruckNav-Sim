@@ -1,3 +1,5 @@
+$button-padding: 8px 10px;
+
 /**
  * GENERAL
  */
@@ -8,6 +10,16 @@
 
     padding-top: 1.8rem;
     font-weight: 600;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-wrapper {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .setting {
@@ -18,9 +30,46 @@
     font-size: 1.8rem;
 }
 
+.menu-list {
+    overflow-y: auto;
+
+    display: flex;
+
+    flex-direction: column;
+    gap: 1.6rem;
+
+    &.main {
+        gap: 2.6rem;
+    }
+
+    padding-bottom: 3.2rem;
+
+    /* Hide scrollbar for browsers */
+    &::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.selector {
+    min-width: 150px;
+    max-width: 200px;
+
+    background: $default-background-color-dark;
+    border-radius: 5px;
+
+    padding: $button-padding;
+
+    font-weight: 700;
+    font-size: 1.6rem;
+    color: $white-font-text;
+
+    cursor: pointer;
+}
+
 .settings-title {
     padding-left: 2rem;
-    margin-bottom: 1.8rem;
 
     font-size: 1.4rem;
 
@@ -65,6 +114,19 @@
     width: 100%;
     background-color: $secondaryColor;
     border-radius: 3px;
+
+    margin-bottom: 1.8rem;
+    margin-top: 1.8rem;
+}
+
+.small-separator {
+    height: 1px;
+    width: 90%;
+    align-self: center;
+    flex-shrink: 0;
+    background-color: $secondaryColor;
+    opacity: 0.7;
+    border-radius: 3px;
 }
 
 .settings-btn {
@@ -72,13 +134,40 @@
     transition: 0s;
     font-weight: 700;
     box-shadow: none;
-    padding: 6px 10px;
+    padding: $button-padding;
     font-size: 1.6rem;
+
+    transition: 0.2s ease all;
 
     &.default-color {
         background-color: $default-background-color-dark;
         color: $white-font-text;
     }
+
+    &.increase-decrease {
+        display: flex;
+        padding: 0;
+
+        font-size: 2rem;
+        width: 3.2rem;
+        height: 3.2rem;
+
+        align-items: center;
+        justify-content: center;
+    }
+
+    &:active {
+        opacity: 0.5;
+        transform: translateY(1px);
+    }
+}
+
+.cancel-timer-icon {
+    color: $red-color;
+}
+
+.actual-truck-preview {
+    background-size: contain;
 }
 
 /**
@@ -105,19 +194,28 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    margin-top: 3.6rem;
 }
 
 .option-title {
     display: flex;
     gap: 0.8rem;
     align-items: center;
+
+    span {
+        width: 24px;
+        height: 24px;
+    }
 }
 
 .color-options {
     display: flex;
     gap: 1rem;
+    align-items: center;
+}
+
+.increase-option {
+    display: flex;
+    gap: 1.2rem;
     align-items: center;
 }
 

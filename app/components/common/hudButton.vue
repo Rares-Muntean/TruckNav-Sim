@@ -1,10 +1,15 @@
 <script lang="ts" setup>
-defineProps<{ onClick: () => void; iconName: string }>();
+defineProps<{
+    onClick: () => void;
+    // iconName: string;
+    // activeIconName?: string;
+    isActive?: boolean;
+}>();
 </script>
 
 <template>
     <button class="option-btn" @click.prevent="onClick">
-        <Icon :name="iconName" size="28" />
+        <slot />
     </button>
 </template>
 

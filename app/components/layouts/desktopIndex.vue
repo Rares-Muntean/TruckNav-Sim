@@ -77,7 +77,7 @@ const toggleWindow = () => {
 <template>
     <section class="section-device-info">
         <div class="top-tagline">
-            <Icon name="whh:gpsalt" class="icon" size="20" />
+            <Icon name="lucide:satellite-dish" class="icon" size="20" />
             <span>Your Trucking Companion</span>
         </div>
 
@@ -86,7 +86,7 @@ const toggleWindow = () => {
                 <h2 class="title">Welcome to TruckNav!</h2>
                 <Icon
                     class="github-icon"
-                    name="mdi:github"
+                    name="lucide:github"
                     size="30"
                     @click.prevent="
                         openLink(
@@ -148,7 +148,7 @@ const toggleWindow = () => {
                         class="status-indicator is-safe"
                     >
                         <Icon
-                            name="mdi:check-circle-outline"
+                            name="lucide:circle-check-big"
                             size="20"
                             class="icon"
                         />
@@ -179,10 +179,7 @@ const toggleWindow = () => {
                                 @click.prevent="handleExplorerLaunch('ETS2')"
                                 class="folder-btn"
                             >
-                                <Icon
-                                    name="mdi:folder-edit-outline"
-                                    size="20"
-                                />
+                                <Icon name="lucide:folder-cog" size="20" />
                             </button>
                         </div>
                     </div>
@@ -203,10 +200,7 @@ const toggleWindow = () => {
                                 @click.prevent="handleExplorerLaunch('ATS')"
                                 class="folder-btn"
                             >
-                                <Icon
-                                    name="mdi:folder-edit-outline"
-                                    size="20"
-                                />
+                                <Icon name="lucide:folder-cog" size="20" />
                             </button>
                         </span>
                     </div>
@@ -228,15 +222,12 @@ const toggleWindow = () => {
             <div class="connection-type">
                 <button @click.prevent="toggleWindow" class="btn">
                     <span>Remote GPS</span>
-                    <Icon name="material-symbols:link-rounded" size="20" />
+                    <Icon name="lucide:link-2" size="20" />
                 </button>
 
                 <button @click.prevent="handleLocalLaunch" class="btn">
                     <span>Local GPS </span>
-                    <Icon
-                        name="material-symbols:screenshot-monitor-outline-rounded"
-                        size="20"
-                    />
+                    <Icon name="lucide:monitor" size="20" />
                 </button>
             </div>
         </div>

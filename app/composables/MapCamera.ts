@@ -28,15 +28,17 @@ export const useMapCamera = (map: Ref<Map | null>) => {
 
     let markerEl: HTMLDivElement | null = null;
 
-    const initMarker = (imgSrc: string) => {
+    const initMarker = (imgSrc: string, size: number) => {
         if (!map.value) return;
         if (!markerEl) {
             markerEl = document.createElement("div");
             markerEl.style.position = "absolute";
             markerEl.style.top = "0";
             markerEl.style.left = "0";
-            markerEl.style.width = "40px";
-            markerEl.style.height = "40px";
+
+            markerEl.style.width = `${size}px`;
+            markerEl.style.height = `${size}px`;
+
             markerEl.style.backgroundImage = `url("${imgSrc}")`;
             markerEl.style.backgroundSize = "contain";
             markerEl.style.backgroundRepeat = "no-repeat";
@@ -46,6 +48,13 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             markerEl.style.willChange = "transform";
 
             map.value.getContainer().appendChild(markerEl);
+        }
+    };
+
+    const updateMarkerSize = (size: number) => {
+        if (markerEl) {
+            markerEl.style.width = `${size}px`;
+            markerEl.style.height = `${size}px`;
         }
     };
 
@@ -159,7 +168,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         map.value.easeTo({
             center: currentTruckCoords,
             bearing: currentTruckHeading,
-            pitch: isNavigating.value ? 38 : map.value.getPitch(),
+            pitch: map.value.getPitch(),
             duration: 350,
             padding: isNavigating.value ? PADDING_NAV : PADDING_FREE,
         });
@@ -223,7 +232,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             center: coords,
             bearing: isNavigating.value ? heading : 0,
             zoom: 11,
-            pitch: 38,
+            pitch: map.value.getPitch(),
             duration: 350,
             padding: PADDING_NAV,
         });
@@ -247,6 +256,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         isNavigating,
         isAutoFollowEnabled,
         initMarker,
+        updateMarkerSize,
         updateMarkerImage,
         initCameraListeners,
         followTruck,

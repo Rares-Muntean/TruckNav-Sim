@@ -1,27 +1,3 @@
-@font-face {
-    font-family: "Quicksand";
-    src: url("/fonts/Quicksand/Quicksand-Regular.ttf") format("truetype");
-    font-weight: 400;
-}
-
-@font-face {
-    font-family: "Quicksand";
-    src: url("/fonts/Quicksand/Quicksand-Bold.ttf") format("truetype");
-    font-weight: 700;
-}
-
-@font-face {
-    font-family: "Quicksand";
-    src: url("/fonts/Quicksand/Quicksand-Medium.ttf") format("truetype");
-    font-weight: 500;
-}
-
-@font-face {
-    font-family: "Quicksand";
-    src: url("/fonts/Quicksand/Quicksand-SemiBold.ttf") format("truetype");
-    font-weight: 600;
-}
-
 $primaryColor: #263444;
 $primaryDarkerColor: #151d25;
 
@@ -42,9 +18,7 @@ $blue-color: #7dd3fc;
 $ats-color: #d32f2f;
 $ets2-color: #fbc02d;
 
-$primaryFont: "Quicksand";
-
-$game-info-bar-height: 40px;
+$game-info-bar-height: var(--top-bar-height);
 
 $expanded-sheet-height: 215px;
 $collapsed-sheet-height: 90px;

@@ -9,6 +9,8 @@ const props = defineProps<{
     isWeb: boolean;
 }>();
 
+const { settings } = useSettings();
+
 const { kmToUserUnits, literToUserUnits, speedUnit, fuelUnit } =
     useUnitConversion();
 
@@ -19,7 +21,10 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
 <template>
     <div class="game-information" :class="{ 'is-native': !isWeb }">
         <div class="truck-info">
-            <div class="truck-speed-div">
+            <div
+                v-show="settings.activeUiComponents.includes('speed')"
+                class="truck-speed-div"
+            >
                 <div class="road-perspective"></div>
                 <p class="truck-speed">{{ truckSpeedConverted }}</p>
                 <p class="km-h">{{ speedUnit }}</p>
@@ -28,10 +33,14 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
 
         <div v-if="gameConnected" class="gas-sleep-time">
             <div class="gas-sleep">
-                <div class="fuel-amount">
+                <div
+                    v-show="settings.activeUiComponents.includes('fuel')"
+                    class="fuel-amount"
+                >
                     <Icon
-                        name="bi:fuel-pump-fill"
+                        name="lucide:fuel"
                         :class="{ 'pulse-red': fuel < 100 }"
+                        size="22"
                     />
                     <p>
                         {{ fuelConverted
@@ -39,9 +48,12 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
                     </p>
                 </div>
 
-                <div class="sleep-div">
+                <div
+                    v-show="settings.activeUiComponents.includes('sleep')"
+                    class="sleep-div"
+                >
                     <Icon
-                        name="icon-park-outline:sleep-two"
+                        name="lucide:bed-double"
                         class="sleep-icon"
                         size="22"
                         :class="{ 'pulse-blue': restStopMinutes < 90 }"
@@ -50,15 +62,17 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
                 </div>
             </div>
 
-            <p class="game-time">{{ gameTime }}</p>
+            <p
+                v-show="settings.activeUiComponents.includes('time')"
+                class="game-time"
+            >
+                {{ gameTime }}
+            </p>
         </div>
 
         <div v-else class="disconnected-div">
             <p class="disconnected-message">Game Offline</p>
-            <Icon
-                name="streamline-ultimate:link-disconnected-bold"
-                class="disconnected-icon"
-            />
+            <Icon name="lucide:wifi-off" class="disconnected-icon" />
         </div>
     </div>
 </template>

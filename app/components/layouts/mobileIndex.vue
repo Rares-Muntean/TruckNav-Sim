@@ -7,11 +7,7 @@ const emit = defineEmits(["connected"]);
 <template>
     <section class="section-mobile-menu">
         <div class="title">
-            <Icon
-                class="icon"
-                name="i-material-symbols:connected-tv-outline"
-                size="20"
-            />
+            <Icon class="icon" name="lucide:cast" size="20" />
             <span>Pair with Computer</span>
         </div>
 

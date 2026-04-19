@@ -10,8 +10,32 @@ $compact-bar-height: 35px;
     gap: 1.2rem;
 
     .start-btn {
+        flex: 1;
         width: 100%;
         padding: 6px 12px;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: var(--progress, 0%);
+
+            background-color: rgba(0, 0, 0, 0.2);
+
+            z-index: 0;
+        }
+
+        span,
+        i,
+        svg,
+        .icon {
+            position: relative;
+            z-index: 1;
+        }
     }
 
     .stop-btn {
@@ -110,28 +134,6 @@ $compact-bar-height: 35px;
         gap: 2px;
         padding: 4px 10px;
     }
-}
-
-.compact-trip-progress {
-    position: absolute;
-    top: -50px;
-    right: -2px;
-    padding: 4px 48px 4px 12px;
-
-    display: flex;
-    gap: 1.4rem;
-    height: $compact-bar-height;
-
-    font-size: 1.8rem;
-    color: $white-font-text;
-
-    border: 1.5px solid var(--theme-color);
-    border-right: none;
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-
-    background-color: $primaryColor;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .separator {

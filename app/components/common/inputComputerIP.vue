@@ -89,7 +89,7 @@ const handleConnect = async () => {
 
             <div class="description">
                 <div class="note">
-                    <Icon name="i-majesticons:information-circle-line" />
+                    <Icon name="lucide:info" />
                     <p>Note</p>
                 </div>
                 <p class="description-text">
@@ -100,7 +100,7 @@ const handleConnect = async () => {
 
         <button class="btn" @click="handleConnect" :disabled="!canConnect">
             <span>{{ isConnecting ? "Connecting..." : "Connect" }}</span>
-            <Icon name="i-fa7-solid:chain" size="20" />
+            <Icon name="lucide:link" size="20" />
         </button>
     </div>
 </template>

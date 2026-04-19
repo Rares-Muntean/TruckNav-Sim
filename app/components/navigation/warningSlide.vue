@@ -29,12 +29,11 @@ const onToggleExpanded = () => {
             :class="{ expanded: isExpanded }"
             v-on:click="onToggleExpanded"
         >
-            <Icon
-                :name="isExpanded ? 'bxs:chevron-right' : 'bxs:chevron-left'"
-                size="22"
-            />
+            <Icon v-if="isExpanded" name="lucide:chevron-right" size="22" />
+            <Icon v-else name="lucide:chevron-left" size="22" />
+
             <div class="warning-message">
-                <Icon name="ant-design:warning-filled" size="22" />
+                <Icon name="lucide:triangle-alert" size="22" />
 
                 <div class="text-content">
                     <span class="text-nowrap">{{ text }}</span>

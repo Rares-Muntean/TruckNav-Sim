@@ -7,12 +7,22 @@ export default defineNuxtConfig({
 
     css: ["~/assets/css/main.css", "~/assets/scss/global/_transitions.scss"],
 
+    icon: {
+        mode: "css",
+
+        clientBundle: {
+            scan: true,
+            sizeLimitKb: 2048,
+        },
+    },
+
     vite: {
         css: {
             preprocessorOptions: {
                 scss: {
                     additionalData: `@use "~/assets/scss/global/variables.scss" as *;
-                     @use "~/assets/scss/global/_mixins.scss" as *;`,
+                     @use "~/assets/scss/global/_mixins.scss" as *;
+                     @use "~/assets/scss/global/_fonts.scss" as *;`,
                 },
             },
         },

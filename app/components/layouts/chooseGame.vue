@@ -20,10 +20,10 @@ const handleStart = () => {
                 @click="goToDesktopIndex"
                 class="back-btn"
             >
-                <Icon name="material-symbols:arrow-back-rounded" size="22" />
+                <Icon name="lucide:arrow-left" size="22" />
             </button>
 
-            <Icon name="material-symbols:globe" class="icon" size="22" />
+            <Icon name="lucide:earth" class="icon" size="22" />
             <span>Select Game</span>
         </div>
 
@@ -43,7 +43,7 @@ const handleStart = () => {
             autofocus
         >
             <span>Start Navigation</span>
-            <Icon name="material-symbols:map-rounded" size="20" />
+            <Icon name="lucide:map-pinned" size="20" />
         </button>
     </div>
 </template>

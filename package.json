@@ -37,6 +37,9 @@
         "ws": "^8.19.0"
     },
     "devDependencies": {
+        "@iconify-json/lucide": "^1.2.102",
+        "@iconify-json/map": "^1.2.2",
+        "@iconify-json/svg-spinners": "^1.2.4",
         "@types/electron": "^1.4.38",
         "@types/node": "^25.2.3",
         "@types/rbush": "^4.0.0",
@@ -44,7 +47,7 @@
         "electron": "^39.2.7",
         "npm-force-resolutions": "^0.0.10",
         "patch-package": "^8.0.1",
-        "sass-embedded": "^1.96.0",
+        "sass-embedded": "^1.99.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3"
     },

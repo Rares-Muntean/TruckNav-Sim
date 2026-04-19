@@ -3,6 +3,15 @@ import type { GameType } from "~/types";
 
 export type UnitSystem = "metric" | "imperial";
 export type TextTheme = "light" | "dark";
+export type UiComponent =
+    | "speed"
+    | "fuel"
+    | "sleep"
+    | "time"
+    | "speedLimit"
+    | "topBar";
+
+export type ActiveComponents = UiComponent[];
 
 export interface GameProfile {
     themeColor: string;
@@ -12,6 +21,7 @@ export interface GameProfile {
     ownedDlcs: number[];
     lastDestination: [number, number] | null;
     hasTurnNavigation: boolean;
+    fontFamily: string;
 }
 
 export interface AppSettingsState {
@@ -21,6 +31,10 @@ export interface AppSettingsState {
         ets2: GameProfile;
         ats: GameProfile;
     };
+    hudBtnSize: number;
+    truckMarkerSize: number;
+    compactTripFontSize: number;
+    activeUiComponents: ActiveComponents;
 }
 
 const DEFAULT_PROFILE: GameProfile = {
@@ -31,6 +45,7 @@ const DEFAULT_PROFILE: GameProfile = {
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
     lastDestination: null,
     hasTurnNavigation: true,
+    fontFamily: "Quicksand",
 };
 
 const DEFAULT_SETTINGS: AppSettingsState = {
@@ -45,6 +60,17 @@ const DEFAULT_SETTINGS: AppSettingsState = {
             units: "imperial",
         },
     },
+    hudBtnSize: 30,
+    truckMarkerSize: 40,
+    compactTripFontSize: 1.8,
+    activeUiComponents: [
+        "speed",
+        "speedLimit",
+        "fuel",
+        "time",
+        "sleep",
+        "topBar",
+    ],
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -70,6 +96,28 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--main-text-color",
             isLight ? "#f2f2f2" : "#333",
+        );
+
+        document.documentElement.style.setProperty(
+            "--app-font",
+            activeSettings.value.fontFamily,
+        );
+
+        document.documentElement.style.setProperty(
+            "--hud-btn-size",
+            `${settings.value.hudBtnSize}px`,
+        );
+
+        document.documentElement.style.setProperty(
+            "--compact-trip-size",
+            `${settings.value.compactTripFontSize}rem`,
+        );
+
+        document.documentElement.style.setProperty(
+            "--top-bar-height",
+            !settings.value.activeUiComponents.includes("topBar")
+                ? "0px"
+                : "40px",
         );
     };
 
@@ -121,8 +169,16 @@ export const useSettings = () => {
         const freshProfile = JSON.parse(
             JSON.stringify(DEFAULT_SETTINGS.profiles[game]),
         );
-
         freshProfile.lastDestination = currentDest;
+
+        settings.value.hudBtnSize = DEFAULT_SETTINGS.hudBtnSize;
+        settings.value.truckMarkerSize = DEFAULT_SETTINGS.truckMarkerSize;
+        settings.value.compactTripFontSize =
+            DEFAULT_SETTINGS.compactTripFontSize;
+
+        settings.value.activeUiComponents = [
+            ...DEFAULT_SETTINGS.activeUiComponents,
+        ];
 
         settings.value.profiles[game] = freshProfile;
 
@@ -132,6 +188,7 @@ export const useSettings = () => {
     return {
         settings,
         activeSettings,
+        DEFAULT_SETTINGS,
         updateGlobal,
         updateProfile,
         initSettings,
