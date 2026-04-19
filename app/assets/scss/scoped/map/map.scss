@@ -80,3 +80,8 @@
     align-items: flex-end;
     gap: 0.8rem;
 }
+
+.icon {
+    width: var(--hud-btn-size);
+    height: var(--hud-btn-size);
+}

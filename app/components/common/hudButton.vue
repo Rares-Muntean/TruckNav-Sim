@@ -1,20 +1,15 @@
 <script lang="ts" setup>
 defineProps<{
     onClick: () => void;
-    iconName: string;
-    activeIconName?: string;
+    // iconName: string;
+    // activeIconName?: string;
     isActive?: boolean;
 }>();
 </script>
 
 <template>
     <button class="option-btn" @click.prevent="onClick">
-        <Icon v-if="!activeIconName" class="icon" :name="iconName" />
-
-        <template v-else>
-            <Icon v-show="isActive" class="icon" :name="activeIconName" />
-            <Icon v-show="!isActive" class="icon" :name="iconName" />
-        </template>
+        <slot />
     </button>
 </template>
 

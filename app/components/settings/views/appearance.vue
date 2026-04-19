@@ -48,17 +48,17 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
 <template>
     <div>
-        <ColorOption
-            option-title="Theme"
-            icon-name="lucide:palette"
-            color-element="themeColor"
-        />
+        <ColorOption option-title="Theme" color-element="themeColor">
+            <template #icon>
+                <Icon name="lucide:palette" size="24" />
+            </template>
+        </ColorOption>
 
-        <ColorOption
-            option-title="Route"
-            icon-name="lucide:route"
-            color-element="routeColor"
-        />
+        <ColorOption option-title="Route" color-element="routeColor">
+            <template #icon>
+                <Icon name="lucide:route" size="24" />
+            </template>
+        </ColorOption>
 
         <div class="small-separator"></div>
 
@@ -116,24 +116,34 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
         <IncreaseOption
             option-title="Hud Button Size"
-            icon-name="lucide:square-plus"
             setting-name="hudBtnSize"
             :max-value="40"
             :min-value="20"
             :amount="1"
-        />
+        >
+            <template #icon>
+                <Icon name="lucide:square-plus" size="24" />
+            </template>
+        </IncreaseOption>
+
         <PreviewSetting :height="70">
-            <HudButton v-on:click="null" icon-name="lucide:star" />
+            <HudButton v-on:click="null">
+                <Icon name="lucide:star" class="icon" />
+            </HudButton>
         </PreviewSetting>
 
         <IncreaseOption
             option-title="Truck Marker Size"
-            icon-name="lucide:map-pin-plus"
             setting-name="truckMarkerSize"
             :max-value="70"
             :min-value="25"
             :amount="1"
-        />
+        >
+            <template #icon>
+                <Icon name="lucide:map-pin-plus" size="24" />
+            </template>
+        </IncreaseOption>
+
         <PreviewSetting :height="70">
             <div
                 class="actual-truck-preview"
@@ -147,12 +157,16 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
         <IncreaseOption
             option-title="Compact Trip Size"
-            icon-name="lucide:circle-plus"
             setting-name="compactTripFontSize"
             :max-value="2.5"
             :min-value="1.2"
             :amount="0.1"
-        />
+        >
+            <template #icon>
+                <Icon name="lucide:circle-plus" size="24" />
+            </template>
+        </IncreaseOption>
+
         <PreviewSetting :height="100">
             <CompactTrip
                 class="compact-trip-progress preview"

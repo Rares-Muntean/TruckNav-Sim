@@ -8,7 +8,6 @@ let repeatInterval: ReturnType<typeof setInterval> | null = null;
 
 const props = defineProps<{
     optionTitle: string;
-    iconName: string;
     settingName: globalKeys;
 
     maxValue: number;
@@ -61,7 +60,7 @@ function stopHold() {
 <template>
     <div class="option setting">
         <div class="option-title">
-            <Icon :name="iconName" size="24" />
+            <slot name="icon"></slot>
             <p>{{ optionTitle }}</p>
         </div>
         <div class="increase-option">

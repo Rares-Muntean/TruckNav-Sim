@@ -470,14 +470,13 @@ const onCancelRoute = () => {
                     />
 
                     <div class="left-buttons">
-                        <HudButton
-                            icon-name="lucide:arrow-left"
-                            :onClick="goHome"
-                        />
-                        <HudButton
-                            icon-name="lucide:settings"
-                            :onClick="toggleSettingsPanel"
-                        />
+                        <HudButton :onClick="goHome">
+                            <Icon name="lucide:arrow-left" class="icon" />
+                        </HudButton>
+
+                        <HudButton :onClick="toggleSettingsPanel">
+                            <Icon name="lucide:settings" class="icon" />
+                        </HudButton>
                     </div>
 
                     <ManeuverCard
@@ -492,19 +491,31 @@ const onCancelRoute = () => {
                     />
 
                     <NotificationGeneral
-                        :icon-name="
-                            isClickingEnabled
-                                ? 'lucide:pointer'
-                                : 'lucide:pointer-off'
-                        "
                         :trigger="clickingNotificationTrigger"
                         :text="
                             isClickingEnabled
                                 ? 'Tapping Enabled'
                                 : 'Tapping Disabled'
                         "
-                        :icon-color="isClickingEnabled ? '#4caf50' : '#dd4a34'"
-                    />
+                    >
+                        <template #icon>
+                            <Icon
+                                v-if="isClickingEnabled"
+                                class="notification-icon"
+                                name="lucide:pointer"
+                                size="24"
+                                :style="{ color: '#4caf50' }"
+                            />
+
+                            <Icon
+                                v-else
+                                class="notification-icon"
+                                name="lucide:pointer-off"
+                                size="24"
+                                :style="{ color: '#dd4a34' }"
+                            />
+                        </template>
+                    </NotificationGeneral>
 
                     <NotificationRoute
                         :is-route-found="routeFound"
@@ -512,31 +523,45 @@ const onCancelRoute = () => {
                     />
 
                     <div class="hud-buttons">
-                        <HudButton
-                            v-if="isWeb"
-                            icon-name="lucide:fullscreen"
-                            :onClick="onToggleFullscreen"
-                        />
-                        <HudButton
-                            icon-name="lucide:compass"
-                            :onClick="onResetNorth"
-                        />
+                        <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
+                            <Icon name="lucide:fullscreen" class="icon" />
+                        </HudButton>
+
+                        <HudButton :onClick="onResetNorth">
+                            <Icon name="lucide:compass" class="icon" />
+                        </HudButton>
+
                         <HudButton
                             :is-active="isAutoFollowEnabled"
-                            icon-name="lucide:locate"
-                            active-icon-name="lucide:locate-fixed"
                             :class="{ 'green-icon': isAutoFollowEnabled }"
                             :onClick="toggleAutoFollow"
-                        />
+                        >
+                            <Icon
+                                v-if="isAutoFollowEnabled"
+                                name="lucide:locate-fixed"
+                                class="icon"
+                            />
+                            <Icon v-else name="lucide:locate" class="icon" />
+                        </HudButton>
+
                         <HudButton
                             :is-active="isClickingEnabled"
-                            icon-name="lucide:pointer"
-                            active-icon-name="lucide:pointer-off"
                             :class="
                                 isClickingEnabled ? 'red-icon' : 'green-icon'
                             "
                             :onClick="toggleEnableClicking"
-                        />
+                        >
+                            <Icon
+                                v-if="isClickingEnabled"
+                                name="lucide:pointer"
+                                class="icon"
+                            />
+                            <Icon
+                                v-else
+                                name="lucide:pointer-off"
+                                class="icon"
+                            />
+                        </HudButton>
                     </div>
 
                     <SpeedLimit

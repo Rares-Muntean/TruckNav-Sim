@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 defineProps<{
     gameName: "ats" | "ets2";
-    iconName: string;
     selectCard: (game: "ets2" | "ats" | null) => void;
     width: number;
 }>();
@@ -16,7 +15,7 @@ defineProps<{
         <img :src="`/images/game-covers/${gameName}.webp`" alt="" />
         <div class="game-name-wrapper">
             <p class="game-name">{{ gameName }}</p>
-            <Icon :name="iconName" size="22" />
+            <slot name="icon"></slot>
         </div>
     </div>
 </template>

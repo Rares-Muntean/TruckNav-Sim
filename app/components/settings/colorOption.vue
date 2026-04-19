@@ -4,7 +4,6 @@ type colorKeys = keyof GameProfile & `${string}Color`;
 
 const props = defineProps<{
     optionTitle: string;
-    iconName: string;
     colorElement: colorKeys;
 }>();
 
@@ -25,7 +24,7 @@ const currentColor = computed({
 <template>
     <div class="option setting">
         <div class="option-title">
-            <Icon :name="iconName" size="24" />
+            <slot name="icon"></slot>
             <p>{{ optionTitle }}</p>
         </div>
         <div class="color-options">

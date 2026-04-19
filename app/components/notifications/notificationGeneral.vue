@@ -2,8 +2,6 @@
 const props = defineProps<{
     text: string;
     trigger: number;
-    iconName: string;
-    iconColor: string;
 }>();
 
 const isVisible = ref(false);
@@ -32,12 +30,7 @@ watch(
                 <Transition name="notification-fade">
                     <div class="content-wrapper">
                         <span>{{ text }}</span>
-                        <Icon
-                            class="notification-icon"
-                            :name="iconName"
-                            size="24"
-                            :style="{ color: iconColor }"
-                        />
+                        <slot name="icon"></slot>
                     </div>
                 </Transition>
             </div>

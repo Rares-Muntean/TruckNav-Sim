@@ -9,6 +9,11 @@ export default defineNuxtConfig({
 
     icon: {
         mode: "css",
+
+        clientBundle: {
+            scan: true,
+            sizeLimitKb: 2048,
+        },
     },
 
     vite: {

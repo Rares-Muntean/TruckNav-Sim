@@ -11,18 +11,25 @@ const selectCard = (game: "ats" | "ets2" | null) => {
     <section class="game-select-section">
         <GameSelectButton
             game-name="ats"
-            icon-name="map:route"
             :select-card="selectCard"
             :class="{ 'is-selected': settings.selectedGame === 'ats' }"
             :width="width"
-        />
+        >
+            <template #icon>
+                <Icon name="map:route" size="22" />
+            </template>
+        </GameSelectButton>
+
         <GameSelectButton
             :select-card="selectCard"
             game-name="ets2"
-            icon-name="mdi:highway"
             :class="{ 'is-selected': settings.selectedGame === 'ets2' }"
             :width="width"
-        />
+        >
+            <template #icon>
+                <Icon name="map:museum" size="22" />
+            </template>
+        </GameSelectButton>
     </section>
 </template>
 
