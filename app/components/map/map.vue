@@ -547,7 +547,7 @@ const onCancelRoute = () => {
                         <HudButton
                             :is-active="isClickingEnabled"
                             :class="
-                                isClickingEnabled ? 'red-icon' : 'green-icon'
+                                isClickingEnabled ? 'green-icon' : 'red-icon'
                             "
                             :onClick="toggleEnableClicking"
                         >
