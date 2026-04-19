@@ -47,7 +47,7 @@
         "electron": "^39.2.7",
         "npm-force-resolutions": "^0.0.10",
         "patch-package": "^8.0.1",
-        "sass-embedded": "^1.96.0",
+        "sass-embedded": "^1.99.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3"
     },
