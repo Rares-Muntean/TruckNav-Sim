@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { isBridgeRunning } from "~/assets/utils/telemetry/helpers";
-import type { ets2Expansions } from "~/data/ets2/ets2Expansions";
+
 const props = defineProps<{ launchChooseGame: () => void }>();
 
 const { fetchIp, fetchPort, localIP, localPort } = useNetwork();
 const { updateGlobal } = useSettings();
+const { t } = useTranslations();
 
 const isServerRunning = ref(false);
 const polling = ref<any>(null);
@@ -78,12 +79,12 @@ const toggleWindow = () => {
     <section class="section-device-info">
         <div class="top-tagline">
             <Icon name="lucide:satellite-dish" class="icon" size="20" />
-            <span>Your Trucking Companion</span>
+            <span>{{ t("desktop.truckingCompanion") }}</span>
         </div>
 
         <div class="content">
             <div class="title-wrapper">
-                <h2 class="title">Welcome to TruckNav!</h2>
+                <h2 class="title">{{ t("desktop.title") }}</h2>
                 <Icon
                     class="github-icon"
                     name="lucide:github"
@@ -96,30 +97,20 @@ const toggleWindow = () => {
                 />
             </div>
 
-            <span class="subtitle"
-                >Below you’ll find instructions to set up the app on your
-                phone.</span
-            >
+            <span class="subtitle">{{ t("desktop.subtitle") }}</span>
             <div class="steps">
                 <ol>
-                    <li>Make sure ETS2 / ATS is running on your PC.</li>
+                    <li>{{ t("desktop.stepRunning") }}</li>
                     <li>
-                        If the plugin is missing, click the folder icon and
-                        select the game's executable folder: <br />
+                        {{ t("desktop.stepExecutable") }} <br />
                         <code>C:\...\Euro Truck Simulator 2\bin\win_x64</code>
                     </li>
+                    <li>{{ t("desktop.stepNetwork") }}</li>
+                    <li>{{ t("desktop.stepOpenApp") }}</li>
                     <li>
-                        Ensure your phone is connected to the same network as
-                        your PC.
-                    </li>
-                    <li>
-                        Open the TruckNav app or web browser using the ip
-                        address below.
-                    </li>
-                    <li>
-                        TruckNav App:
+                        {{ t("desktop.truckNavApp") }}
                         <strong class="localIp">{{ localIP }}</strong> |
-                        Browser:
+                        {{ t("desktop.browser") }}:
                         <strong class="localIp"
                             >{{ localIP }}:{{ localPort }}</strong
                         >
@@ -130,15 +121,15 @@ const toggleWindow = () => {
             <div class="bottom-info">
                 <div class="status-div">
                     <div class="status">
-                        <p>Current Status: &nbsp;</p>
+                        <p>{{ t("common.currentStatus") }} &nbsp;</p>
                         <span
                             :class="
                                 isServerRunning ? 'connected' : 'disconnected'
                             "
                             >{{
                                 isServerRunning
-                                    ? "Connected"
-                                    : "Offline, try opening again."
+                                    ? t("common.connected")
+                                    : t("common.offlineTryAgain")
                             }}</span
                         >
                     </div>
@@ -153,9 +144,9 @@ const toggleWindow = () => {
                             class="icon"
                         />
                         <span
-                            >Telemetry is running.
-                            <strong>Minimize</strong> this window to keep the
-                            GPS active.
+                            >{{ t("desktop.telemetryRunning") }}
+                            <strong>{{ t("desktop.minimize") }}</strong>
+                            {{ t("desktop.telemetryRunningSuffix") }}
                         </span>
                     </div>
                 </div>
@@ -165,15 +156,19 @@ const toggleWindow = () => {
         <div class="bottom">
             <div class="setup-games-sdk">
                 <div class="game-status">
-                    <span class="game-name">ETS2</span>
+                    <span class="game-name">{{ t("desktop.ets2") }}</span>
                     <div class="icon-status-wrapper">
                         <div
                             class="label"
                             :class="etsActive ? 'active' : 'missing'"
                         >
                             <span
-                                >Plugin
-                                {{ etsActive ? "Active" : "Missing" }}</span
+                                >{{ t("desktop.plugin") }}
+                                {{
+                                    etsActive
+                                        ? t("common.active")
+                                        : t("common.missing")
+                                }}</span
                             >
                             <button
                                 @click.prevent="handleExplorerLaunch('ETS2')"
@@ -186,15 +181,19 @@ const toggleWindow = () => {
                 </div>
 
                 <div class="game-status">
-                    <span class="game-name">ATS</span>
+                    <span class="game-name">{{ t("desktop.ats") }}</span>
                     <div class="icon-status-wrapper">
                         <span
                             class="label"
                             :class="atsActive ? 'active' : 'missing'"
                         >
                             <span
-                                >Plugin
-                                {{ atsActive ? "Active" : "Missing" }}</span
+                                >{{ t("desktop.plugin") }}
+                                {{
+                                    atsActive
+                                        ? t("common.active")
+                                        : t("common.missing")
+                                }}</span
                             >
                             <button
                                 @click.prevent="handleExplorerLaunch('ATS')"
@@ -221,12 +220,12 @@ const toggleWindow = () => {
 
             <div class="connection-type">
                 <button @click.prevent="toggleWindow" class="btn">
-                    <span>Remote GPS</span>
+                    <span>{{ t("desktop.remoteGps") }}</span>
                     <Icon name="lucide:link-2" size="20" />
                 </button>
 
                 <button @click.prevent="handleLocalLaunch" class="btn">
-                    <span>Local GPS </span>
+                    <span>{{ t("desktop.localGps") }}</span>
                     <Icon name="lucide:monitor" size="20" />
                 </button>
             </div>

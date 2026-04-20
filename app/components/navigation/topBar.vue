@@ -10,6 +10,7 @@ const props = defineProps<{
 }>();
 
 const { settings } = useSettings();
+const { t } = useTranslations();
 
 const { kmToUserUnits, literToUserUnits, speedUnit, fuelUnit } =
     useUnitConversion();
@@ -71,7 +72,7 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
         </div>
 
         <div v-else class="disconnected-div">
-            <p class="disconnected-message">Game Offline</p>
+            <p class="disconnected-message">{{ t("common.gameOffline") }}</p>
             <Icon name="lucide:wifi-off" class="disconnected-icon" />
         </div>
     </div>

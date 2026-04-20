@@ -5,15 +5,16 @@ const props = defineProps<{
 }>();
 
 const { isWeb } = usePlatform();
+const { t } = useTranslations();
 
 const notificationName = computed(() => {
     if (props.isRouteFound === true) {
-        return "Route Found";
+        return t("notifications.routeFound");
     } else if (props.isRouteFound === false) {
-        return "No Route Available";
+        return t("notifications.noRouteAvailable");
     }
 
-    return "Locating Route";
+    return t("notifications.locatingRoute");
 });
 
 const isVisible = computed(() => {

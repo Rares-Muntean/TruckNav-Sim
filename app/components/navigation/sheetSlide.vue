@@ -12,6 +12,7 @@ const props = defineProps<{
 }>();
 
 const { kmToUserUnits, distanceUnit } = useUnitConversion();
+const { t } = useTranslations();
 
 const countdown = ref(5);
 const progress = ref(100);
@@ -104,7 +105,7 @@ watch(
                                 class="chevron-icon"
                                 size="20"
                             />
-                            Hide
+                            {{ t("common.hide") }}
                         </button>
                     </div>
                 </div>
@@ -120,7 +121,9 @@ watch(
                         />
                         <div>
                             <div class="value">{{ routeEta }}</div>
-                            <div class="label">Estimated Time</div>
+                            <div class="label">
+                                {{ t("common.estimatedTime") }}
+                            </div>
                         </div>
                     </div>
 
@@ -130,7 +133,7 @@ watch(
                             <div class="value">
                                 {{ routeDistanceConverted }} {{ distanceUnit }}
                             </div>
-                            <div class="label">Distance</div>
+                            <div class="label">{{ t("common.distance") }}</div>
                         </div>
                     </div>
                 </div>
@@ -141,7 +144,7 @@ watch(
                         class="stop-btn nav-btn"
                         @click.prevent="onStopNavigation"
                     >
-                        <span>Stop</span>
+                        <span>{{ t("common.stop") }}</span>
                     </button>
 
                     <button
@@ -151,7 +154,9 @@ watch(
                     >
                         <Icon name="lucide:map-pin-check" size="24" />
                         <span>{{
-                            isNavigating ? "Resume" : "Start Navigation"
+                            isNavigating
+                                ? t("common.resume")
+                                : t("common.startNavigation")
                         }}</span>
                         <span
                             v-if="countdown > 0 && !isNavigating"

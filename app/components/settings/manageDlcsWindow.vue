@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const { settings, activeSettings, updateProfile } = useSettings();
+const { t } = useTranslations();
 import { ets2Expansions } from "~/data/ets2/ets2Expansions";
 import { atsExpansions } from "~/data/ats/atsExpansions";
 
@@ -63,7 +64,8 @@ const toggleDlc = (id: number) => {
                     <div class="dlc-details">
                         <p class="dlc-name">{{ dlc.name }}</p>
                         <p class="dlc-release-date">
-                            Release Date: {{ dlc.releaseDate }}
+                            {{ t("settings.releaseDate") }}:
+                            {{ dlc.releaseDate }}
                         </p>
                     </div>
                 </div>

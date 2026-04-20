@@ -3,6 +3,7 @@ import { generateTruckIcon } from "~/assets/utils/map/markers";
 
 const { settings, activeSettings, updateProfile, DEFAULT_SETTINGS } =
     useSettings();
+const { t } = useTranslations();
 
 const truckImgSrc = ref("");
 const isDriveInfoOpened = ref(false);
@@ -48,13 +49,13 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
 <template>
     <div>
-        <ColorOption option-title="Theme" color-element="themeColor">
+        <ColorOption :option-title="t('settings.theme')" color-element="themeColor">
             <template #icon>
                 <Icon name="lucide:palette" size="24" />
             </template>
         </ColorOption>
 
-        <ColorOption option-title="Route" color-element="routeColor">
+        <ColorOption :option-title="t('settings.route')" color-element="routeColor">
             <template #icon>
                 <Icon name="lucide:route" size="24" />
             </template>
@@ -65,7 +66,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:type-outline" size="24" />
-                <p>Text Theme</p>
+                <p>{{ t("settings.textTheme") }}</p>
             </div>
 
             <div class="segmented-control" @click="toggleTextColor">
@@ -73,14 +74,14 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                     class="segment-btn"
                     :class="{ active: isTextThemeLight }"
                 >
-                    <span class="label">Light</span>
+                    <span class="label">{{ t("settings.light") }}</span>
                 </button>
 
                 <button
                     class="segment-btn"
                     :class="{ active: !isTextThemeLight }"
                 >
-                    <span class="label">Dark</span>
+                    <span class="label">{{ t("settings.dark") }}</span>
                 </button>
             </div>
         </div>
@@ -88,7 +89,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:type" size="24" />
-                <p>App Font</p>
+                <p>{{ t("settings.appFont") }}</p>
             </div>
 
             <USelect
@@ -115,7 +116,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
         <div class="small-separator"></div>
 
         <IncreaseOption
-            option-title="Hud Button Size"
+            :option-title="t('settings.hudButtonSize')"
             setting-name="hudBtnSize"
             :max-value="40"
             :min-value="20"
@@ -133,7 +134,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
         </PreviewSetting>
 
         <IncreaseOption
-            option-title="Truck Marker Size"
+            :option-title="t('settings.truckMarkerSize')"
             setting-name="truckMarkerSize"
             :max-value="70"
             :min-value="25"
@@ -156,7 +157,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
         </PreviewSetting>
 
         <IncreaseOption
-            option-title="Compact Trip Size"
+            :option-title="t('settings.compactTripSize')"
             setting-name="compactTripFontSize"
             :max-value="2.5"
             :min-value="1.2"
@@ -179,7 +180,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:circle-gauge" size="24" />
-                <p>Driving Info</p>
+                <p>{{ t("settings.drivingInfo") }}</p>
             </div>
             <div class="owned-dlcs">
                 <button
@@ -188,7 +189,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                 >
                     {{ settings.activeUiComponents.length }} /
                     {{ DEFAULT_SETTINGS.activeUiComponents.length }}
-                    active
+                    {{ t("common.active") }}
                 </button>
             </div>
         </div>
@@ -196,7 +197,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
         <Transition name="panel-pop">
             <PopupPanel
                 v-if="isDriveInfoOpened"
-                title="Select Components"
+                :title="t('settings.selectComponents')"
                 @close="toggleDriveInfoPanel"
             >
                 <ManageDriveInfoPanel />

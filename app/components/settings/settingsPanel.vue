@@ -4,6 +4,7 @@ type settingsView = "main" | "general" | "appearance" | "navigation";
 const props = defineProps<{ closePanel: () => void }>();
 
 const currentView = ref<settingsView>("main");
+const { t } = useTranslations();
 
 function setView(view: settingsView) {
     currentView.value = view;
@@ -29,9 +30,9 @@ function handleBack() {
                 <Icon name="lucide:settings" size="38" />
 
                 <div>
-                    <p class="panel-title">Settings</p>
+                    <p class="panel-title">{{ t("settings.title") }}</p>
                     <p class="panel-description">
-                        App preferences and customization
+                        {{ t("settings.description") }}
                     </p>
                 </div>
             </div>
@@ -48,7 +49,7 @@ function handleBack() {
                 >
                     <div class="option setting" @click="setView('general')">
                         <Icon name="lucide:settings-2" size="28" />
-                        <span>General</span>
+                        <span>{{ t("settings.general") }}</span>
                         <Icon
                             name="lucide:chevron-right"
                             size="24"
@@ -58,7 +59,7 @@ function handleBack() {
 
                     <div class="option setting" @click="setView('appearance')">
                         <Icon name="lucide:palette" size="28" />
-                        <span>Appearance</span>
+                        <span>{{ t("settings.appearance") }}</span>
                         <Icon
                             name="lucide:chevron-right"
                             size="24"
@@ -68,7 +69,7 @@ function handleBack() {
 
                     <div class="option setting" @click="setView('navigation')">
                         <Icon name="lucide:navigation" size="28" />
-                        <span>Navigation</span>
+                        <span>{{ t("settings.navigation") }}</span>
                         <Icon
                             name="lucide:chevron-right"
                             size="24"

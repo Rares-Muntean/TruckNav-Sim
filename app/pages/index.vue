@@ -3,6 +3,7 @@ import { SafeArea, SystemBarsType } from "@capacitor-community/safe-area";
 
 const { isElectron, isMobile, isWeb } = usePlatform();
 const { settings } = useSettings();
+const { initLocale } = useTranslations();
 
 const currentView = ref<string>("");
 
@@ -40,6 +41,8 @@ const updateSystemBars = async () => {
 };
 
 onMounted(() => {
+    initLocale();
+
     setTimeout(() => {
         updateSystemBars();
     }, 500);

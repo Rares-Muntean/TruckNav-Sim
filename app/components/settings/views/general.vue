@@ -4,10 +4,12 @@ import { atsExpansions } from "~/data/ats/atsExpansions";
 
 const { settings, activeSettings, updateProfile, resetSettings } =
     useSettings();
+const { locale, setLocale, t } = useTranslations();
 
 const isDlcPanelOpened = ref(false);
 
 const isMetric = computed(() => activeSettings.value.units === "metric");
+const isGerman = computed(() => locale.value === "de");
 const selectedExpansion = computed(() => {
     return settings.value.selectedGame === "ets2"
         ? ets2Expansions
@@ -16,6 +18,10 @@ const selectedExpansion = computed(() => {
 
 function toggleUnits() {
     updateProfile("units", isMetric.value ? "imperial" : "metric");
+}
+
+function toggleLanguage() {
+    setLocale(isGerman.value ? "en" : "de");
 }
 
 function toggleDlcPanel() {
@@ -28,7 +34,7 @@ function toggleDlcPanel() {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:map-plus" size="24" />
-                <p>Owned DLCs</p>
+                <p>{{ t("settings.ownedDlcs") }}</p>
             </div>
             <div class="owned-dlcs">
                 <button
@@ -37,7 +43,24 @@ function toggleDlcPanel() {
                 >
                     {{ activeSettings.ownedDlcs.length }} /
                     {{ Object.keys(selectedExpansion).length }}
-                    active
+                    {{ t("common.active") }}
+                </button>
+            </div>
+        </div>
+
+        <div class="option setting">
+            <div class="option-title">
+                <Icon name="lucide:languages" size="24" />
+                <p>{{ t("settings.language") }}</p>
+            </div>
+
+            <div class="segmented-control" @click="toggleLanguage">
+                <button class="segment-btn" :class="{ active: !isGerman }">
+                    <span class="label">{{ t("settings.english") }}</span>
+                </button>
+
+                <button class="segment-btn" :class="{ active: isGerman }">
+                    <span class="label">{{ t("settings.german") }}</span>
                 </button>
             </div>
         </div>
@@ -45,16 +68,16 @@ function toggleDlcPanel() {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:ruler" size="24" />
-                <p>Units</p>
+                <p>{{ t("settings.units") }}</p>
             </div>
 
             <div class="segmented-control" @click="toggleUnits">
                 <button class="segment-btn" :class="{ active: isMetric }">
-                    <span class="label">Metric</span>
+                    <span class="label">{{ t("settings.metric") }}</span>
                 </button>
 
                 <button class="segment-btn" :class="{ active: !isMetric }">
-                    <span class="label">Imperial</span>
+                    <span class="label">{{ t("settings.imperial") }}</span>
                 </button>
             </div>
         </div>
@@ -64,21 +87,21 @@ function toggleDlcPanel() {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:rotate-ccw" size="24" />
-                <p>Reset to Defaults</p>
+                <p>{{ t("settings.resetToDefaults") }}</p>
             </div>
 
             <button
                 @click.prevent="resetSettings"
                 class="nav-btn settings-btn red-color"
             >
-                Reset
+                {{ t("common.reset") }}
             </button>
         </div>
 
         <Transition name="panel-pop">
             <PopupPanel
                 v-if="isDlcPanelOpened"
-                title="Choose DLCs"
+                :title="t('common.chooseDlcs')"
                 @close="toggleDlcPanel"
             >
                 <ManageDlcsWindow />

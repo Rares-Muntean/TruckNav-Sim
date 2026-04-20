@@ -3,6 +3,7 @@ import { darkenColor } from "~/assets/utils/shared/colors";
 
 defineProps<{ progress: number }>();
 const { activeSettings } = useSettings();
+const { t } = useTranslations();
 </script>
 
 <template>
@@ -27,7 +28,7 @@ const { activeSettings } = useSettings();
                 }"
             ></div>
         </div>
-        <h2 class="loading-text">Loading Route Data...</h2>
+        <h2 class="loading-text">{{ t("common.loadingRouteData") }}</h2>
     </div>
 </template>
 
