@@ -85,23 +85,38 @@ app.on("browser-window-created", (_, window) => {
     });
 });
 
-// Run Application
-(async () => {
-    // Wait for electron app to be ready.
-    await app.whenReady();
+const gotTheLock = app.requestSingleInstanceLock();
 
-    startTelemetryServer();
-    startWebServer();
+if (!gotTheLock) {
+    app.quit();
+} else {
+    app.on("second-instance", () => {
+        const win = myCapacitorApp.getMainWindow();
+        if (win) {
+            if (win.isMinimized()) win.restore();
+            win.focus();
+            win.show();
+        }
+    });
 
-    // Security - Set Content-Security-Policy based on whether or not we are in dev mode.
-    setupContentSecurityPolicy(myCapacitorApp.getCustomURLScheme());
+    // Run Application
+    (async () => {
+        // Wait for electron app to be ready.
+        await app.whenReady();
 
-    // Initialize our app, build windows, and load content.
-    await myCapacitorApp.init();
+        startTelemetryServer();
+        startWebServer();
 
-    // Check for updates if we are in a packaged app.
-    // autoUpdater.checkForUpdatesAndNotify();
-})();
+        // Security - Set Content-Security-Policy based on whether or not we are in dev mode.
+        setupContentSecurityPolicy(myCapacitorApp.getCustomURLScheme());
+
+        // Initialize our app, build windows, and load content.
+        await myCapacitorApp.init();
+
+        // Check for updates if we are in a packaged app.
+        // autoUpdater.checkForUpdatesAndNotify();
+    })();
+}
 
 app.on("before-quit", function () {
     (app as any).isQuitting = true;
