@@ -16,13 +16,14 @@ import {
     setupReloadWatcher,
 } from "./setup";
 import path from "path";
-import { spawn, spawnSync } from "child_process";
+import { spawn, spawnSync, ChildProcess } from "child_process";
 import {
     copyFileSync,
     existsSync,
     mkdirSync,
     readFileSync,
     writeFileSync,
+    createWriteStream,
 } from "fs";
 import * as dgram from "dgram";
 import * as registry from "native-reg";
@@ -55,7 +56,6 @@ const capacitorFileConfig: CapacitorElectronConfig =
     getCapacitorElectronConfig();
 
 // Initialize our app. You can pass menu templates into the app here.
-// const myCapacitorApp = new ElectronCapacitorApp(capacitorFileConfig);
 const myCapacitorApp = new ElectronCapacitorApp(
     capacitorFileConfig,
     trayMenuTemplate,
@@ -160,42 +160,125 @@ async function getSteamPath() {
     return steamPath;
 }
 
-async function setupFirewallRules() {
-    if (process.platform !== "win32") return;
+const exeName = "TruckNavTelemetry.exe";
+let telemetryProcess: ChildProcess | null = null;
 
-    const mainExePath = process.execPath;
-    const telemetryExePath = app.isPackaged
-        ? path.join(process.resourcesPath, "bin", "TruckNavTelemetry.exe")
-        : path.join(app.getAppPath(), "bin", "TruckNavTelemetry.exe");
+async function startTelemetryServer() {
+    try {
+        const serverPath = app.isPackaged
+            ? path.join(process.resourcesPath, "bin", exeName)
+            : path.join(app.getAppPath(), "bin", exeName);
 
-    const batPath = path.join(app.getPath("userData"), "setup-firewall.bat");
+        if (!existsSync(serverPath)) {
+            dialog.showErrorBox(
+                "DEBUG: Path Error",
+                `Telemetry .exe NOT found at:\n${serverPath}`,
+            );
+            return;
+        }
 
-    const batContent = `
-            @echo off
-            netsh advfirewall firewall delete rule name=all program="${mainExePath}"
-            netsh advfirewall firewall delete rule name=all program="${telemetryExePath}"
+        killTelemetry();
+        const serverDir = path.dirname(serverPath);
 
-            netsh advfirewall firewall delete rule name="trucknavtelemetry.exe"
-            netsh advfirewall firewall delete rule name="TruckNav App"
-            netsh advfirewall firewall delete rule name="TruckNav Telemetry"
-            netsh advfirewall firewall delete rule name="TruckNavTelemetry"
+        const logPath = path.join(
+            app.getPath("userData"),
+            "telemetry-crash-log.txt",
+        );
+        const logStream = createWriteStream(logPath, { flags: "a" });
 
+        logStream.write(`\n\n--- App Boot: ${new Date().toISOString()} ---\n`);
+        logStream.write(`Path: ${serverPath}\nPackaged: ${app.isPackaged}\n\n`);
 
-            netsh advfirewall firewall add rule name="TruckNav App" dir=in action=allow program="${mainExePath}" enable=yes profile=any
-            netsh advfirewall firewall add rule name="TruckNav Telemetry" dir=in action=allow program="${telemetryExePath}" enable=yes profile=any
-            exit
-                `;
+        telemetryProcess = spawn(serverPath, [], {
+            cwd: serverDir,
+            windowsHide: true,
+        });
 
-    writeFileSync(batPath, batContent);
+        telemetryProcess.stdout?.pipe(logStream);
+        telemetryProcess.stderr?.pipe(logStream);
 
-    spawn("powershell.exe", [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        `Start-Process -FilePath "${batPath}" -Verb RunAs -WindowStyle Hidden`,
-    ]);
+        telemetryProcess.on("error", (err: any) => {
+            logStream.write(
+                `[FATAL ERROR]: Failed to start process: ${err.message}\n`,
+            );
+        });
+
+        telemetryProcess.on("close", (code: number) => {
+            logStream.write(
+                `[INFO]: Server process exited with code ${code}\n`,
+            );
+            telemetryProcess = null;
+        });
+    } catch (globalError) {
+        console.error("Failed to start telemetry server:", globalError);
+    }
 }
+
+const killTelemetry = () => {
+    console.log("[Telemetry] Cleaning up background processes...");
+
+    if (telemetryProcess) {
+        try {
+            telemetryProcess.kill();
+        } catch (e) {}
+        telemetryProcess = null;
+    }
+
+    try {
+        spawnSync("taskkill", ["/F", "/IM", exeName, "/T"], {
+            stdio: "ignore",
+            windowsHide: true,
+        });
+    } catch (e) {}
+};
+
+const currentPort = { value: 0 };
+async function startWebServer() {
+    const server = express();
+    currentPort.value = await getAvailablePort(8628);
+    const webDir = app.isPackaged
+        ? path.join(process.resourcesPath, "app.asar", "app")
+        : path.join(app.getAppPath(), "app");
+
+    server.use(express.static(webDir));
+
+    server.get("/*splat", (_req, res) => {
+        res.sendFile(path.join(webDir, "index.html"));
+    });
+
+    server.listen(currentPort.value, "0.0.0.0");
+}
+
+async function getAvailablePort(startingPort: number): Promise<number> {
+    return new Promise((resolve) => {
+        const server = net.createServer();
+
+        server.once("error", (err: any) => {
+            if (err.code === "EADDRINUSE") {
+                resolve(getAvailablePort(startingPort + 1));
+            } else {
+                console.error("Unexpected server error:", err);
+            }
+        });
+
+        server.listen(startingPort, "0.0.0.0", () => {
+            const address = server.address();
+            if (address && typeof address !== "string") {
+                const port = address.port;
+                server.close();
+                console.log(`Port ${port} confirmed available.`);
+                resolve(port);
+            }
+        });
+    });
+}
+
+/**
+ * Ipc Handlers
+ */
+ipcMain.handle("get-local-port", () => {
+    return currentPort.value;
+});
 
 ipcMain.handle("check-plugin-statuses", async () => {
     const steamRoot = await getSteamPath();
@@ -264,147 +347,14 @@ ipcMain.handle("check-plugin-statuses", async () => {
                         if (existsSync(dllSource)) {
                             copyFileSync(dllSource, dllDest);
                             results[game.key as "ets2" | "ats"] = true;
-                        } else {
-                            throw new Error(`Source not found: ${dllSource}`);
                         }
-                    } catch (err) {
-                        console.error(
-                            `[Auto-Install] Failed to copy to ${game.folder}:`,
-                            err,
-                        );
-                    }
+                    } catch (err) {}
                 }
             }
         });
     });
 
     return results;
-});
-
-const exeName = "TruckNavTelemetry.exe";
-async function startTelemetryServer() {
-    try {
-        const serverPath = app.isPackaged
-            ? path.join(process.resourcesPath, "bin", exeName)
-            : path.join(app.getAppPath(), "bin", exeName);
-
-        if (!existsSync(serverPath)) {
-            dialog.showErrorBox(
-                "DEBUG: Path Error",
-                `File NOT found at:\n${serverPath}`,
-            );
-            return;
-        }
-
-        killTelemetry();
-
-        const serverDir = path.dirname(serverPath);
-
-        const firewallFlagPath = path.join(
-            app.getPath("userData"),
-            ".firewall-v1-applied",
-        );
-        const firewallFixApplied = existsSync(firewallFlagPath);
-
-        const firstRunFlagPath = path.join(
-            app.getPath("userData"),
-            ".first-run-completed",
-        );
-        const isFirstRun = !existsSync(firstRunFlagPath);
-
-        const psCommand = `Start-Process -FilePath '${serverPath}' -WorkingDirectory '${serverDir}' -WindowStyle Hidden`;
-
-        const logPath = path.join(
-            app.getPath("userData"),
-            "truck-nav-debug.txt",
-        );
-        writeFileSync(
-            logPath,
-            `Attempting to launch:\n${psCommand}\n\nPackaged: ${app.isPackaged}`,
-        );
-
-        const child = spawn(
-            "powershell.exe",
-            ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", psCommand],
-            { shell: true },
-        );
-
-        child.stderr.on("data", (data) => {
-            dialog.showErrorBox("POWERSHELL ERROR", data.toString());
-        });
-
-        if (!firewallFixApplied) {
-            setupFirewallRules();
-
-            writeFileSync(firewallFlagPath, "done");
-
-            if (isFirstRun) {
-                writeFileSync(firstRunFlagPath, "done");
-            }
-        }
-    } catch (globalError) {
-        console.error("Failed to start telemetry server:", globalError);
-    }
-}
-
-const killTelemetry = () => {
-    console.log("[Telemetry] Cleaning up background processes...");
-    try {
-        spawnSync("taskkill", ["/F", "/IM", exeName, "/T"], {
-            stdio: "ignore",
-            windowsHide: true,
-        });
-    } catch (e) {}
-};
-
-const currentPort = { value: 0 };
-async function startWebServer() {
-    const server = express();
-    currentPort.value = await getAvailablePort(8628);
-    const webDir = app.isPackaged
-        ? path.join(process.resourcesPath, "app.asar", "app")
-        : path.join(app.getAppPath(), "app");
-
-    server.use(express.static(webDir));
-
-    server.get("/*splat", (_req, res) => {
-        res.sendFile(path.join(webDir, "index.html"));
-    });
-
-    server.listen(currentPort.value, "0.0.0.0");
-}
-
-async function getAvailablePort(startingPort: number): Promise<number> {
-    return new Promise((resolve) => {
-        const server = net.createServer();
-
-        server.once("error", (err: any) => {
-            if (err.code === "EADDRINUSE") {
-                resolve(getAvailablePort(startingPort + 1));
-            } else {
-                console.error("Unexpected server error:", err);
-            }
-        });
-
-        server.listen(startingPort, "0.0.0.0", () => {
-            const address = server.address();
-            if (address && typeof address !== "string") {
-                const port = address.port;
-
-                server.close();
-
-                console.log(`Port ${port} confirmed available.`);
-                resolve(port);
-            }
-        });
-    });
-}
-
-/**
- * Ipc Handlers
- */
-ipcMain.handle("get-local-port", () => {
-    return currentPort.value;
 });
 
 ipcMain.handle("select-game-folder", async (event, gameName: string) => {

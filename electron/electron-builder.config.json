@@ -19,9 +19,13 @@
         }
     ],
     "nsis": {
-        "allowElevation": true,
+        "include": "installer.nsh",
         "oneClick": false,
-        "allowToChangeInstallationDirectory": true
+        "perMachine": true,
+        "allowElevation": true,
+        "allowToChangeInstallationDirectory": true,
+        "installerIcon": "assets/TruckNavIconOutline.ico",
+        "uninstallerIcon": "assets/TruckNavIconOutline.ico"
     },
     "win": {
         "target": "nsis",
