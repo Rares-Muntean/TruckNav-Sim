@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import SegmentedControl from "../segmentedControl.vue";
+
 const { activeSettings, updateProfile } = useSettings();
 
 const hasGuidedNavigation = computed(
@@ -21,21 +23,13 @@ function toggleGuidedNavigation() {
                 <p>Guided Navigation</p>
             </div>
 
-            <div class="segmented-control" @click="toggleGuidedNavigation">
-                <button
-                    class="segment-btn"
-                    :class="{ active: hasGuidedNavigation }"
-                >
-                    <span class="label">On</span>
-                </button>
-
-                <button
-                    class="segment-btn"
-                    :class="{ activeOff: !hasGuidedNavigation }"
-                >
-                    <span class="label">Off</span>
-                </button>
-            </div>
+            <SegmentedControl
+                left-option="On"
+                right-option="Off"
+                @connect="toggleGuidedNavigation"
+                size="normal"
+                :active="hasGuidedNavigation"
+            />
         </div>
     </div>
 </template>

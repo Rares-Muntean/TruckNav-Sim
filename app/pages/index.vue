@@ -12,7 +12,7 @@ watch(currentView, async () => {
 
     if (isElectron.value) {
         if (currentView.value === "desktopHome") {
-            (window as any).electronAPI.setWindowSize(900, 600, false, false);
+            (window as any).electronAPI.setWindowSize(950, 700, false, false);
         }
     }
 });

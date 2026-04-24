@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { generateTruckIcon } from "~/assets/utils/map/markers";
+import SegmentedControl from "../segmentedControl.vue";
 
 const { settings, activeSettings, updateProfile, DEFAULT_SETTINGS } =
     useSettings();
@@ -68,21 +69,14 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                 <p>Text Theme</p>
             </div>
 
-            <div class="segmented-control" @click="toggleTextColor">
-                <button
-                    class="segment-btn"
-                    :class="{ active: isTextThemeLight }"
-                >
-                    <span class="label">Light</span>
-                </button>
-
-                <button
-                    class="segment-btn"
-                    :class="{ active: !isTextThemeLight }"
-                >
-                    <span class="label">Dark</span>
-                </button>
-            </div>
+            <SegmentedControl
+                left-option="Light"
+                right-option="Dark"
+                :is-same-color="true"
+                @connect="toggleTextColor"
+                :active="isTextThemeLight"
+                size="normal"
+            />
         </div>
 
         <div class="option setting">
@@ -93,7 +87,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
             <USelect
                 :model-value="activeSettings.fontFamily"
-                @update:model-value="(val) => updateFont(val)"
+                @update:model-value="(val: string) => updateFont(val)"
                 :items="items"
                 variant="none"
                 class="selector"

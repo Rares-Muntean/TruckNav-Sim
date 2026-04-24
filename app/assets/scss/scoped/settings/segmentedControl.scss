@@ -1,0 +1,56 @@
+.segmented-control {
+    display: flex;
+    gap: 0.8rem;
+    background: $default-background-color-dark;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &.normal {
+        padding: 4px;
+
+        .label {
+            font-size: 1.6rem;
+        }
+
+        .segment-btn {
+            padding: 4px 6px;
+        }
+    }
+
+    &.small {
+        padding: 3px;
+
+        .label {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .segment-btn {
+            padding: 2px 5px;
+            line-height: 1;
+        }
+    }
+
+    .segment-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        color: $white-font-text60;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+
+        &.active {
+            background: var(--theme-color);
+            color: var(--main-text-color);
+            box-shadow: $default-box-shadow;
+        }
+
+        &.activeOff {
+            background-color: $red-color;
+            color: $white-font-text;
+            box-shadow: $default-box-shadow;
+        }
+    }
+}

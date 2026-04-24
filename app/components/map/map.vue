@@ -295,7 +295,7 @@ onMounted(async () => {
     await loadLocationData();
     if (!mapEl.value) return;
     if (isElectron.value) {
-        (window as any).electronAPI.setWindowSize(900, 600, true, true);
+        (window as any).electronAPI.setWindowSize(950, 700, true, true);
     }
 
     try {

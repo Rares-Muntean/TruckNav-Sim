@@ -28,6 +28,14 @@ import {
 import * as dgram from "dgram";
 import * as registry from "native-reg";
 
+import { getSettings, saveSettings } from "./settingsManager";
+import type { AppSettings } from "./settingsConstants";
+
+const appSettings = getSettings();
+
+let forceKeepHidden =
+    appSettings.startMinimized || process.argv.includes("--hidden");
+
 // Graceful handling of unhandled errors.
 unhandled();
 
@@ -36,24 +44,33 @@ const trayMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
     new MenuItem({
         label: "Show App",
         click: () => {
+            forceKeepHidden = false;
             const win = myCapacitorApp.getMainWindow();
-            if (win) win.show();
+            if (win) {
+                if (win.isMinimized()) win.restore();
+                win.show();
+                win.focus();
+            }
         },
     }),
-
     new MenuItem({ type: "separator" }),
-
     new MenuItem({ label: "Quit App", role: "quit" }),
-];
-
-const appMenuBarMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
-    { role: process.platform === "darwin" ? "appMenu" : "fileMenu" },
-    { role: "viewMenu" },
 ];
 
 // Get Config options from capacitor.config
 const capacitorFileConfig: CapacitorElectronConfig =
     getCapacitorElectronConfig();
+
+if (forceKeepHidden) {
+    if (!capacitorFileConfig.electron) capacitorFileConfig.electron = {};
+    (capacitorFileConfig.electron as any).hideMainWindowOnLaunch = true;
+    (capacitorFileConfig.electron as any).splashScreenEnabled = false;
+
+    (capacitorFileConfig.electron as any).windowOptions = {
+        ...(capacitorFileConfig.electron as any).windowOptions,
+        show: false,
+    };
+}
 
 // Initialize our app. You can pass menu templates into the app here.
 const myCapacitorApp = new ElectronCapacitorApp(
@@ -77,44 +94,80 @@ if (electronIsDev) {
 }
 
 app.on("browser-window-created", (_, window) => {
-    window.on("close", (event: Electron.Event) => {
+    const originalShow = window.show.bind(window);
+    window.show = () => {
+        if (forceKeepHidden) return;
+
+        originalShow();
+    };
+
+    window.on("close", (event: any) => {
         if (!(app as any).isQuitting) {
             event.preventDefault();
-            window.hide(); // Hide to tray instead of closing
+            window.hide();
         }
+    });
+
+    (window as any).on("minimize", (event: any) => {
+        if (event && event.preventDefault) {
+            event.preventDefault();
+        }
+        window.hide();
     });
 });
 
 const gotTheLock = app.requestSingleInstanceLock();
-
 if (!gotTheLock) {
     app.quit();
 } else {
     app.on("second-instance", () => {
+        forceKeepHidden = false;
         const win = myCapacitorApp.getMainWindow();
         if (win) {
             if (win.isMinimized()) win.restore();
-            win.focus();
             win.show();
+            win.focus();
         }
     });
 
     // Run Application
     (async () => {
-        // Wait for electron app to be ready.
-        await app.whenReady();
+        try {
+            await app.whenReady();
 
-        startTelemetryServer();
-        startWebServer();
+            startTelemetryServer();
+            startWebServer();
+            setupContentSecurityPolicy(myCapacitorApp.getCustomURLScheme());
 
-        // Security - Set Content-Security-Policy based on whether or not we are in dev mode.
-        setupContentSecurityPolicy(myCapacitorApp.getCustomURLScheme());
+            await myCapacitorApp.init();
 
-        // Initialize our app, build windows, and load content.
-        await myCapacitorApp.init();
+            const tray = (myCapacitorApp as any).TrayIcon;
 
-        // Check for updates if we are in a packaged app.
-        // autoUpdater.checkForUpdatesAndNotify();
+            if (tray) {
+                tray.removeAllListeners("click");
+                tray.removeAllListeners("double-click");
+
+                const toggleAppWindow = () => {
+                    forceKeepHidden = false;
+
+                    const win = myCapacitorApp.getMainWindow();
+                    if (win) {
+                        if (win.isVisible() && !win.isMinimized()) {
+                            win.hide();
+                        } else {
+                            if (win.isMinimized()) win.restore();
+                            win.show();
+                            win.focus();
+                        }
+                    }
+                };
+
+                tray.on("click", toggleAppWindow);
+                tray.on("double-click", toggleAppWindow);
+            }
+        } catch (e) {
+            console.error("Failed to init app", e);
+        }
     })();
 }
 
@@ -131,8 +184,7 @@ app.on("window-all-closed", function () {
 
 // When the dock icon is clicked.
 app.on("activate", async function () {
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
+    forceKeepHidden = false;
     const win = myCapacitorApp.getMainWindow();
     if (win && win.isDestroyed()) {
         await myCapacitorApp.init();
@@ -291,6 +343,33 @@ async function getAvailablePort(startingPort: number): Promise<number> {
 /**
  * Ipc Handlers
  */
+ipcMain.handle("get-settings", () => {
+    return getSettings();
+});
+
+ipcMain.handle(
+    "update-setting",
+    <K extends keyof AppSettings>(
+        _event: any,
+        key: K,
+        value: AppSettings[K],
+    ) => {
+        const settings = getSettings();
+        settings[key] = value;
+        saveSettings(settings);
+
+        if (key === "startWithWindows") {
+            app.setLoginItemSettings({
+                openAtLogin: value,
+                path: app.getPath("exe"),
+                args: ["--hidden"],
+            });
+        }
+
+        return settings;
+    },
+);
+
 ipcMain.handle("get-local-port", () => {
     return currentPort.value;
 });

@@ -87,15 +87,11 @@ const handleConnect = async () => {
                 </p>
             </div>
 
-            <div class="description">
-                <div class="note">
-                    <Icon name="lucide:info" />
-                    <p>Note</p>
-                </div>
-                <p class="description-text">
-                    Enter the IP shown in TruckNav from your computer
-                </p>
-            </div>
+            <InfoBox type="note">
+                <template #content>
+                    <p>Enter the IP shown in TruckNav PC Companion</p>
+                </template>
+            </InfoBox>
         </div>
 
         <button class="btn" @click="handleConnect" :disabled="!canConnect">

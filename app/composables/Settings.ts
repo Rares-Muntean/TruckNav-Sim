@@ -1,4 +1,3 @@
-import { AppSettings } from "~/constants/appSettings";
 import type { GameType } from "~/types";
 
 export type UnitSystem = "metric" | "imperial";
@@ -38,21 +37,26 @@ export interface AppSettingsState {
 }
 
 const DEFAULT_PROFILE: GameProfile = {
-    themeColor: AppSettings.theme.defaultColor,
+    themeColor: "#fbc02d",
     textColor: "light",
     routeColor: "#22d3ee",
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
     lastDestination: null,
     hasTurnNavigation: true,
-    fontFamily: "Quicksand",
+    fontFamily: "Commissioner",
 };
 
 const DEFAULT_SETTINGS: AppSettingsState = {
     selectedGame: null,
     savedIP: null,
     profiles: {
-        ets2: { ...DEFAULT_PROFILE, themeColor: "#fbc02d", units: "metric" },
+        ets2: {
+            ...DEFAULT_PROFILE,
+            themeColor: "#fbc02d",
+            textColor: "dark",
+            units: "metric",
+        },
         ats: {
             ...DEFAULT_PROFILE,
             themeColor: "#d32f2f",

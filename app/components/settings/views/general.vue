@@ -48,15 +48,13 @@ function toggleDlcPanel() {
                 <p>Units</p>
             </div>
 
-            <div class="segmented-control" @click="toggleUnits">
-                <button class="segment-btn" :class="{ active: isMetric }">
-                    <span class="label">Metric</span>
-                </button>
-
-                <button class="segment-btn" :class="{ active: !isMetric }">
-                    <span class="label">Imperial</span>
-                </button>
-            </div>
+            <SegmentedControl
+                left-option="On"
+                right-option="Off"
+                @connect="toggleUnits"
+                size="normal"
+                :active="isMetric"
+            />
         </div>
 
         <div class="small-separator"></div>

@@ -37,25 +37,6 @@
     }
 }
 
-.description {
-    margin-left: 4px;
-    opacity: 0.8;
-    font-size: 1.4rem;
-    padding: 0px 0px 6px 12px;
-
-    border-left: $blue-color 3px solid;
-    border-radius: 3px;
-}
-
-.note {
-    display: flex;
-    gap: 0.6rem;
-    align-items: center;
-    margin-bottom: 0.4rem;
-
-    color: $blue-color;
-}
-
 form {
     display: flex;
     flex-direction: column;

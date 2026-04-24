@@ -5,6 +5,9 @@ onMounted(async () => {
     const { initSettings } = useSettings();
     initSettings();
 
+    const { initDesktopSettings } = useDesktopSettings();
+    await initDesktopSettings();
+
     const result = await KeepAwake.isSupported();
     if (result.isSupported) {
         await KeepAwake.keepAwake();

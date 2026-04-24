@@ -1,16 +1,19 @@
 <script lang="ts" setup>
 import { isBridgeRunning } from "~/assets/utils/telemetry/helpers";
-import type { ets2Expansions } from "~/data/ets2/ets2Expansions";
 const props = defineProps<{ launchChooseGame: () => void }>();
 
 const { fetchIp, fetchPort, localIP, localPort } = useNetwork();
 const { updateGlobal } = useSettings();
+const { settings, updateDesktopSetting } = useDesktopSettings();
 
 const isServerRunning = ref(false);
 const polling = ref<any>(null);
 const isWindowOpened = ref(false);
 const etsActive = ref(false);
 const atsActive = ref(false);
+
+const startWithWindows = computed(() => settings.value.startWithWindows);
+const startMinimized = computed(() => settings.value.startMinimized);
 
 const checkStatus = async () => {
     isServerRunning.value = await isBridgeRunning("127.0.0.1");
@@ -29,7 +32,11 @@ onMounted(async () => {
     await fetchIp();
     await fetchPort();
 
-    (window as any).electronAPI.setWindowSize(900, 600, false, false);
+    const settings = await (window as any).electronAPI.getSettings();
+    if (!settings.startMinimized) {
+        (window as any).electronAPI.setWindowSize(950, 700, false, false);
+    }
+
     checkStatus();
     const bootTimer = setInterval(async () => {
         if (isServerRunning.value) {
@@ -116,21 +123,62 @@ const toggleWindow = () => {
                         Open the TruckNav app or web browser using the ip
                         address below.
                     </li>
-                    <li>
-                        TruckNav App:
-                        <strong class="localIp">{{ localIP }}</strong> |
+                </ol>
+                <div class="ip-type-wrapper">
+                    <div class="ip-type">
+                        <Icon name="lucide:app-window" class="icon" size="22" />
+                        App:
+                        <strong class="localIp">{{ localIP }}</strong>
+                    </div>
+
+                    <div class="ip-type">
+                        <Icon name="lucide:globe" class="icon" size="22" />
                         Browser:
                         <strong class="localIp"
                             >{{ localIP }}:{{ localPort }}</strong
                         >
-                    </li>
-                </ol>
+                    </div>
+                </div>
+
+                <div class="settings">
+                    <div class="toggle-button">
+                        <span class="toggle-title">Launch on startup</span>
+                        <SegmentedControl
+                            left-option="On"
+                            right-option="Off"
+                            @connect="
+                                updateDesktopSetting(
+                                    'startWithWindows',
+                                    !startWithWindows,
+                                )
+                            "
+                            size="small"
+                            :active="startWithWindows"
+                        />
+                    </div>
+
+                    <div class="toggle-button">
+                        <span class="toggle-title">Start minimized</span>
+                        <SegmentedControl
+                            left-option="On"
+                            right-option="Off"
+                            @connect="
+                                updateDesktopSetting(
+                                    'startMinimized',
+                                    !startMinimized,
+                                )
+                            "
+                            size="small"
+                            :active="startMinimized"
+                        />
+                    </div>
+                </div>
             </div>
 
             <div class="bottom-info">
                 <div class="status-div">
                     <div class="status">
-                        <p>Current Status: &nbsp;</p>
+                        <p>TruckNavTelemetry.exe: &nbsp;</p>
                         <span
                             :class="
                                 isServerRunning ? 'connected' : 'disconnected'
@@ -230,6 +278,15 @@ const toggleWindow = () => {
                     <Icon name="lucide:monitor" size="20" />
                 </button>
             </div>
+        </div>
+
+        <div class="troubleshoot">
+            <InfoBox type="note">
+                <template #content
+                    >If you're using a cracked version or a repack, the plugin
+                    may show as 'Missing' even after setup
+                </template>
+            </InfoBox>
         </div>
     </section>
 </template>

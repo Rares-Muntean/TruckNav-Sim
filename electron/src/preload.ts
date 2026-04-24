@@ -1,7 +1,6 @@
 require("./rt/electron-rt");
-//////////////////////////////
-// User Defined Preload scripts below
 import { contextBridge, ipcRenderer } from "electron";
+import type { AppSettings } from "./settingsConstants";
 
 contextBridge.exposeInMainWorld("electronAPI", {
     onServerIp: (callback: (ip: string) => void) =>
@@ -28,4 +27,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
         }),
 
     manualStartServer: () => ipcRenderer.send("manual-start-server"),
+
+    getSettings: () => ipcRenderer.invoke("get-settings"),
+    updateSetting: (key: keyof AppSettings, value: any) =>
+        ipcRenderer.invoke("update-setting", key, value),
 });

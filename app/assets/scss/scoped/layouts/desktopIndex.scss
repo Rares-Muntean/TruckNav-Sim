@@ -1,11 +1,11 @@
 .section-device-info {
-    height: 550px;
-    width: 850px;
+    width: 900px;
 
     color: $white-font-text;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    font-family: "Commissioner";
 }
 
 .top-tagline {
@@ -29,6 +29,9 @@
     display: flex;
     flex-direction: column;
     align-self: center;
+    min-width: 85%;
+
+    margin-top: 3.2rem;
 
     .title-wrapper {
         display: flex;
@@ -59,18 +62,19 @@
     }
 
     .steps {
-        list-style-position: inside;
+        // list-style-position: inside;
         margin-top: 2rem;
 
         background-color: $secondaryColor;
         border-radius: 6px;
-        padding: 24px 24px 24px 38px;
+        padding: 24px 24px 16px 24px;
 
         font-size: 1.6rem;
         font-weight: 600;
 
         ol {
             list-style-type: decimal;
+            margin-left: 1.8rem;
         }
 
         li {
@@ -80,11 +84,45 @@
         li:last-child {
             margin-bottom: 0;
         }
+
+        .ip-type-wrapper {
+            margin-top: 2.6rem;
+
+            display: flex;
+            gap: 1.8rem;
+        }
+
+        .ip-type {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+
+            .icon {
+                margin-top: 0.3rem;
+            }
+        }
+    }
+
+    .settings {
+        margin-top: 0.8rem;
+        display: flex;
+        gap: 1.8rem;
+    }
+
+    .toggle-title {
+        font-size: 1.4rem;
+    }
+
+    .toggle-button {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
     }
 }
 
 .localIp {
     background-color: var(--theme-color);
+    color: var(--main-text-color);
     border-radius: 4px;
     padding: 3px 6px;
     margin-left: 4px;
@@ -98,7 +136,13 @@
     align-items: end;
     justify-content: space-between;
 
-    margin: 3.2rem;
+    margin: 0 3.2rem;
+    margin-top: 3.2rem;
+}
+
+.troubleshoot {
+    margin: 0 3.2rem;
+    margin-top: 1.4rem;
 }
 
 .bottom-info {
@@ -272,7 +316,7 @@
     font-family: inherit;
     font-weight: 600;
     font-size: 1.6rem;
-    color: $white-font-text;
+    color: var(--main-text-color);
 
     height: fit-content;
     border: none;
