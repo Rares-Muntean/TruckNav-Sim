@@ -5,7 +5,6 @@ import nl from "~/locales/nl.json";
 
 type TranslationTree = typeof en;
 
-// New Language for NL By Mambu
 const dictionaries: Record<LocaleCode, TranslationTree> = { en, de, nl };
 
 function readValue(tree: TranslationTree, path: string): string | undefined {
