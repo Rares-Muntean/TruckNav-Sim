@@ -10,7 +10,6 @@ export type UiComponent =
     | "speedLimit"
     | "topBar";
 export type ActiveComponents = UiComponent[];
-// New Language for NL By Mambu
 export type LocaleCode = "en" | "de" | "nl";
 
 export interface GameProfile {
