@@ -247,7 +247,7 @@ export const calculateRoute = (
                     if (edge.maneuverType === 3) {
                         if (diff > 1.0) stepCost += 50;
                     } else {
-                        if (diff > 2.8) stepCost += 100_000;
+                        if (diff > 2.8) stepCost += 100_000_000;
                         else if (diff > 1.5) stepCost += 10_000;
                         else if (diff > 1.0) stepCost += 1000;
                         else if (diff > 0.4) stepCost += 500;
