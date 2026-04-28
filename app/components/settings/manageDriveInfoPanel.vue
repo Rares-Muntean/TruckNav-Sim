@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const { settings, updateGlobal } = useSettings();
+const { t } = useTranslations();
 
 interface Component {
     id: UiComponent;
@@ -8,53 +9,49 @@ interface Component {
     iconName: string;
 }
 
-const components: Component[] = [
+const components = computed<Component[]>(() => [
     {
         id: "speed",
-        title: "Speed",
-        description:
-            "Displays your current driving speed in your preferred unit.",
+        title: t("uiComponents.speedTitle"),
+        description: t("uiComponents.speedDescription"),
         iconName: "lucide:gauge",
     },
 
     {
         id: "fuel",
-        title: "Fuel",
-        description:
-            "Shows your remaining fuel level and it pulses when running low.",
+        title: t("uiComponents.fuelTitle"),
+        description: t("uiComponents.fuelDescription"),
         iconName: "lucide:fuel",
     },
 
     {
         id: "sleep",
-        title: "Sleep Time",
-        description:
-            "Displays the time remaining until your next mandatory rest stop.",
+        title: t("uiComponents.sleepTitle"),
+        description: t("uiComponents.sleepDescription"),
         iconName: "lucide:bed-double",
     },
 
     {
         id: "time",
-        title: "Game Time",
-        description: "Shows the current in-game time.",
+        title: t("uiComponents.gameTimeTitle"),
+        description: t("uiComponents.gameTimeDescription"),
         iconName: "lucide:clock",
     },
 
     {
         id: "speedLimit",
-        title: "Speed Sign",
-        description:
-            "Displays the legal speed limit for the road you are currently on.",
+        title: t("uiComponents.speedLimitTitle"),
+        description: t("uiComponents.speedLimitDescription"),
         iconName: "lucide:octagon-alert",
     },
 
     {
         id: "topBar",
-        title: "Top Bar",
-        description: "Hides the whole top bar with drive info.",
+        title: t("uiComponents.topBarTitle"),
+        description: t("uiComponents.topBarDescription"),
         iconName: "lucide:info",
     },
-];
+]);
 
 function toggleUiComponent(componentId: UiComponent) {
     const currentList = [...settings.value.activeUiComponents];

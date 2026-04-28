@@ -4,6 +4,7 @@ import { atsExpansions } from "~/data/ats/atsExpansions";
 
 const { settings, activeSettings, updateProfile, resetSettings } =
     useSettings();
+const { locale, setLocale, t } = useTranslations();
 
 const isDlcPanelOpened = ref(false);
 
@@ -12,6 +13,19 @@ const selectedExpansion = computed(() => {
     return settings.value.selectedGame === "ets2"
         ? ets2Expansions
         : atsExpansions;
+});
+
+const languageItems = [
+    { label: "English", value: "en" as LocaleCode },
+    { label: "Deutsch", value: "de" as LocaleCode },
+];
+
+const currentLanguageLabel = computed(() => {
+    const foundLanguage = languageItems.find((item) => {
+        return item.value === locale.value;
+    });
+
+    return foundLanguage ? foundLanguage.label : "English";
 });
 
 function toggleUnits() {
@@ -28,7 +42,7 @@ function toggleDlcPanel() {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:map-plus" size="24" />
-                <p>Owned DLCs</p>
+                <p>{{ t("settings.ownedDlcs") }}</p>
             </div>
             <div class="owned-dlcs">
                 <button
@@ -37,7 +51,7 @@ function toggleDlcPanel() {
                 >
                     {{ activeSettings.ownedDlcs.length }} /
                     {{ Object.keys(selectedExpansion).length }}
-                    active
+                    {{ t("common.active") }}
                 </button>
             </div>
         </div>
@@ -45,16 +59,49 @@ function toggleDlcPanel() {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:ruler" size="24" />
-                <p>Units</p>
+                <p>{{ t("settings.units") }}</p>
             </div>
 
             <SegmentedControl
-                left-option="On"
-                right-option="Off"
+                :left-option="t('settings.metric')"
+                :right-option="t('settings.imperial')"
                 @connect="toggleUnits"
                 size="normal"
                 :active="isMetric"
             />
+        </div>
+
+        <div class="option setting">
+            <div class="option-title">
+                <Icon name="lucide:languages" size="24" />
+                <p>{{ t("settings.language") }}</p>
+            </div>
+
+            <USelect
+                :model-value="locale"
+                @update:model-value="(val: any) => setLocale(val)"
+                :items="languageItems"
+                variant="none"
+                class="selector"
+                :ui="{
+                    trailingIcon: 'shrink-0 size-[20px] text-white !px-6',
+                    content: 'bg-[#222e3c] shadow-xl rounded-md',
+                    item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#3d546e] rounded cursor-pointer transition-colors',
+                    itemTrailingIcon: 'text-white',
+                }"
+            >
+                <template #default>
+                    <span>
+                        {{ currentLanguageLabel }}
+                    </span>
+                </template>
+
+                <template #item="{ item }">
+                    <span>
+                        {{ item.label }}
+                    </span>
+                </template>
+            </USelect>
         </div>
 
         <div class="small-separator"></div>
@@ -62,21 +109,21 @@ function toggleDlcPanel() {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:rotate-ccw" size="24" />
-                <p>Reset to Defaults</p>
+                <p>{{ t("settings.resetToDefaults") }}</p>
             </div>
 
             <button
                 @click.prevent="resetSettings"
                 class="nav-btn settings-btn red-color"
             >
-                Reset
+                {{ t("common.reset") }}
             </button>
         </div>
 
         <Transition name="panel-pop">
             <PopupPanel
                 v-if="isDlcPanelOpened"
-                title="Choose DLCs"
+                :title="t('common.chooseDlcs')"
                 @close="toggleDlcPanel"
             >
                 <ManageDlcsWindow />

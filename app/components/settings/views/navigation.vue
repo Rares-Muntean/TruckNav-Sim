@@ -2,6 +2,7 @@
 import SegmentedControl from "../segmentedControl.vue";
 
 const { activeSettings, updateProfile } = useSettings();
+const { t } = useTranslations();
 
 const hasGuidedNavigation = computed(
     () => activeSettings.value.hasTurnNavigation === true,
@@ -20,12 +21,12 @@ function toggleGuidedNavigation() {
         <div class="option setting">
             <div class="option-title">
                 <Icon name="lucide:navigation-2" size="24" />
-                <p>Guided Navigation</p>
+                <p>{{ t("settings.guidedNavigation") }}</p>
             </div>
 
             <SegmentedControl
-                left-option="On"
-                right-option="Off"
+                :left-option="t('settings.on')"
+                :right-option="t('settings.off')"
                 @connect="toggleGuidedNavigation"
                 size="normal"
                 :active="hasGuidedNavigation"

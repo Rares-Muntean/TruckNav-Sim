@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const { selectedGame } = useGameSelection();
+const { t } = useTranslations();
 
 const emit = defineEmits(["connected"]);
 </script>
@@ -8,7 +9,7 @@ const emit = defineEmits(["connected"]);
     <section class="section-mobile-menu">
         <div class="title">
             <Icon class="icon" name="lucide:cast" size="20" />
-            <span>Pair with Computer</span>
+            <span>{{ t("mobile.pairWithComputer") }}</span>
         </div>
 
         <div class="content">

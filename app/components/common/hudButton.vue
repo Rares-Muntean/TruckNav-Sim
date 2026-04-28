@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 defineProps<{
     onClick: () => void;
-    // iconName: string;
-    // activeIconName?: string;
     isActive?: boolean;
 }>();
 </script>

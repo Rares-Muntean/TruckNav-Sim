@@ -5,6 +5,7 @@ const props = defineProps<{
 }>();
 const { selectedGame, commitSelection } = useGameSelection();
 const { isWeb, isElectron } = usePlatform();
+const { t } = useTranslations();
 
 const handleStart = () => {
     commitSelection();
@@ -24,7 +25,7 @@ const handleStart = () => {
             </button>
 
             <Icon name="lucide:earth" class="icon" size="22" />
-            <span>Select Game</span>
+            <span>{{ t("common.selectGame") }}</span>
         </div>
 
         <div class="game-selection" :style="{ width: isWeb ? '80%' : '85%' }">
@@ -42,7 +43,7 @@ const handleStart = () => {
             class="btn nav-btn"
             autofocus
         >
-            <span>Start Navigation</span>
+            <span>{{ t("common.startNavigation") }}</span>
             <Icon name="lucide:map-pinned" size="20" />
         </button>
     </div>

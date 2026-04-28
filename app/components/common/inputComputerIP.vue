@@ -4,8 +4,9 @@ const props = defineProps<{ requireGame?: boolean }>();
 
 const { selectedGame, commitSelection } = useGameSelection();
 const { settings, updateGlobal } = useSettings();
+const { t } = useTranslations();
 
-const connectionError = ref("Disconnected");
+const connectionError = ref(t("common.disconnected"));
 const ipInput = ref(settings.value.savedIP || "");
 const isConnecting = ref(false);
 const isConnected = ref(false);
@@ -34,10 +35,10 @@ const canConnect = computed(() => {
 });
 
 const handleConnect = async () => {
-    connectionError.value = "Disconnected";
+    connectionError.value = t("common.disconnected");
 
     if (!ipInput.value) {
-        connectionError.value = "Please input a value.";
+        connectionError.value = t("input.missingValue");
         return;
     }
 
@@ -45,7 +46,7 @@ const handleConnect = async () => {
 
     try {
         if (!(await isBridgeRunning(ipInput.value)))
-            throw new Error("Bridge not reachable");
+            throw new Error(t("input.bridgeNotReachable"));
 
         updateGlobal("savedIP", ipInput.value);
         isConnected.value = true;
@@ -58,7 +59,7 @@ const handleConnect = async () => {
         }, 500);
     } catch (error) {
         isConnected.value = false;
-        connectionError.value = "Could not connect...";
+        connectionError.value = t("input.couldNotConnect");
         isConnecting.value = false;
     }
 };
@@ -69,33 +70,37 @@ const handleConnect = async () => {
         <div class="input-ip">
             <div class="form-details">
                 <form @submit.prevent="handleConnect" action="">
-                    <label for="ip">IP Address:</label>
+                    <label for="ip">{{ t("input.ipAddress") }}</label>
                     <input
                         id="ip"
                         v-model="ipInput"
                         type="text"
                         name="ip"
-                        placeholder="Type here..."
+                        :placeholder="t('input.placeholder')"
                         :disabled="isConnecting"
                     />
                 </form>
                 <p class="status">
-                    <span v-if="!connectionError">Current Status: &nbsp;</span>
+                    <span v-if="!connectionError"
+                        >{{ t("common.currentStatus") }} &nbsp;</span
+                    >
                     <span :class="isConnected ? 'connected' : 'disconnected'">{{
-                        isConnected ? "Connected" : connectionError
+                        isConnected ? t("common.connected") : connectionError
                     }}</span>
                 </p>
             </div>
 
             <InfoBox type="note">
                 <template #content>
-                    <p>Enter the IP shown in TruckNav PC Companion</p>
+                    <p>{{ t("input.description") }}</p>
                 </template>
             </InfoBox>
         </div>
 
         <button class="btn" @click="handleConnect" :disabled="!canConnect">
-            <span>{{ isConnecting ? "Connecting..." : "Connect" }}</span>
+            <span>{{
+                isConnecting ? t("common.connecting") : t("common.connect")
+            }}</span>
             <Icon name="lucide:link" size="20" />
         </button>
     </div>

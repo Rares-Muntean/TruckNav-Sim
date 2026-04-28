@@ -109,6 +109,7 @@ const {
 //
 // Settings Controller
 const { activeSettings, settings } = useSettings();
+const { t } = useTranslations();
 
 let uiTimer: ReturnType<typeof setTimeout> | null = null;
 let routeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -486,7 +487,7 @@ const onCancelRoute = () => {
                         :upcoming-turns="fullRouteDirections"
                         :distance-to-next-turn="nextTurnDistance"
                         :next-instruction="
-                            fullRouteDirections[1]?.text || 'Follow Route'
+                            fullRouteDirections[1]?.text || t('map.followRoute')
                         "
                     />
 
@@ -494,8 +495,8 @@ const onCancelRoute = () => {
                         :trigger="clickingNotificationTrigger"
                         :text="
                             isClickingEnabled
-                                ? 'Tapping Enabled'
-                                : 'Tapping Disabled'
+                                ? t('map.tappingEnabled')
+                                : t('map.tappingDisabled')
                         "
                     >
                         <template #icon>
@@ -577,13 +578,13 @@ const onCancelRoute = () => {
                         <WarningSlide
                             :show-if="hasInGameMarker && !isRouteActive"
                             :reset-on="isRouteActive"
-                            text="External Route Detected: Set Waypoint"
+                            :text="t('map.externalRouteDetected')"
                         />
 
                         <WarningSlide
                             :show-if="!gameConnected"
                             :reset-on="gameConnected"
-                            text="Game Offline"
+                            :text="t('common.gameOffline')"
                         />
                     </div>
 
