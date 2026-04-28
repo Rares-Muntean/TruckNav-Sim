@@ -18,6 +18,8 @@ const selectedExpansion = computed(() => {
 const languageItems = [
     { label: "English", value: "en" as LocaleCode },
     { label: "Deutsch", value: "de" as LocaleCode },
+    // New Language for NL By Mambu
+    { label: "Nederlands", value: "nl" as LocaleCode },
 ];
 
 const currentLanguageLabel = computed(() => {
