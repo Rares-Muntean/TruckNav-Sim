@@ -29,7 +29,7 @@
     },
     "win": {
         "target": "nsis",
-        "icon": "assets/TruckNavIconOutline.ico"
+        "icon": "assets/TruckNavIconOutline.png"
     },
     "mac": {
         "category": "your.app.category.type",
