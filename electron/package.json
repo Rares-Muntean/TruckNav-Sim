@@ -1,7 +1,7 @@
 {
     "name": "truck-nav",
     "productName": "TruckNav",
-    "version": "0.4.3",
+    "version": "0.4.4",
     "description": "Real-time GPS navigation route advisor for ETS2. Second monitor map with live tracking and routing.",
     "author": {
         "name": "RaresMuntean",
