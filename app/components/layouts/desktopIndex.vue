@@ -171,6 +171,7 @@ const toggleWindow = () => {
                             :active="startMinimized"
                         />
                     </div>
+
                 </div>
             </div>
 
