@@ -10,7 +10,7 @@ export type UiComponent =
     | "speedLimit"
     | "topBar";
 export type ActiveComponents = UiComponent[];
-export type LocaleCode = "en" | "de";
+export type LocaleCode = "en" | "de" | "nl";
 
 export interface GameProfile {
     themeColor: string;
