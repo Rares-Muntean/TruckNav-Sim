@@ -51,6 +51,33 @@ let headingOffset = 0;
 
 let socket: WebSocket | null = null;
 
+function sendDiscordRpcState(payload: {
+    game: string;
+    connected: boolean;
+    hasActiveJob: boolean;
+    sourceCity?: string;
+    destinationCity?: string;
+    cargoName?: string;
+    truckBrand?: string;
+    truckName?: string;
+}) {
+    if (typeof window === "undefined") return;
+
+    const electronApi = (window as any).electronAPI;
+    if (!electronApi?.updateDiscordRpc) return;
+
+    electronApi.updateDiscordRpc(payload);
+}
+
+function clearDiscordRpcState() {
+    if (typeof window === "undefined") return;
+
+    const electronApi = (window as any).electronAPI;
+    if (!electronApi?.clearDiscordRpc) return;
+
+    electronApi.clearDiscordRpc();
+}
+
 export function useEtsTelemetry() {
     const { settings } = useSettings();
 
@@ -167,6 +194,18 @@ export function useEtsTelemetry() {
             destinationCompany: destinationCompany,
         });
 
+        sendDiscordRpcState({
+            game: data.game,
+            connected: gameConnected,
+            hasActiveJob,
+            sourceCity: data.job.citySource || data.job.citySourceId,
+            destinationCity:
+                data.job.cityDestination || data.job.cityDestinationId,
+            cargoName: data.job.cargo?.name,
+            truckBrand: data.truck.constants?.brand,
+            truckName: data.truck.constants?.name,
+        });
+
         if (onUpdate) {
             onUpdate({
                 truck: { ...truckState },
@@ -208,6 +247,8 @@ export function useEtsTelemetry() {
         Object.assign(jobState, {
             hasActiveJob: false,
         });
+
+        clearDiscordRpcState();
 
         if (onUpdate && wasConnected) {
             onUpdate({

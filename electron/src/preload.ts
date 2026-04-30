@@ -1,6 +1,7 @@
 require("./rt/electron-rt");
 import { contextBridge, ipcRenderer } from "electron";
 import type { AppSettings } from "./settingsConstants";
+import type { DiscordRpcPayload } from "./discordRpc";
 
 contextBridge.exposeInMainWorld("electronAPI", {
     onServerIp: (callback: (ip: string) => void) =>
@@ -27,6 +28,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
         }),
 
     manualStartServer: () => ipcRenderer.send("manual-start-server"),
+
+    updateDiscordRpc: (payload: DiscordRpcPayload) =>
+        ipcRenderer.send("update-discord-rpc", payload),
+    clearDiscordRpc: () => ipcRenderer.send("clear-discord-rpc"),
 
     getSettings: () => ipcRenderer.invoke("get-settings"),
     updateSetting: (key: keyof AppSettings, value: any) =>
