@@ -27,7 +27,11 @@ export async function initializeMap(
             protocol.add(pmtilesInstance);
 
             console.log(
-                `Successfully loaded ${fileName} into memory (${(blob.size / 1024 / 1024).toFixed(2)} MB)`,
+                `Successfully loaded ${fileName} into memory (${(
+                    blob.size /
+                    1024 /
+                    1024
+                ).toFixed(2)} MB)`,
             );
         } catch (error) {
             console.error("Error loading PMTiles blob:", error);
@@ -57,7 +61,7 @@ export async function initializeMap(
             {
                 id: "background",
                 type: "background",
-                paint: { "background-color": "#272d39" },
+                paint: { "background-color": "#24467b" },
             },
             {
                 id: "lines",
@@ -76,7 +80,7 @@ export async function initializeMap(
         ets: {
             container,
             style,
-            center: [10, 50],
+            center: [0, 0],
             zoom: 6,
             minZoom: 5,
             maxZoom: 13,
@@ -85,15 +89,15 @@ export async function initializeMap(
             attributionControl: false,
             collectResourceTiming: false,
             maxBounds: [
-                [-28, 25], // [[west, south]
-                [50, 74], // [east, north]]
+                [-30, -23], // [[west, south]
+                [23, 25], // [east, north]]
             ],
         },
 
         ats: {
             container,
             style,
-            center: [-115, 40],
+            center: [0, 0],
             zoom: 6,
             minZoom: 5,
             maxZoom: 13,
@@ -102,8 +106,8 @@ export async function initializeMap(
             attributionControl: false,
             collectResourceTiming: false,
             maxBounds: [
-                [-130, 23], // SW
-                [-60, 55], // NE
+                [-30, -23], // [[west, south]
+                [23, 25], // [east, north]]
             ],
         },
     };
@@ -132,6 +136,29 @@ export async function initializeMap(
             url: "pmtiles://all-data",
         });
 
+        // WATER
+        map.addLayer({
+            id: "water",
+            type: "fill",
+            source: "all-data",
+            "source-layer": "water",
+            paint: {
+                "fill-color": "#272d39",
+            },
+        });
+
+        // DISPLAYING COUNTRY DELIMITATIONS
+        map.addLayer({
+            id: "country-borders",
+            type: "fill",
+            source: "all-data",
+            "source-layer": "countries",
+            paint: {
+                "fill-color": "#3d546e",
+                "fill-opacity": 0.3,
+            },
+        });
+
         ////
         //// LAYERS FOR DISPLAYING
         //// FROM SOURCES
@@ -151,21 +178,9 @@ export async function initializeMap(
                     5,
                     7,
                     10,
-                    4,
+                    8,
                 ],
-                "line-opacity": 0.6,
-            },
-        });
-
-        // WATER
-        map.addLayer({
-            id: "water",
-            type: "fill",
-            source: "all-data",
-            "source-layer": "water",
-            paint: {
-                "fill-color": "#24467b",
-                "fill-opacity": 0.6,
+                "line-opacity": 0.7,
             },
         });
 
@@ -228,7 +243,6 @@ export async function initializeMap(
         );
 
         // PREFABS FOR SERVICE AREAS     ETC
-
         const color0 = blendWithBg(
             lightenColor(activeSettings.value.themeColor, 0.3),
             0.6,
@@ -258,9 +272,9 @@ export async function initializeMap(
                         "#3d546e",
                     ],
                 },
-                minzoom: 5,
+                minzoom: 6,
             },
-            "lines",
+            "roads",
         );
 
         // DISPLAYING VILLAGE NAMES
@@ -283,22 +297,6 @@ export async function initializeMap(
             },
             minzoom: 8.2,
         });
-
-        // DISPLAYING COUNTRY DELIMITATIONS
-        map.addLayer(
-            {
-                id: "country-borders",
-                type: "line",
-                source: "all-data",
-                "source-layer": "countries",
-                paint: {
-                    "line-color": "#3d546e",
-                    "line-width": 2,
-                    "line-opacity": 0.4,
-                },
-            },
-            "lines",
-        );
 
         // DISPLAYING STATE DELIMITATIONS
         map.addLayer(
