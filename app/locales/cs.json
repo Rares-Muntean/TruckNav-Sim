@@ -99,7 +99,7 @@
         "units": "Jednotky"
     },
     "uiComponents": {
-        "fuelDescription": "Ukáže zbyvající palivo a pulzuje, když dochází.",
+        "fuelDescription": "Ukáže zbývající palivo a pulzuje, když dochází.",
         "fuelTitle": "Palivo",
         "gameTimeDescription": "Ukazuje aktuální čas ve hře.",
         "gameTimeTitle": "Herní čas",
