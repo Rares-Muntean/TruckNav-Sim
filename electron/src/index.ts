@@ -30,11 +30,19 @@ import * as registry from "native-reg";
 
 import { getSettings, saveSettings } from "./settingsManager";
 import type { AppSettings } from "./settingsConstants";
+import {
+    clearDiscordRpc,
+    destroyDiscordRpc,
+    initDiscordRpc,
+    setDiscordRpcEnabled,
+    updateDiscordRpc,
+} from "./discordRpc";
 
 const appSettings = getSettings();
 
 let forceKeepHidden =
     appSettings.startMinimized || process.argv.includes("--hidden");
+let isQuittingForRpcCleanup = false;
 
 // Graceful handling of unhandled errors.
 unhandled();
@@ -138,6 +146,9 @@ if (!gotTheLock) {
             startTelemetryServer();
             startWebServer();
             setupContentSecurityPolicy(myCapacitorApp.getCustomURLScheme());
+            if (appSettings.rpcEnabled) {
+                await initDiscordRpc();
+            }
 
             await myCapacitorApp.init();
 
@@ -171,7 +182,22 @@ if (!gotTheLock) {
     })();
 }
 
-app.on("before-quit", function () {
+app.on("before-quit", function (event) {
+    if (!isQuittingForRpcCleanup) {
+        event.preventDefault();
+        isQuittingForRpcCleanup = true;
+        (app as any).isQuitting = true;
+        killTelemetry();
+
+        destroyDiscordRpc()
+            .catch(() => {})
+            .finally(() => {
+                app.quit();
+            });
+
+        return;
+    }
+
     (app as any).isQuitting = true;
     killTelemetry();
 });
@@ -366,6 +392,12 @@ ipcMain.handle(
             });
         }
 
+        if (key === "rpcEnabled") {
+            return setDiscordRpcEnabled(Boolean(value)).then(() => {
+                return settings;
+            });
+        }
+
         return settings;
     },
 );
@@ -532,4 +564,12 @@ ipcMain.on(
 
 ipcMain.on("manual-start-server", () => {
     startTelemetryServer();
+});
+
+ipcMain.on("update-discord-rpc", (_event, payload) => {
+    updateDiscordRpc(payload);
+});
+
+ipcMain.on("clear-discord-rpc", () => {
+    clearDiscordRpc();
 });

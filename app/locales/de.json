@@ -25,6 +25,7 @@
         "app": "App:",
         "ats": "ATS",
         "browser": "Browser",
+        "discordRpc": "Discord RPC",
         "ets2": "ETS2",
         "launchStartup": "Beim Systemstart starten",
         "localGps": "Lokales GPS",
