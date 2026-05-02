@@ -19,7 +19,6 @@ const languageItems = [
     { label: "English", value: "en" as LocaleCode },
     { label: "Deutsch", value: "de" as LocaleCode },
     { label: "Čeština", value: "cs" as LocaleCode },
-    { label: "Polski", value: "pl" as LocaleCode },
     { label: "Slovenčina", value: "sk" as LocaleCode },
 ];
 
