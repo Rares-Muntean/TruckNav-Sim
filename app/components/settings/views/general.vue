@@ -126,12 +126,7 @@ onMounted(async () => {
             <SegmentedControl
                 :left-option="t('settings.on')"
                 :right-option="t('settings.off')"
-                @connect="
-                    updateDesktopSetting(
-                        'rpcEnabled',
-                        !rpcEnabled,
-                    )
-                "
+                @connect="updateDesktopSetting('rpcEnabled', !rpcEnabled)"
                 size="normal"
                 :active="rpcEnabled"
             />

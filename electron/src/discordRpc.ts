@@ -11,7 +11,6 @@ export interface DiscordRpcPayload {
 
 // Enter your Discord application client ID here to enable Rich Presence integration.
 // For now we use TruckNav's RPC ID, If not set, RPC features will be disabled.
-// The Discord RPC is handled by Mambu. Discord: mambuzrrr
 const DISCORD_CLIENT_ID = "1401296138186788865";
 const ROTATE_INTERVAL_MS = 10_000;
 const RPC_SHUTDOWN_WAIT_MS = 1_500;
@@ -101,8 +100,7 @@ export async function clearDiscordRpc() {
         }
 
         await setIdlePresence();
-    } catch {
-    }
+    } catch {}
 }
 
 export async function suspendDiscordRpc() {
@@ -138,13 +136,11 @@ export async function destroyDiscordRpc(useIdleFlush = true) {
             await rpcClient.clearActivity();
             await waitForDiscordRpcShutdown();
         }
-    } catch {
-    }
+    } catch {}
 
     try {
         rpcClient.destroy();
-    } catch {
-    }
+    } catch {}
 
     rpcClient = null;
     rpcReady = false;
@@ -170,7 +166,7 @@ export async function setDiscordRpcEnabled(enabled: boolean) {
 }
 
 async function waitForDiscordRpcShutdown() {
-    // Helper: when TruckNav closes, Discord may keep showing the RPC for non reason (Discord's problem? :D older discord version we didnt had that problem).
+    // Helper: when TruckNav closes, Discord may keep showing the RPC for non reason.
     // This small delay gives Discord enough time to clear the presence properly.
     await new Promise((resolve) => {
         setTimeout(resolve, RPC_SHUTDOWN_WAIT_MS);
@@ -213,8 +209,7 @@ async function pushCurrentPresence() {
     try {
         await rpcClient.setActivity(normalized);
         lastPayloadKey = payloadKey;
-    } catch {
-    }
+    } catch {}
 }
 
 function buildPresence(payload: DiscordRpcPayload) {
