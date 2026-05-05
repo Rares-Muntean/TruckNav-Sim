@@ -113,6 +113,15 @@ To open the app in your browser, click the network link shown in the terminal (t
 ➜ Network: http://192.168.1.x:3000/
 ```
 
+# 🐧 Linux & Steam Deck Support
+
+Official native Linux support is a priority for the roadmap, but it will take some time to implement while I finalize the core architecture.
+
+If you are a Linux user and need a solution immediately, please use the community-maintained branch by Jeroen van Straten. He has put an incredible amount of work into this integration, and his research will serve as the foundation for official Linux support in the future.
+
+
+[TruckNav Linux Branch (by Jeroen van Straten)](https://github.com/jvanstraten/TruckNav-Sim/tree/better-attempt)
+
 #  How it Works
 
 1. **Telemetry:** The app uses a telemetry server to pull data (coordinates, speed, heading) directly from the running game.
