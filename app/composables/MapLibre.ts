@@ -272,7 +272,7 @@ export async function initializeMap(
                         "#3d546e",
                     ],
                 },
-                minzoom: 6,
+                minzoom: 8,
             },
             "roads",
         );
@@ -329,9 +329,11 @@ export async function initializeMap(
                     ["linear"],
                     ["zoom"],
                     7,
-                    0.7,
+                    1,
                     10,
                     1.5,
+                    12,
+                    2,
                 ],
                 "icon-allow-overlap": false,
                 "symbol-sort-key": [
