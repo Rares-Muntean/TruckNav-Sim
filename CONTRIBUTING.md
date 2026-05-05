@@ -30,4 +30,4 @@ We love new ideas! Please open an issue first to discuss the feature before writ
 3. Open your PR against the **develop** branch with a clear description of what you changed.
 
 ## 🤝 Need Help?
-If you have questions, feel free to [mention where to reach you, e.g., open an issue or link to a Discord].
+If you have questions, feel free to join our Discord and ask there: [TruckNav Discord](https://discord.gg/C5BTXCF2jC).
