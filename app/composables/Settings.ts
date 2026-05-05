@@ -16,6 +16,9 @@ export interface GameProfile {
     themeColor: string;
     textColor: TextTheme;
     routeColor: string;
+    backgroundColor: string;
+    landColor: string;
+    roadColor: string;
     units: UnitSystem;
     ownedDlcs: number[];
     lastDestination: [number, number] | null;
@@ -41,6 +44,9 @@ const DEFAULT_PROFILE: GameProfile = {
     themeColor: "#fbc02d",
     textColor: "light",
     routeColor: "#22d3ee",
+    roadColor: "#4a5f7a",
+    backgroundColor: "#24467b",
+    landColor: "#272d39",
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
     lastDestination: null,
@@ -88,7 +94,7 @@ export const useSettings = () => {
 
     const activeSettings = computed(() => {
         const game = settings.value.selectedGame || "ets2";
-        return settings.value.profiles[game as "ets2" | "ats"];
+        return settings.value.profiles[game];
     });
 
     const applySideEffects = () => {
@@ -136,7 +142,7 @@ export const useSettings = () => {
         key: K,
         value: AppSettingsState[K],
     ) => {
-        (settings.value as any)[key] = value;
+        settings.value[key] = value;
         saveSettings();
     };
 
@@ -145,7 +151,7 @@ export const useSettings = () => {
         value: GameProfile[K],
     ) => {
         const game = settings.value.selectedGame || "ets2";
-        (settings.value.profiles[game as "ets2" | "ats"] as any)[key] = value;
+        settings.value.profiles[game][key] = value;
         saveSettings();
     };
 
@@ -165,6 +171,23 @@ export const useSettings = () => {
         }
 
         applySideEffects();
+    };
+
+    const resetGlobalSetting = <
+        K extends keyof Omit<AppSettingsState, "profiles">,
+    >(
+        key: K,
+    ) => {
+        settings.value[key] = DEFAULT_SETTINGS[key];
+        saveSettings();
+    };
+
+    const resetProfileSetting = <K extends keyof GameProfile>(key: K) => {
+        const game = settings.value.selectedGame || "ets2";
+        const defaultValue = DEFAULT_SETTINGS.profiles[game][key];
+
+        settings.value.profiles[game][key] = defaultValue;
+        saveSettings();
     };
 
     const resetSettings = () => {
@@ -197,6 +220,8 @@ export const useSettings = () => {
         DEFAULT_SETTINGS,
         updateGlobal,
         updateProfile,
+        resetGlobalSetting,
+        resetProfileSetting,
         initSettings,
         resetSettings,
     };

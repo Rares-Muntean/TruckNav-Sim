@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-const { activeSettings, updateProfile } = useSettings();
+const { activeSettings, updateProfile, resetProfileSetting } = useSettings();
+const { t } = useTranslations();
 type colorKeys = keyof GameProfile & `${string}Color`;
 
 const props = defineProps<{
@@ -19,6 +20,10 @@ const currentColor = computed({
         updateProfile(props.colorElement, newColor);
     },
 });
+
+function resetColor() {
+    resetProfileSetting(props.colorElement);
+}
 </script>
 
 <template>
@@ -48,6 +53,16 @@ const currentColor = computed({
                         v-model="currentColor"
                         class="color-picker"
                     />
+                    <div class="picker-footer">
+                        <button
+                            @click.prevent="resetColor"
+                            class="settings-btn default-color small-reset"
+                            title="Reset to default"
+                        >
+                            <Icon name="lucide:refresh-ccw" size="18" />
+                            <span>{{ t("common.reset") }}</span>
+                        </button>
+                    </div>
                 </template>
             </UPopover>
         </div>

@@ -1,5 +1,9 @@
 import type { Map as MapLibreGl, StyleSpecification } from "maplibre-gl";
-import { blendWithBg, lightenColor } from "~/assets/utils/shared/colors";
+import {
+    blendWithBg,
+    darkenColor,
+    lightenColor,
+} from "~/assets/utils/shared/colors";
 import { BlobSource } from "~/assets/utils/shared/BlobSource";
 
 export async function initializeMap(
@@ -61,7 +65,10 @@ export async function initializeMap(
             {
                 id: "background",
                 type: "background",
-                paint: { "background-color": "#24467b" },
+                paint: {
+                    "background-color":
+                        activeSettings.value.backgroundColor ?? "#24467b",
+                },
             },
             {
                 id: "lines",
@@ -143,7 +150,7 @@ export async function initializeMap(
             source: "all-data",
             "source-layer": "water",
             paint: {
-                "fill-color": "#272d39",
+                "fill-color": activeSettings.value?.landColor ?? "#272d39",
             },
         });
 
@@ -154,8 +161,10 @@ export async function initializeMap(
             source: "all-data",
             "source-layer": "countries",
             paint: {
-                "fill-color": "#3d546e",
-                "fill-opacity": 0.3,
+                "fill-color": activeSettings.value?.landColor
+                    ? darkenColor(activeSettings.value.landColor, 0.4)
+                    : "#3d546e",
+                "fill-opacity": 0.4,
             },
         });
 
@@ -170,15 +179,17 @@ export async function initializeMap(
             source: "all-data",
             "source-layer": "water",
             paint: {
-                "line-color": "#1e3a5f",
+                "line-color": activeSettings.value?.landColor
+                    ? darkenColor(activeSettings.value.landColor, 0.15)
+                    : "#1e3a5f",
                 "line-width": [
                     "interpolate",
                     ["linear"],
                     ["zoom"],
                     5,
-                    7,
+                    2.5,
                     10,
-                    8,
+                    5,
                 ],
                 "line-opacity": 0.7,
             },
@@ -195,7 +206,9 @@ export async function initializeMap(
                 "line-cap": ["step", ["zoom"], "butt", 8, "round"],
             },
             paint: {
-                "line-color": "#4a5f7a",
+                "line-color": activeSettings.value?.roadColor
+                    ? activeSettings.value.roadColor
+                    : "#4a5f7a",
                 "line-width": [
                     "interpolate",
                     ["linear"],
@@ -418,7 +431,6 @@ export async function initializeMap(
             paint: {
                 "text-color": "#ffffff",
                 "text-halo-color": "#ffffff",
-                "text-halo-width": 0.5,
             },
 
             minzoom: 6,
@@ -444,7 +456,6 @@ export async function initializeMap(
                 "text-color": "#ffffff",
                 "text-halo-color": "#ffffff",
                 "text-halo-width": 0.5,
-                "text-opacity": 0.5,
             },
             minzoom: 5,
             maxzoom: 6,

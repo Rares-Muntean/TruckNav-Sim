@@ -4,7 +4,11 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import maplibregl from "maplibre-gl";
 import { usePlatform } from "~/composables/Platform";
 import eruda from "eruda";
-import { blendWithBg, lightenColor } from "~/assets/utils/shared/colors";
+import {
+    blendWithBg,
+    darkenColor,
+    lightenColor,
+} from "~/assets/utils/shared/colors";
 import { generateTruckIcon } from "~/assets/utils/map/markers";
 
 defineProps<{ goHome: () => void }>();
@@ -226,6 +230,62 @@ watch(
     },
 );
 
+// We check each time the background color changes to update the map libre color
+watch(
+    () => activeSettings.value.backgroundColor,
+    async (newColor) => {
+        if (!map.value) return;
+
+        if (map.value.getLayer("background")) {
+            map.value.setPaintProperty(
+                "background",
+                "background-color",
+                newColor,
+            );
+        }
+    },
+);
+
+// We check each time the land color changes to update the map libre color
+watch(
+    () => activeSettings.value.landColor,
+    async (newColor) => {
+        if (!map.value) return;
+
+        if (map.value.getLayer("water")) {
+            map.value.setPaintProperty("water", "fill-color", newColor);
+        }
+
+        if (map.value.getLayer("country-borders")) {
+            map.value.setPaintProperty(
+                "country-borders",
+                "fill-color",
+                darkenColor(newColor, 0.4),
+            );
+        }
+
+        if (map.value.getLayer("water-outline")) {
+            map.value.setPaintProperty(
+                "water-outline",
+                "line-color",
+                darkenColor(newColor, 0.4),
+            );
+        }
+    },
+);
+
+// We check each time the road color changes to update the map libre color
+watch(
+    () => activeSettings.value.roadColor,
+    async (newColor) => {
+        if (!map.value) return;
+
+        if (map.value.getLayer("roads")) {
+            map.value.setPaintProperty("roads", "line-color", newColor);
+        }
+    },
+);
+
 // We check each time the truck marker size changes to update the map libre truck marker elemeent size
 watch(
     () => settings.value.truckMarkerSize,
@@ -339,8 +399,8 @@ onMounted(async () => {
                 scale.value > 0
                     ? scale.value
                     : settings.value.selectedGame === "ats"
-                      ? 20
-                      : 19;
+                    ? 20
+                    : 19;
 
             await handleRouteClick(
                 [e.lngLat.lng, e.lngLat.lat],

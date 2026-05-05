@@ -130,6 +130,10 @@ $button-padding: 8px 10px;
 }
 
 .settings-btn {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
     border-radius: 5px;
     transition: 0s;
     font-weight: 700;
@@ -173,23 +177,6 @@ $button-padding: 8px 10px;
 /**
  * COLOR SETTINGS
  */
-.color-box {
-    height: 34px;
-    width: 34px;
-    background-color: var(--theme-color);
-    transition:
-        transform 0.2s,
-        border-color 0.2s;
-
-    border-radius: 3px;
-
-    &.active {
-        border-color: white;
-        transform: scale(1.2);
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-    }
-}
-
 .option {
     display: flex;
     align-items: center;
@@ -205,6 +192,16 @@ $button-padding: 8px 10px;
         width: 24px;
         height: 24px;
     }
+}
+
+.picker-footer {
+    display: flex;
+    align-items: center;
+
+    background: $primaryDarkerColor;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 .color-options {
@@ -229,10 +226,18 @@ $button-padding: 8px 10px;
 
 .color-picker {
     background-color: $secondaryColor;
-    border-radius: 4px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
     padding: 4px;
 }
 
+.small-reset {
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    gap: 0.8rem;
+}
 /**
  * DLC SETTINGS
  */

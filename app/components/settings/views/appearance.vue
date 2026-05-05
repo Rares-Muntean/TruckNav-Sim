@@ -64,9 +64,42 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             color-element="routeColor"
         >
             <template #icon>
+                <Icon name="lucide:milestone" size="24" />
+            </template>
+        </ColorOption>
+
+        <div class="small-separator"></div>
+
+        <ColorOption
+            :option-title="t('settings.background')"
+            color-element="backgroundColor"
+        >
+            <template #icon>
+                <Icon name="lucide:waves" size="24" />
+            </template>
+        </ColorOption>
+
+        <ColorOption
+            :option-title="t('settings.land')"
+            color-element="landColor"
+        >
+            <template #icon>
+                <Icon name="lucide:mountain" size="24" />
+            </template>
+        </ColorOption>
+
+        <ColorOption
+            :option-title="t('settings.roads')"
+            color-element="roadColor"
+        >
+            <template #icon>
                 <Icon name="lucide:route" size="24" />
             </template>
         </ColorOption>
+
+        <PreviewSetting :height="240">
+            <MapColorPreview />
+        </PreviewSetting>
 
         <div class="small-separator"></div>
 

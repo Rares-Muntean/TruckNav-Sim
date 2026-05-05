@@ -69,6 +69,9 @@
     "settings": {
         "appFont": "App Font",
         "appearance": "Appearance",
+        "background": "Background",
+        "land": "Land",
+        "roads": "Roads",
         "chooseLanguage": "Choose Language",
         "compactTripSize": "Compact Trip Size",
         "description": "App preferences and customization",
