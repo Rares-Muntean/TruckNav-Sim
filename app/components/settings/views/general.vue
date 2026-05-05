@@ -21,20 +21,20 @@ const selectedExpansion = computed(() => {
         : atsExpansions;
 });
 
-const languageItems = [
-    { label: "English", value: "en" as LocaleCode },
-    { label: "Deutsch", value: "de" as LocaleCode },
-    { label: "Nederlands", value: "nl" as LocaleCode },
-    { label: "Čeština", value: "cs" as LocaleCode },
-    { label: "Slovenčina", value: "sk" as LocaleCode },
-];
+const languageItems = computed(() => [
+    { label: t("languages.english"), value: "en" as LocaleCode },
+    { label: t("languages.german"), value: "de" as LocaleCode },
+    { label: t("languages.dutch"), value: "nl" as LocaleCode },
+    { label: t("languages.czech"), value: "cs" as LocaleCode },
+    { label: t("languages.slovak"), value: "sk" as LocaleCode },
+]);
 
 const currentLanguageLabel = computed(() => {
-    const foundLanguage = languageItems.find((item) => {
+    const foundLanguage = languageItems.value.find((item) => {
         return item.value === locale.value;
     });
 
-    return foundLanguage ? foundLanguage.label : "English";
+    return foundLanguage ? foundLanguage.label : t("languages.english");
 });
 
 function toggleUnits() {

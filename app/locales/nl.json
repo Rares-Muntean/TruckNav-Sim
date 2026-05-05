@@ -73,9 +73,7 @@
         "compactTripSize": "Compacte ritgrootte",
         "description": "App-voorkeuren en aanpassingen",
         "drivingInfo": "Rij-informatie",
-        "english": "Engels",
         "general": "Algemeen",
-        "german": "Duits",
         "guidedNavigation": "Begeleide navigatie",
         "hudButtonSize": "HUD-knopgrootte",
         "imperial": "Imperiaal",
@@ -96,6 +94,13 @@
         "title": "Instellingen",
         "truckMarkerSize": "Truckmarkergrootte",
         "units": "Eenheden"
+    },
+    "languages": {
+        "czech": "Tsjechisch",
+        "dutch": "Nederlands",
+        "english": "Engels",
+        "german": "Duits",
+        "slovak": "Slowaaks"
     },
     "uiComponents": {
         "fuelDescription": "Toont je resterende brandstofniveau en pulseert wanneer het laag is.",

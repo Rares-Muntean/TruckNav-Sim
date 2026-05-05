@@ -71,12 +71,9 @@
         "appearance": "Appearance",
         "chooseLanguage": "Choose Language",
         "compactTripSize": "Compact Trip Size",
-        "czech": "Czech",
         "description": "App preferences and customization",
         "drivingInfo": "Driving Info",
-        "english": "English",
         "general": "General",
-        "german": "German",
         "guidedNavigation": "Guided Navigation",
         "hudButtonSize": "Hud Button Size",
         "imperial": "Imperial",
@@ -92,12 +89,18 @@
         "releaseDate": "Release Date",
         "route": "Route",
         "selectComponents": "Select Components",
-        "slovak": "Slovak",
         "textTheme": "Text Theme",
         "theme": "Theme",
         "title": "Settings",
         "truckMarkerSize": "Truck Marker Size",
         "units": "Units"
+    },
+    "languages": {
+        "czech": "Czech",
+        "dutch": "Dutch",
+        "english": "English",
+        "german": "German",
+        "slovak": "Slovak"
     },
     "uiComponents": {
         "fuelDescription": "Shows your remaining fuel level and it pulses when running low.",

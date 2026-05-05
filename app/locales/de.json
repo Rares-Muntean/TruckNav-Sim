@@ -71,12 +71,9 @@
         "appearance": "Aussehen",
         "chooseLanguage": "Sprache auswählen",
         "compactTripSize": "Kompakte Reisegröße",
-        "czech": "Tschechisch",
         "description": "App Einstellungen und Anpassung",
         "drivingInfo": "Fahrinfos",
-        "english": "Englisch",
         "general": "Allgemein",
-        "german": "Deutsch",
         "guidedNavigation": "Geführte Navigation",
         "hudButtonSize": "HUD Button Größe",
         "imperial": "Imperial",
@@ -92,12 +89,18 @@
         "releaseDate": "Veröffentlichung",
         "route": "Route",
         "selectComponents": "Komponenten auswählen",
-        "slovak": "Slowakisch",
         "textTheme": "Text Design",
         "theme": "Design",
         "title": "Einstellungen",
         "truckMarkerSize": "Truck Marker Größe",
         "units": "Einheiten"
+    },
+    "languages": {
+        "czech": "Tschechisch",
+        "dutch": "Niederländisch",
+        "english": "Englisch",
+        "german": "Deutsch",
+        "slovak": "Slowakisch"
     },
     "uiComponents": {
         "fuelDescription": "Zeigt deinen verbleibenden Kraftstoff an und pulsiert bei niedrigem Stand.",
