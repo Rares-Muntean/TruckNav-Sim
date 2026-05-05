@@ -162,6 +162,23 @@ export const useSettings = () => {
             try {
                 const parsed = JSON.parse(savedString);
                 settings.value = { ...DEFAULT_SETTINGS, ...parsed };
+
+                settings.value.profiles = {
+                    ets2: {
+                        ...DEFAULT_SETTINGS.profiles.ets2,
+                        ...(parsed.profiles?.ets2 || {}),
+                        fontFamily:
+                            parsed.profiles?.ets2?.fontFamily ||
+                            DEFAULT_SETTINGS.profiles.ets2.fontFamily,
+                    },
+                    ats: {
+                        ...DEFAULT_SETTINGS.profiles.ats,
+                        ...(parsed.profiles?.ats || {}),
+                        fontFamily:
+                            parsed.profiles?.ats?.fontFamily ||
+                            DEFAULT_SETTINGS.profiles.ats.fontFamily,
+                    },
+                };
             } catch (e) {
                 console.error("Corrupt settings found, resetting to defaults.");
                 settings.value = { ...DEFAULT_SETTINGS };
