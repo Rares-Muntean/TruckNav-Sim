@@ -1,3 +1,7 @@
+//-----------------------------------------------------------------------------
+// RenCloud's SCS SDK plugin
+//-----------------------------------------------------------------------------
+
 /**
  * CORE TELEMETRY PACKET
  */
@@ -185,4 +189,91 @@ export interface Delivered {
     distanceKm: number;
     earnedXp: number;
     revenue: number;
+}
+
+//-----------------------------------------------------------------------------
+// TruckTel
+//-----------------------------------------------------------------------------
+
+// Delta-coded: missing key means unchanged from previous packet, null is used
+// to invalidate.
+export interface TruckTelPacket {
+    game?: "eut2" | "ats";
+    posX?: number | null;
+    posY?: number | null;
+    posZ?: number | null;
+    speedKph?: number | null;
+    rawHeading?: number | null;
+    scale?: number | null;
+    speedLimitKph?: number | null;
+    navDist?: number | null;
+    truckBrand?: string | null;
+    truckName?: string | null;
+    trailerAttached?: boolean | null;
+    fuel?: number | null;
+    jobType?: string | null;
+    origCompId?: string | null;
+    origCompName?: string | null;
+    origCityId?: string | null;
+    origCityName?: string | null;
+    destCompId?: string | null;
+    destCompName?: string | null;
+    destCityId?: string | null;
+    destCityName?: string | null;
+    cargoName?: string | null;
+    income?: number | null;
+    restRemain?: number | null;
+    timestamp?: number | null;
+}
+
+//-----------------------------------------------------------------------------
+// Common intermediate representation
+//-----------------------------------------------------------------------------
+
+export interface CommonConnection {
+    connectedToBridge: boolean;
+    simDataValid: boolean;
+    game: string, // ETS2, ATS, or something like "disconnected" probably
+}
+
+export interface CommonNavInfo {
+    position: Vector3,
+    speedKph: number,
+    rawGameHeading: number,
+    mapScale: number,
+    speedLimitKph: number,
+    inGameNavDistance: number,
+}
+
+export interface CommonTruckInfo {
+    brand: string,
+    name: string,
+    trailerAvailable: boolean,
+    trailerAttached: boolean,
+    fuel: number,
+}
+
+export interface CommonCompany {
+    companyName: string;
+    companyId: string;
+    cityName: string;
+    cityId: string;
+}
+
+export interface CommonJobInfo {
+    active: boolean,
+    type: string,
+    origin: CommonCompany,
+    destination: CommonCompany,
+    cargo: string,
+    income: number,
+}
+
+export interface CommonTelemetryData {
+    connection: CommonConnection,
+    nav: CommonNavInfo,
+    job: CommonJobInfo,
+    truck: CommonTruckInfo,
+    gameTimeFormatted: string,
+    nextRestStopMinutes: number,
 }

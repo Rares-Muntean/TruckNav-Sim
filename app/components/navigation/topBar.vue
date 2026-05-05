@@ -2,6 +2,7 @@
 const props = defineProps<{
     truckSpeed: number;
     gameConnected: boolean;
+    simDataValid: boolean;
     fuel: number;
     restStopMinutes: number;
     restStopTime: string;
@@ -32,7 +33,7 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
             </div>
         </div>
 
-        <div v-if="gameConnected" class="gas-sleep-time">
+        <div v-if="simDataValid" class="gas-sleep-time">
             <div class="gas-sleep">
                 <div
                     v-show="settings.activeUiComponents.includes('fuel')"
@@ -71,9 +72,14 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
             </p>
         </div>
 
-        <div v-else class="disconnected-div">
-            <p class="disconnected-message">{{ t("common.gameOffline") }}</p>
+        <div v-else-if="!gameConnected" class="game-status-div">
+            <p class="game-status-message">{{ t("common.gameOffline") }}</p>
             <Icon name="lucide:wifi-off" class="disconnected-icon" />
+        </div>
+
+        <div v-else class="game-status-div">
+            <p class="game-status-message">{{ t("common.gamePaused") }}</p>
+            <Icon name="lucide:pause" class="paused-icon" />
         </div>
     </div>
 </template>

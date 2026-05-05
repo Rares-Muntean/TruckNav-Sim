@@ -1,0 +1,87 @@
+---
+port: 30001
+
+content-types:
+  - if: .*\.html?
+    then: text/html; charset=utf-8
+  - if: .*\.json
+    then: application/json; charset=utf-8
+  - if: .*\.js
+    then: text/javascript; charset=utf-8
+  - if: .*\.css
+    then: text/css; charset=utf-8
+  - if: .*\.svg
+    then: image/svg+xml; charset=utf-8
+  - if: .*\.png
+    then: image/png
+  - if: .*\.jpe?g
+    then: image/jpeg
+  - if: .*\.gif
+    then: image/gif
+  - if: .*\.ico
+    then: image/vnd.microsoft.icon
+  - if: .*\.ttf
+    then: font/ttf
+  - if: .*\.webp
+    then: image/webp
+
+custom-structures:
+  nav:
+    game:
+      key: game.id
+    posX:
+      key: truck.world.placement.0
+    posY:
+      key: truck.world.placement.1
+    posZ:
+      key: truck.world.placement.2
+    speedKph:
+      key: truck.speed
+      scale: 3.6 # to km/h
+      operator: round
+    rawHeading:
+      key: truck.world.placement.3
+    scale:
+      key: local.scale
+    speedLimitKph:
+      key: truck.navigation.speed.limit
+      scale: 3.6 # to km/h
+      operator: round
+    navDist:
+      key: truck.navigation.distance
+      operator: round
+    truckBrand:
+      key: truck.brand
+    truckName:
+      key: truck.name
+    trailerAttached:
+      key: trailer.0.connected
+    fuel:
+      key: truck.fuel.amount
+      operator: round
+    jobType:
+      key: job.job.market
+    origCompId:
+      key: job.source.company.id
+    origCompName:
+      key: job.source.company
+    origCityId:
+      key: job.source.city.id
+    origCityName:
+      key: job.source.city
+    destCompId:
+      key: job.destination.company.id
+    destCompName:
+      key: job.destination.company
+    destCityId:
+      key: job.destination.city.id
+    destCityName:
+      key: job.destination.city
+    cargoName:
+      key: job.cargo
+    income:
+      key: job.income
+    restRemain:
+      key: rest.stop
+    timestamp:
+      key: game.time

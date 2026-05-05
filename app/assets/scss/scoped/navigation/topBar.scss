@@ -119,15 +119,22 @@
     }
 }
 
-.disconnected-div {
+.game-status-div {
     display: flex;
     gap: 0.8rem;
     align-items: center;
     justify-content: center;
 
-    .disconnected-message {
+    .game-status-message {
         font-size: 1.6rem;
         font-weight: 600;
+    }
+
+    .paused-icon {
+        background-color: $white-font-text;
+        opacity: 0.9;
+        width: 20px;
+        height: 20px;
     }
 
     .disconnected-icon {

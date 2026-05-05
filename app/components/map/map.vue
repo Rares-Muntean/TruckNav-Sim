@@ -36,6 +36,7 @@ const {
     stopTelemetry,
     gameTime,
     gameConnected,
+    simDataValid,
     truckCoords,
     truckSpeed,
     speedLimit,
@@ -463,6 +464,7 @@ const onCancelRoute = () => {
                         v-show="settings.activeUiComponents.includes('topBar')"
                         :fuel="fuel"
                         :game-connected="gameConnected"
+                        :sim-data-valid="simDataValid"
                         :game-time="gameTime"
                         :rest-stop-minutes="restStopMinutes"
                         :rest-stop-time="restStoptime"

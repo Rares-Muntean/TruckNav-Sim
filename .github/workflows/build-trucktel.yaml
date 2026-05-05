@@ -1,0 +1,56 @@
+name: Build TruckTel app
+
+on:
+    workflow_dispatch:
+
+jobs:
+    # ---------------------------------------------------------
+    # BUILD TRUCKTEL PLUGIN
+    # ---------------------------------------------------------
+    build-trucktel:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+                  cache: "npm"
+
+            - name: Install Root Dependencies
+              run: npm install
+
+            - name: Get latest TruckTel release information
+              id: trucktel
+              uses: pozetroninc/github-action-get-latest-release@master
+              with:
+                repository: jvanstraten/TruckTel
+
+            - name: Download TruckTel
+              run: |
+                  mkdir -p gamebindir/plugins
+                  wget https://github.com/jvanstraten/TruckTel/releases/download/${{ steps.trucktel.outputs.release }}/trucktel.zip
+                  7z x -ogamebindir/plugins trucktel.zip
+
+            - name: Remove TruckTel example apps
+              run: |
+                  rm -rf gamebindir/plugins/trucktel/*/
+
+            - name: Build Nuxt Web App
+              run: |
+                  npx nuxi generate
+
+            - name: Generate TruckTel app
+              run: |
+                  mkdir -p gamebindir/plugins/trucktel/trucknav/www
+                  cp trucktel/config.yaml gamebindir/plugins/trucktel/trucknav
+                  cp -r .output/public/* gamebindir/plugins/trucktel/trucknav/www
+                  cp trucktel/README.txt gamebindir
+
+            - name: Upload TruckTel app to GitHub
+              uses: actions/upload-artifact@v4
+              with:
+                  name: TruckNav-On-TruckTel
+                  path: gamebindir

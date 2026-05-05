@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import {Capacitor} from "@capacitor/core";
+
 const props = defineProps<{
     launchMap: () => void;
     goToDesktopIndex: () => void;
@@ -11,10 +13,45 @@ const handleStart = () => {
     commitSelection();
     props.launchMap();
 };
+
+const manualSelection = ref(false);
+
+async function autoSelectGame(): Promise<"ets2" | "ats" | "unknown"> {
+    if (Capacitor.isNativePlatform()) return "unknown";
+    const url = "/api/rest/single/game/id";
+    try {
+        const response = await fetch(url, { signal: AbortSignal.timeout(500) });
+        if (!response.ok) return "unknown";
+        const result = await response.text();
+        if (result === '"eut2"') {
+            return "ets2";
+        } else if (result === '"ats"') {
+            return "ats";
+        }
+        return "unknown";
+    } catch (e) {
+        console.error(`unexpected error trying to auto-detect game: ${e}`);
+        return "unknown";
+    }
+}
+
+onMounted(async () => {
+    console.log("Trying to auto-detect game using TruckTel API...");
+    const result = await autoSelectGame();
+    if (result == "unknown") {
+        console.log("Auto-detection failed");
+        manualSelection.value = true;
+    } else {
+        console.log(`Detected ${result.toUpperCase()}`);
+        selectedGame.value = result;
+        handleStart();
+    }
+});
+
 </script>
 
 <template>
-    <div class="choose-game-section">
+    <div v-show="manualSelection" class="choose-game-section">
         <div class="top-tagline">
             <button
                 v-show="isElectron"

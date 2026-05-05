@@ -8,6 +8,7 @@ export interface TelemetryUpdate {
 export interface GameState {
     gameTime: string;
     gameConnected: boolean;
+    simDataValid: boolean;
     hasInGameMarker: boolean;
     scale: number;
 }

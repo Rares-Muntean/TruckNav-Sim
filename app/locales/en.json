@@ -10,6 +10,7 @@
         "distance": "Distance",
         "estimatedTime": "Estimated Time",
         "gameOffline": "Game Offline",
+        "gamePaused": "Game Paused",
         "hide": "Hide",
         "loadingRouteData": "Loading Route Data...",
         "missing": "Missing",
