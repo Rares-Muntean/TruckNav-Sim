@@ -152,6 +152,10 @@ Your reports help refine the application and improve navigation accuracy.
 **Note:**  
 Reported issues will be addressed as time permits.
 
+# Code Signing
+
+This program uses free code signing provided by [SignPath.io](https://signpath.io/), and a free code signing certificate by the [SignPath Foundation](https://signpath.org/).
+
 # Credits & Acknowledgements
 
 ### [@truckermudgeon](https://github.com/truckermudgeon)
