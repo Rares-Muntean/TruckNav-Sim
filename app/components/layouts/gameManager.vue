@@ -39,6 +39,11 @@ const availableMods = computed(() => {
                 name: "ProMods Canada",
                 url: "https://trucknavapp.com/promods-canada.zip",
             },
+            {
+                id: "reforma",
+                name: "Reforma",
+                url: "https://trucknavapp.com/reforma.zip",
+            },
         ],
     };
     return mods[selectedGame.value] || [];

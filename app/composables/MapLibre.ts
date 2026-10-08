@@ -93,15 +93,25 @@ export async function initializeMap(
         ],
     };
 
-    const isProMods = activeSettings.value.activeMod === "promods-europe";
+    const isMods = activeSettings.value.activeMod !== "none";
 
-    const proModsBounds: [number[], number[]] = [
+    const modsEtsBounds: [number[], number[]] = [
         [-40, -30], // [[west, south]
         [75, 88], // [east, north]]
     ];
 
     const baseEtsBounds: [number[], number[]] = [
         [-30, -23],
+        [23, 25],
+    ];
+
+    const baseAtsBounds: [number[], number[]] = [
+        [-30, -23],
+        [23, 25],
+    ];
+
+    const modsAtsBounds: [number[], number[]] = [
+        [-30, -30],
         [23, 25],
     ];
 
@@ -117,7 +127,7 @@ export async function initializeMap(
             fadeDuration: 0,
             attributionControl: false,
             collectResourceTiming: false,
-            maxBounds: isProMods ? proModsBounds : baseEtsBounds,
+            maxBounds: isMods ? modsEtsBounds : baseEtsBounds,
         },
 
         ats: {
@@ -131,10 +141,7 @@ export async function initializeMap(
             fadeDuration: 0,
             attributionControl: false,
             collectResourceTiming: false,
-            maxBounds: [
-                [-30, -23], // [[west, south]
-                [23, 25], // [east, north]]
-            ],
+            maxBounds: isMods ? modsAtsBounds : baseAtsBounds,
         },
     };
 
