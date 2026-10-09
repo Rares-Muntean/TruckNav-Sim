@@ -27,6 +27,12 @@ export interface ScsCity {
     areas: ScsCityArea[];
 }
 
+export interface MapScaleConfig {
+    ruralScale: number;
+    urbanScale: number;
+    hasUkRule: boolean;
+}
+
 interface GeoJsonProperties {
     name: string;
     poiName: string;
@@ -63,6 +69,11 @@ const scsCitiesData = shallowRef<ScsCity[] | null>(null);
 const villageData = shallowRef<GeoJsonCollection | null>(null);
 const companiesData = shallowRef<GeoJsonCollection | null>(null);
 const realCompanyModData = shallowRef<RealCompanyModFallback | null>(null);
+const mapScaleConfig = shallowRef<MapScaleConfig>({
+    ruralScale: 19,
+    urbanScale: 3,
+    hasUkRule: true,
+});
 
 const optimizedCityNodes = shallowRef<WorkerCityArea[]>([]);
 
@@ -71,6 +82,18 @@ const isLoaded = ref(false);
 
 export function useCityData() {
     const { settings } = useSettings();
+
+    async function fetchSafe<T>(url: string): Promise<T | null> {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) return null;
+            const text = await res.text();
+
+            return JSON.parse(text) as T;
+        } catch {
+            return null;
+        }
+    }
 
     async function loadLocationData() {
         const folder = getActiveMapFolder(settings.value);
@@ -96,49 +119,44 @@ export function useCityData() {
                 folder,
                 "map-data/RealCompaniesModVanillaMapping.json",
             );
+            const scaleUrl = await getMapFileUrl(folder, "map-data/scale.json");
+            const villagesUrl = await getMapFileUrl(
+                folder,
+                "map-data/villages.geojson",
+            );
 
-            if (settings.value.selectedGame === "ets2") {
-                const villagesUrl = await getMapFileUrl(
-                    folder,
-                    "map-data/villages.geojson",
-                );
+            const [citiesData, companiesDataRes, scaleData] = await Promise.all(
+                [
+                    fetchSafe<ScsCity[]>(citiesUrl),
+                    fetchSafe<GeoJsonCollection>(companiesUrl),
+                    fetchSafe<MapScaleConfig>(scaleUrl),
+                ],
+            );
 
-                const [
-                    citiesRes,
-                    villagesRes,
-                    companiesRes,
-                    realCompanyModRes,
-                ] = await Promise.all([
-                    fetch(citiesUrl),
-                    fetch(villagesUrl),
-                    fetch(companiesUrl),
-                    fetch(realCompanyModUrl),
-                ]);
+            if (citiesData) scsCitiesData.value = citiesData;
+            if (companiesDataRes) companiesData.value = companiesDataRes;
 
-                if (citiesRes.ok) scsCitiesData.value = await citiesRes.json();
-                if (villagesRes.ok)
-                    villageData.value = await villagesRes.json();
-                if (companiesRes.ok)
-                    companiesData.value = await companiesRes.json();
-                if (realCompanyModRes.ok)
-                    realCompanyModData.value = await realCompanyModRes.json();
+            if (scaleData) {
+                mapScaleConfig.value = scaleData;
             } else {
-                const [citiesRes, companiesRes, realCompanyModRes] =
-                    await Promise.all([
-                        fetch(citiesUrl),
-                        fetch(companiesUrl),
-                        fetch(realCompanyModUrl),
-                    ]);
-
-                if (citiesRes.ok) scsCitiesData.value = await citiesRes.json();
-                if (companiesRes.ok)
-                    companiesData.value = await companiesRes.json();
-                if (realCompanyModRes.ok)
-                    realCompanyModData.value = await realCompanyModRes.json();
+                mapScaleConfig.value = {
+                    ruralScale: settings.value.selectedGame === "ats" ? 20 : 19,
+                    urbanScale: 3,
+                    hasUkRule: settings.value.selectedGame === "ets2",
+                };
             }
 
-            optimizedCityNodes.value = getWorkerCityData() || [];
+            const [realCompData, vData] = await Promise.all([
+                fetchSafe<RealCompanyModFallback>(realCompanyModUrl),
+                settings.value.selectedGame === "ets2"
+                    ? fetchSafe<GeoJsonCollection>(villagesUrl)
+                    : Promise.resolve(null),
+            ]);
 
+            if (realCompData) realCompanyModData.value = realCompData;
+            if (vData) villageData.value = vData;
+
+            optimizedCityNodes.value = getWorkerCityData() || [];
             isLoaded.value = true;
             loadedMapSource.value = folder;
         } catch (e) {
@@ -326,6 +344,7 @@ export function useCityData() {
 
     return {
         scsCitiesData,
+        mapScaleConfig,
         loadLocationData,
         getGameLocationName,
         getWorkerCityData,

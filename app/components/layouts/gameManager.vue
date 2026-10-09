@@ -32,6 +32,11 @@ const availableMods = computed(() => {
                 name: "ProMods Europe",
                 url: "https://trucknavapp.com/promods-europe.zip",
             },
+            {
+                id: "grand-utopia",
+                name: "Grand Utopia",
+                url: "https://trucknavapp.com/grand-utopia.zip",
+            },
         ],
         ats: [
             {

@@ -2,6 +2,7 @@ import { MinHeap } from "~/assets/utils/routing/MinHeap";
 import { getBearing, getAngleDiff } from "~/assets/utils/map/maths";
 import { convertGeoToAts, convertGeoToEts2 } from "../map/converters";
 import type { GameType } from "~/types";
+import type { MapScaleConfig } from "~/composables/CityData";
 
 // Increased size to handle Directed Edges instead of Nodes
 const MAX_EDGES = 4000000;
@@ -62,10 +63,15 @@ export function getScaleMultiplier(
     gameZ: number,
     cityAreas: WorkerCityArea[] | null,
     selectedGame: string | null,
+    scaleConfig: MapScaleConfig,
 ): number {
-    let highwayScale = selectedGame === "ats" ? 20 : 19;
+    const rural = scaleConfig.ruralScale;
+    const urban = scaleConfig.urbanScale ?? 3;
+    const hasUk = scaleConfig.hasUkRule;
 
-    if (selectedGame === "ets2" && gameX < -31100 && gameZ < -5500) {
+    let highwayScale = rural;
+
+    if (hasUk && gameX < -31100 && gameZ < -5500) {
         highwayScale = 15;
     }
 
@@ -80,7 +86,7 @@ export function getScaleMultiplier(
             gameZ >= area.minZ &&
             gameZ <= area.maxZ
         ) {
-            return 3;
+            return urban;
         }
     }
 
@@ -425,6 +431,7 @@ export function buildRouteStatsCache(
     selectedGame: GameType,
     sdkScale: number = 0,
     avgSpeed: number,
+    scaleConfig: MapScaleConfig,
 ) {
     const cache = new Float32Array(pathCoords.length * 3);
     const isAts = selectedGame === "ats";
@@ -463,6 +470,7 @@ export function buildRouteStatsCache(
             (z1 + z2) / 2,
             cities,
             selectedGame,
+            scaleConfig,
         );
 
         const segmentKm = (rawLength * multiplier) / 1000;

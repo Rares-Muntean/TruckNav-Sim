@@ -26,7 +26,8 @@ export const useRouteController = (
     nodeCoords: Map<number, [number, number]>,
     stopNavigationMode: () => void,
 ) => {
-    const { getGameLocationName, getWorkerCityData } = useCityData();
+    const { getGameLocationName, getWorkerCityData, mapScaleConfig } =
+        useCityData();
     const { getClosestNodes } = useGraphSystem();
     const { settings, activeSettings, updateGlobal, updateProfile } =
         useSettings();
@@ -189,6 +190,7 @@ export const useRouteController = (
                     graphBuffer: graphBuffer,
                     geometryBuffer: geometryBuffer,
                     cities: cityPayload,
+                    scaleConfig: toRaw(mapScaleConfig.value),
                 },
             },
             transferables,
@@ -860,9 +862,7 @@ export const useRouteController = (
                         const currentScale =
                             scale.value > 0
                                 ? scale.value
-                                : settings.value.selectedGame === "ats"
-                                ? 20
-                                : 19;
+                                : mapScaleConfig.value.ruralScale;
 
                         await removeWaypointAtIndex(
                             targetIdx,

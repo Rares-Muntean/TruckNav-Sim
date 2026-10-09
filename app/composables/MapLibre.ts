@@ -115,6 +115,20 @@ export async function initializeMap(
         [23, 25],
     ];
 
+    const grandUtopiaBounds: [number[], number[]] = [
+        [-56, -15],
+        [-22, 24],
+    ];
+
+    const getEtsBounds = () => {
+        if (activeSettings.value.activeMod === "grand-utopia")
+            return grandUtopiaBounds;
+
+        if (activeSettings.value.activeMod !== "none") return modsEtsBounds;
+
+        return baseEtsBounds;
+    };
+
     const gameMap = {
         ets: {
             container,
@@ -127,7 +141,7 @@ export async function initializeMap(
             fadeDuration: 0,
             attributionControl: false,
             collectResourceTiming: false,
-            maxBounds: isMods ? modsEtsBounds : baseEtsBounds,
+            maxBounds: getEtsBounds(),
         },
 
         ats: {

@@ -9,9 +9,15 @@ import {
     simplifyPath,
     smoothPath,
 } from "~/assets/utils/routing/algorithm";
+import type { MapScaleConfig } from "~/composables/CityData";
 
 let cityNodes: WorkerCityArea[] | null = null;
 let geometryF32: Float32Array | null = null;
+let workerScaleConfig: MapScaleConfig = {
+    ruralScale: 19,
+    urbanScale: 3,
+    hasUkRule: true,
+};
 
 class TypedNodeCoordsMap {
     private array: Float64Array;
@@ -104,8 +110,13 @@ self.onmessage = async (e: MessageEvent) => {
 
     if (type === "INIT_GRAPH") {
         try {
-            const { nodesCoordsBuffer, graphBuffer, geometryBuffer, cities } =
-                payload;
+            const {
+                nodesCoordsBuffer,
+                graphBuffer,
+                geometryBuffer,
+                cities,
+                scaleConfig,
+            } = payload;
 
             geometryF32 = new Float32Array(geometryBuffer);
             const graphF32 = new Float32Array(graphBuffer);
@@ -115,6 +126,7 @@ self.onmessage = async (e: MessageEvent) => {
 
             adjacency = new Map();
             if (cities) cityNodes = cities;
+            if (scaleConfig) workerScaleConfig = scaleConfig;
 
             for (let i = 0; i < graphF32.length; i += 12) {
                 const u = graphF32[i]!;
@@ -228,6 +240,7 @@ self.onmessage = async (e: MessageEvent) => {
                     selectedGame,
                     sdkScale,
                     avgSpeed,
+                    workerScaleConfig,
                 );
 
                 const nodeKms = new Float32Array(result.nodeSequence.length);
@@ -464,6 +477,7 @@ self.onmessage = async (e: MessageEvent) => {
                 selectedGame,
                 sdkScale,
                 avgSpeed,
+                workerScaleConfig,
             );
 
             const nodeKms = new Float32Array(combinedNodeSequence.length);

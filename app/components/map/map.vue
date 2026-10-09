@@ -50,7 +50,8 @@ const {
 } = useEtsTelemetry();
 
 // Map Areas Data
-const { loadLocationData, findDestinationCoords } = useCityData();
+const { loadLocationData, findDestinationCoords, mapScaleConfig } =
+    useCityData();
 
 // Check Platform
 const { isElectron, isMobile, isWeb } = usePlatform();
@@ -367,11 +368,7 @@ onMounted(async () => {
             if (!truckCoords.value) return;
 
             const currentScale =
-                scale.value > 0
-                    ? scale.value
-                    : settings.value.selectedGame === "ats"
-                    ? 20
-                    : 19;
+                scale.value > 0 ? scale.value : mapScaleConfig.value.ruralScale;
 
             const clickCoords: [number, number] = [e.lngLat.lng, e.lngLat.lat];
 
