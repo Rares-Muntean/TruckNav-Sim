@@ -1,0 +1,716 @@
+{
+  "gas_ico": {
+    "x": 640,
+    "y": 128,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_n66": {
+    "x": 0,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "parking_ico": {
+    "x": 672,
+    "y": 128,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "garage_large_ico": {
+    "x": 640,
+    "y": 160,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "pns_con_whs": {
+    "x": 64,
+    "y": 0,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "pcp_car_whs": {
+    "x": 64,
+    "y": 32,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "viewpoint": {
+    "x": 672,
+    "y": 160,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "dc_car_dlr": {
+    "x": 0,
+    "y": 64,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_hosp": {
+    "x": 0,
+    "y": 96,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "dealer_ico": {
+    "x": 640,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "service_ico": {
+    "x": 672,
+    "y": 192,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_e015": {
+    "x": 64,
+    "y": 96,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_igle": {
+    "x": 128,
+    "y": 96,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "pns_con_sit": {
+    "x": 0,
+    "y": 160,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "hs_mkt": {
+    "x": 192,
+    "y": 0,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "sg_whs": {
+    "x": 192,
+    "y": 32,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "oh_con_hom": {
+    "x": 192,
+    "y": 64,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "usb_food_pln": {
+    "x": 192,
+    "y": 96,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_antig": {
+    "x": 192,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "nmq_min_plnt": {
+    "x": 0,
+    "y": 192,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "roadwork": {
+    "x": 256,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_e025": {
+    "x": 0,
+    "y": 224,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_pr659": {
+    "x": 64,
+    "y": 224,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "st_met_whs": {
+    "x": 128,
+    "y": 192,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_shop": {
+    "x": 128,
+    "y": 224,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "dotdot": {
+    "x": 640,
+    "y": 256,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2
+  },
+  "es_pic": {
+    "x": 192,
+    "y": 224,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "gal_oil_gst": {
+    "x": 0,
+    "y": 288,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_n66h": {
+    "x": 256,
+    "y": 224,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "hms_con_svc": {
+    "x": 128,
+    "y": 288,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "sc_frm": {
+    "x": 320,
+    "y": 0,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "weigh_station_ico": {
+    "x": 640,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "ali_car_dlr": {
+    "x": 320,
+    "y": 32,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "cm_min_qryp": {
+    "x": 320,
+    "y": 64,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "kw_trk_dlr": {
+    "x": 320,
+    "y": 96,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "pic_mkt": {
+    "x": 320,
+    "y": 128,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "ftf_food_pln": {
+    "x": 320,
+    "y": 160,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "sb_whs": {
+    "x": 320,
+    "y": 192,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "wld_frm_str": {
+    "x": 320,
+    "y": 224,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "railcrossing": {
+    "x": 320,
+    "y": 256,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "jns_rail_wrk": {
+    "x": 0,
+    "y": 320,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_fort": {
+    "x": 384,
+    "y": 256,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "recruitment_ico": {
+    "x": 672,
+    "y": 224,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "gm_food_plnt": {
+    "x": 128,
+    "y": 320,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "wal_mkt": {
+    "x": 256,
+    "y": 320,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "aport_pcc": {
+    "x": 0,
+    "y": 352,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "aport_ult": {
+    "x": 128,
+    "y": 352,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "hf_wd_pln": {
+    "x": 256,
+    "y": 352,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "vm_car_pln": {
+    "x": 0,
+    "y": 384,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "pnp_wd_pln": {
+    "x": 128,
+    "y": 384,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "gm_chs_plnt": {
+    "x": 256,
+    "y": 384,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "42p_pck_pln": {
+    "x": 0,
+    "y": 416,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "vp_epw_pln": {
+    "x": 128,
+    "y": 416,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "bn_live_auc": {
+    "x": 256,
+    "y": 416,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_e036": {
+    "x": 448,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "dg_wd_saw": {
+    "x": 0,
+    "y": 448,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "tay_con_grg": {
+    "x": 128,
+    "y": 448,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_airpo": {
+    "x": 448,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "nls_rd_wrk": {
+    "x": 256,
+    "y": 448,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_pal": {
+    "x": 448,
+    "y": 128,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_bosq": {
+    "x": 448,
+    "y": 192,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_anima": {
+    "x": 448,
+    "y": 256,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "chm_che_plnt": {
+    "x": 384,
+    "y": 448,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_pr220": {
+    "x": 448,
+    "y": 320,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "tid_mkt": {
+    "x": 0,
+    "y": 480,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "dri_oil_gst": {
+    "x": 128,
+    "y": 480,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "fb_farm_pln": {
+    "x": 256,
+    "y": 480,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "pt_trk_dlr": {
+    "x": 384,
+    "y": 480,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_scen": {
+    "x": 448,
+    "y": 384,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "aml_rail_str": {
+    "x": 512,
+    "y": 0,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "nmq_min_svc": {
+    "x": 512,
+    "y": 32,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "dg_wd_hrv": {
+    "x": 512,
+    "y": 64,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "re_train": {
+    "x": 512,
+    "y": 96,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "ws_trk_dlr": {
+    "x": 512,
+    "y": 128,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "nmq_min_qry": {
+    "x": 512,
+    "y": 160,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "ed_mkt": {
+    "x": 512,
+    "y": 192,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "cm_min_qry": {
+    "x": 512,
+    "y": 224,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "bit_rd_svc": {
+    "x": 512,
+    "y": 256,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_look": {
+    "x": 512,
+    "y": 288,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_tunn": {
+    "x": 576,
+    "y": 288,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "nmq_min_str": {
+    "x": 512,
+    "y": 352,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "avs_met_scr": {
+    "x": 512,
+    "y": 384,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_boat": {
+    "x": 512,
+    "y": 416,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "sc_frm_grg": {
+    "x": 512,
+    "y": 480,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_hote": {
+    "x": 576,
+    "y": 416,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_hik": {
+    "x": 0,
+    "y": 512,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_moun": {
+    "x": 64,
+    "y": 512,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_camp": {
+    "x": 128,
+    "y": 512,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "fb_farm_mkt": {
+    "x": 192,
+    "y": 512,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "lum_car_dlr": {
+    "x": 320,
+    "y": 512,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "dlv_c01": {
+    "x": 448,
+    "y": 512,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_muse": {
+    "x": 0,
+    "y": 576,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "bit_rd_grg": {
+    "x": 192,
+    "y": 544,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_sky": {
+    "x": 64,
+    "y": 576,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "vp_epw_sit": {
+    "x": 320,
+    "y": 544,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "mcs_con_sit": {
+    "x": 448,
+    "y": 544,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_brid": {
+    "x": 128,
+    "y": 576,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "gal_oil_str": {
+    "x": 192,
+    "y": 576,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  },
+  "es_toll": {
+    "x": 640,
+    "y": 0,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "es_inc": {
+    "x": 640,
+    "y": 64,
+    "width": 64,
+    "height": 64,
+    "pixelRatio": 2
+  },
+  "dot": {
+    "x": 660,
+    "y": 256,
+    "width": 20,
+    "height": 20,
+    "pixelRatio": 2
+  },
+  "bit_rd_wrk": {
+    "x": 320,
+    "y": 576,
+    "width": 128,
+    "height": 32,
+    "pixelRatio": 2
+  }
+}

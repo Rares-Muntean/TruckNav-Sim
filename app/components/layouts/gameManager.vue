@@ -37,6 +37,11 @@ const availableMods = computed(() => {
                 name: "Grand Utopia",
                 url: "https://trucknavapp.com/grand-utopia.zip",
             },
+            {
+                id: "ro-extended",
+                name: "Ro-Extended",
+                url: "https://trucknavapp.com/ro-extended.zip",
+            },
         ],
         ats: [
             {
@@ -48,6 +53,16 @@ const availableMods = computed(() => {
                 id: "reforma",
                 name: "Reforma",
                 url: "https://trucknavapp.com/reforma.zip",
+            },
+            {
+                id: "reforma-esterlon",
+                name: "Reforma Esterlon",
+                url: "https://trucknavapp.com/reforma-esterlon.zip",
+            },
+            {
+                id: "reforma-sierra-nevada",
+                name: "Reforma Sierra Nevada",
+                url: "https://trucknavapp.com/reforma-sierra-nevada.zip",
             },
         ],
     };
