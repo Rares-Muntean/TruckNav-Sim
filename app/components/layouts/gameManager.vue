@@ -42,8 +42,23 @@ const availableMods = computed(() => {
                 name: "Ro-Extended",
                 url: "https://trucknavapp.com/ro-extended.zip",
             },
+            {
+                id: "rusmap",
+                name: "RusMap",
+                url: "https://trucknavapp.com/rusmap.zip",
+            },
         ],
         ats: [
+            {
+                id: "ats-expansion",
+                name: "ATS Expansion",
+                url: "https://trucknavapp.com/ats-expansion.zip",
+            },
+            {
+                id: "coast-to-coast",
+                name: "Coast To Coast",
+                url: "https://trucknavapp.com/coast-to-coast.zip",
+            },
             {
                 id: "promods-canada",
                 name: "ProMods Canada",
