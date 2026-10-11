@@ -129,11 +129,21 @@ export async function initializeMap(
         return baseEtsBounds;
     };
 
+    const baseEtsCenter = [0, 0];
+    const grandUtopiaCenter = [-40, 10];
+
+    const getEtsCenter = () => {
+        if (activeSettings.value.activeMod === "grand-utopia")
+            return grandUtopiaCenter;
+
+        return baseEtsCenter;
+    };
+
     const gameMap = {
         ets: {
             container,
             style,
-            center: [0, 0],
+            center: getEtsCenter(),
             zoom: 6,
             minZoom: 5,
             maxZoom: 13,
