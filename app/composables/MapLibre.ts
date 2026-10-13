@@ -152,6 +152,8 @@ export async function initializeMap(
             attributionControl: false,
             collectResourceTiming: false,
             maxBounds: getEtsBounds(),
+
+            pixelRatio: Math.min(window.devicePixelRatio, 1.6),
         },
 
         ats: {
@@ -166,6 +168,8 @@ export async function initializeMap(
             attributionControl: false,
             collectResourceTiming: false,
             maxBounds: isMods ? modsAtsBounds : baseAtsBounds,
+
+            pixelRatio: Math.min(window.devicePixelRatio, 1.6),
         },
     };
 

@@ -1,23 +1,13 @@
-import type {
-    CalcMultiRoutePayload,
-    NodeIndexItem,
-    RoadEdge,
-    TripSegment,
-} from "~/types";
-import {
-    getRadianAngleDiff,
-    getSquaredDist,
-    radianToCompassDegrees,
-} from "../map/maths";
+import type { CalcMultiRoutePayload, RoadEdge, TripSegment } from "~/types";
+import { getRadianAngleDiff, radianToCompassDegrees } from "../map/maths";
 import type { TypedNodeCoordsMap } from "./TypedNodeCoordsMap";
+import { calculateRoute } from "./algorithm";
 import {
     buildRouteStatsCache,
-    calculateRoute,
     simplifyPath,
     smoothPath,
     type WorkerCityArea,
-} from "./algorithm";
-import type RBush from "rbush";
+} from "./routeStats";
 
 const MAX_ALLOWED_TURN_ANGLE_RAD = 2.4;
 

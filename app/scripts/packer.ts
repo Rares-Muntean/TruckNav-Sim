@@ -42,7 +42,7 @@ function haversineDistance(p1: [number, number], p2: [number, number]): number {
 function calculatePolylineDistance(coords: [number, number][]): number {
     let total = 0;
     for (let i = 0; i < coords.length - 1; i++) {
-        total += haversineDistance(coords[i], coords[i + 1]);
+        total += haversineDistance(coords[i]!, coords[i + 1]!);
     }
     return total;
 }
@@ -76,8 +76,8 @@ async function packData(
 
     const nodesBuffer = Buffer.alloc(nodeList.length * 16);
     for (let i = 0; i < nodeList.length; i++) {
-        uidToInt.set(nodeList[i], i);
-        nodesBuffer.write(nodeList[i].padEnd(16, "\0"), i * 16, 16, "ascii");
+        uidToInt.set(nodeList[i]!, i);
+        nodesBuffer.write(nodeList[i]!.padEnd(16, "\0"), i * 16, 16, "ascii");
     }
     const nodesOutPath = path.join(outputPath, OUT_NODES);
     fs.writeFileSync(nodesOutPath, nodesBuffer);
@@ -141,8 +141,8 @@ async function packData(
         const startIndex = geomPointer;
 
         for (let i = 0; i < pointCount; i++) {
-            geometryData.push(coords[i][0]);
-            geometryData.push(coords[i][1]);
+            geometryData.push(coords[i]![0]!);
+            geometryData.push(coords[i]![1]!);
             geomPointer += 2;
         }
 
@@ -211,7 +211,7 @@ async function main() {
     }
 
     const [brainInputPath, prefabsInputPath, outDir] = cliArgs;
-    await packData(brainInputPath, prefabsInputPath, outDir);
+    await packData(brainInputPath!, prefabsInputPath!, outDir!);
 }
 
 main().catch((err) => {

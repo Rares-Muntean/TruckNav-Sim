@@ -3,7 +3,7 @@ import {
     convertEts2ToGeo,
 } from "~/assets/utils/map/converters";
 import { getActiveMapFolder } from "~/assets/utils/map/helpers";
-import { type WorkerCityArea } from "~/assets/utils/routing/algorithm";
+import type { WorkerCityArea } from "~/assets/utils/routing/routeStats";
 import { getMapFileUrl } from "~/assets/utils/shared/fileManager";
 
 // --- Types ---

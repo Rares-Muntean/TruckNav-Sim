@@ -2,15 +2,13 @@ let adjacency: Map<number, RoadEdge[]> | null = null;
 let nodeCoordsF64: Float64Array | null = null;
 let nodeCoordsMapInstance: TypedNodeCoordsMap | null = null;
 
-import {
-    calculateRoute,
-    type WorkerCityArea,
-} from "~/assets/utils/routing/algorithm";
+import { calculateRoute } from "~/assets/utils/routing/algorithm";
 import {
     buildDisplayCoordinatesForNodes,
     executeMultiRoute,
     finalizeAndSendRouteResult,
 } from "~/assets/utils/routing/routeExecution";
+import type { WorkerCityArea } from "~/assets/utils/routing/routeStats";
 import { TypedNodeCoordsMap } from "~/assets/utils/routing/TypedNodeCoordsMap";
 import type { MapScaleConfig } from "~/composables/CityData";
 import type { CalcMultiRoutePayload, RoadEdge } from "~/types";

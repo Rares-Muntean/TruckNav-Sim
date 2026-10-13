@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.activity.EdgeToEdge;
 import androidx.core.view.WindowCompat;
+import android.webkit.WebView;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import com.getcapacitor.BridgeActivity;
@@ -15,6 +16,10 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
+        WebView webView = this.getBridge().getWebView();
+        if (webView != null) {
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        }
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
