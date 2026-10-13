@@ -189,6 +189,17 @@ export const useRouteController = (
         isWorkerReady.value = true;
     }
 
+    /**
+     * Manages the full multi-stop route calculation:
+     * - Snaps the truck and waypoints to the closest valid graph nodes.
+     * - Sends the required data to the background Web Worker.
+     * - Updated reactive route statistics (ETA, distance, turn directions)
+     * - Renders the route line, markers and visual turn arrows on MapLibre.
+     * @param truckCoords - In-game truck coordinates used to find the best starting road edge.
+     * @param truckHeading - Current truck heading to ensure navigation starts in the driving direction.
+     * @param sdkScale - Game world scale (e.g. 1:19 or 1:15 UK) for accurate real-time/distance conversion.
+     * @param avgSpeed - Average driving speed used to calculate realistic travel ETA.
+     */
     async function handleMultiRouteCalculation(
         truckCoords: [number, number],
         truckHeading: number,
@@ -388,6 +399,12 @@ export const useRouteController = (
         });
     }
 
+    /**
+     * Determines the optimal insertion index in `waypointList` for a newly clicked stop.
+     *
+     * @param clickCoords - Geographic [lng, lat] coordinates of the user's map click.
+     * @returns The zero-based index where the stop should be inserted in the list.
+     */
     function findBestWaypointInsertionIndex(
         clickCoords: [number, number],
     ): number {
@@ -542,6 +559,14 @@ export const useRouteController = (
         return [v[0] + t * (w[0] - v[0]), v[1] + t * (w[1] - v[1])];
     }
 
+    /**
+     * Snaps the truck onto the most suitable road edge based on position and heading direction.
+     *
+     * @param truckCoords - Geographic [lng, lat] coordinates of the truck.
+     * @param truckHeading - Compass heading (0 - 360) to match the road's one way direction.
+     * @param searchLimit - Maximum number of nearby nodes to look for (default: 50).
+     * @returns The matched road segment or yard configuration, or null if off-road.
+     */
     function findBestStartConfiguration(
         truckCoords: [number, number],
         truckHeading: number,
@@ -890,6 +915,18 @@ export const useRouteController = (
     }
 
     const lastRecalcTime = ref(0);
+
+    /**
+     * Calculates the truck's live map position on the route, updates navigation stats
+     * (remaining distance, ETA, next turn countdown), and triggers route recalculation if
+     * the truck goes off the route.
+     *
+     * @param truckCoords - Geographic [lng, lat] coordinates of the truck.
+     * @param truckHeading - Current truck heading forwarded to recalculation if off-route.
+     * @param sdkScale - Game scale (1:19 in Europe, 1:15 in UK) forwarded to recalculation if off-route.
+     * @param avgSpeed - Current average speed of the truck forwarded to recalculation if off-route.
+     * @returns Void if data is invalid to prevent crashes.
+     */
     const updateRouteProgress = (
         truckCoords: [number, number],
         truckHeading: number,

@@ -1,10 +1,6 @@
 import { MinHeap } from "~/assets/utils/routing/MinHeap";
 import { getBearing, getAngleDiff } from "~/assets/utils/map/maths";
-import { convertGeoToAts, convertGeoToEts2 } from "../map/converters";
-import type { GameType } from "~/types";
-import type { MapScaleConfig } from "~/composables/CityData";
 
-// Increased size to handle Directed Edges instead of Nodes
 const MAX_EDGES = 4000000;
 
 const cache_costs = new Float64Array(MAX_EDGES);
@@ -66,6 +62,93 @@ function fastDistKm(
     return Math.sqrt(dx * dx + dy * dy);
 }
 
+const U_TURN_PENALTY = 100_000_000;
+function calculateTurnPenalty(
+    currentArrivalHeading: number,
+    edge: any,
+    currentEdgeId: number,
+    startEdgeId: number,
+    startHeading: number | null,
+    startType: "road" | "yard",
+    currentLng: number,
+    currentLat: number,
+    nextLng: number,
+    nextLat: number,
+) {
+    if (currentEdgeId === startEdgeId && startHeading !== null) {
+        const roadBearing = getBearing(
+            [currentLng, currentLat],
+            [nextLng, nextLat],
+        );
+        const angleDiff = Math.abs(getAngleDiff(startHeading, roadBearing));
+
+        if (angleDiff > 75) return U_TURN_PENALTY;
+        if (angleDiff > 45) return 1000;
+        return startType === "yard" ? 10 : 0;
+    }
+
+    if (currentEdgeId !== startEdgeId && edge.hOut !== undefined) {
+        let angleDiff = Math.abs(currentArrivalHeading - edge.hOut);
+        if (angleDiff > Math.PI) angleDiff = 2 * Math.PI - angleDiff;
+
+        if (edge.maneuverType === 3) {
+            return angleDiff > 1.0 ? 50 : 0;
+        }
+
+        if (angleDiff > 2.8) return U_TURN_PENALTY;
+        if (angleDiff > 1.5) return 10_000;
+        if (angleDiff > 1.0) return 1000;
+        if (angleDiff > 0.4) return 500;
+    }
+
+    return 0;
+}
+
+function reconstructPath(
+    foundEndEdgeId: number,
+    startNodeId: number,
+    startEdgeId: number,
+    flatCoords: Float64Array,
+) {
+    const path: [number, number][] = [];
+    const nodeSequence: number[] = [];
+    let currEdgeId = foundEndEdgeId;
+
+    while (currEdgeId !== startEdgeId && currEdgeId !== -1) {
+        const nodeId = edge_target[currEdgeId]!;
+        path.unshift([flatCoords[nodeId * 2]!, flatCoords[nodeId * 2 + 1]!]);
+        nodeSequence.unshift(nodeId);
+        currEdgeId = cache_previous[currEdgeId]!;
+        if (path.length > 20000) break;
+    }
+
+    path.unshift([
+        flatCoords[startNodeId * 2]!,
+        flatCoords[startNodeId * 2 + 1]!,
+    ]);
+    nodeSequence.unshift(startNodeId);
+
+    return {
+        path,
+        nodeSequence,
+        endId: nodeSequence[nodeSequence.length - 1]!,
+    };
+}
+
+/**
+ * Computes the optimal path from a starting node to any of the candidate target nodes
+ *  using an edge-expanded A* search with heading alignment and turn penatlies.
+ *
+ * @param start - Starting graph node ID (where the truck or segment begins).
+ * @param possibleEnds - Set of acceptable target graph node Ids near the destination.
+ * @param startHeading - Initial compass heading of the truck to prevent starting in reverse.
+ * @param adjacency - Graph road network mapping node IDs to outgoing edges.
+ * @param nodeCoords - Node coordinate lookup mapping node IDs to [lng, lat].
+ * @param startType - Starting road: "road" (strict angles) or "yard" (relaxed depot turns).
+ * @param ownedDlcs - Array of owned DLC IDs used to filter out innacessible map areas.
+ * @param targetLocation - Optional exact [lng, lat] coordinates of the destination.
+ * @returns Object containing the path coordinates, node sequence, and final end node ID, or `null` if unreachable.
+ */
 export const calculateRoute = (
     start: number,
     possibleEnds: Set<number | undefined>,
@@ -187,53 +270,31 @@ export const calculateRoute = (
             let stepCost = edge.weight || 1;
 
             if (!edge.isFerry && ferryGraceCounter === 0) {
-                if (currentEdgeId === START_EDGE_ID && startHeading !== null) {
-                    const nLng = flatCoords[neighborNodeId * 2]!;
-                    const nLat = flatCoords[neighborNodeId * 2 + 1]!;
-                    const dir = getBearing([cLng, cLat], [nLng, nLat]);
-                    const diff = Math.abs(getAngleDiff(startHeading, dir));
+                const nLng = flatCoords[neighborNodeId * 2]!;
+                const nLat = flatCoords[neighborNodeId * 2 + 1]!;
 
-                    if (startType === "yard") {
-                        stepCost += 10;
-                        if (diff > 75) stepCost += 10_000_000;
-                        else if (diff > 45) stepCost += 1000;
-                    } else {
-                        if (diff > 75) stepCost += 10_000_000;
-                        else if (diff > 45) stepCost += 1000;
-                    }
-                } else if (
-                    currentEdgeId !== START_EDGE_ID &&
-                    edge.hOut !== undefined
-                ) {
-                    let diff = Math.abs(currentArrivalHeading! - edge.hOut);
-                    if (diff > Math.PI) diff = 2 * Math.PI - diff;
-
-                    if (edge.maneuverType === 3) {
-                        if (diff > 1.0) stepCost += 50;
-                    } else {
-                        if (diff > 2.8) stepCost += 100_000_000;
-                        else if (diff > 1.5) stepCost += 10_000;
-                        else if (diff > 1.0) stepCost += 1000;
-                        else if (diff > 0.4) stepCost += 500;
-                    }
-                }
+                stepCost += calculateTurnPenalty(
+                    currentArrivalHeading!,
+                    edge,
+                    currentEdgeId,
+                    START_EDGE_ID,
+                    startHeading,
+                    startType,
+                    cLng,
+                    cLat,
+                    nLng,
+                    nLat,
+                );
             }
 
-            if (stepCost < 1) stepCost = 1;
-            const tentativeG = currentG + stepCost;
+            const tentativeG = currentG + Math.max(1, stepCost);
 
             if (tentativeG < cache_costs[neighborEdgeId]!) {
                 cache_previous[neighborEdgeId] = currentEdgeId;
                 cache_costs[neighborEdgeId] = tentativeG;
-
-                if (edge.isFerry) {
-                    cache_is_ferry[neighborEdgeId] = 5;
-                } else {
-                    cache_is_ferry[neighborEdgeId] = Math.max(
-                        0,
-                        ferryGraceCounter! - 1,
-                    );
-                }
+                cache_is_ferry[neighborEdgeId] = edge.isFerry
+                    ? 5
+                    : Math.max(0, ferryGraceCounter! - 1);
 
                 openHeap.push(
                     neighborEdgeId,
@@ -245,26 +306,7 @@ export const calculateRoute = (
 
     if (foundEndEdgeId === null) return null;
 
-    const path: [number, number][] = [];
-    const nodeSequence: number[] = [];
-    let currEdgeId: number = foundEndEdgeId;
-
-    while (currEdgeId !== START_EDGE_ID && currEdgeId !== -1) {
-        const cId = edge_target[currEdgeId]!;
-        path.unshift([flatCoords[cId * 2]!, flatCoords[cId * 2 + 1]!]);
-        nodeSequence.unshift(cId);
-        currEdgeId = cache_previous[currEdgeId]!;
-        if (path.length > 20000) break;
-    }
-
-    path.unshift([flatCoords[start * 2]!, flatCoords[start * 2 + 1]!]);
-    nodeSequence.unshift(start);
-
-    return {
-        path,
-        nodeSequence,
-        endId: nodeSequence[nodeSequence.length - 1]!,
-    };
+    return reconstructPath(foundEndEdgeId, start, START_EDGE_ID, flatCoords);
 };
 
 export const mergeClosePoints = (

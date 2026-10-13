@@ -20,6 +20,15 @@ export function getRoadBetweenNodes(
     return upcomingRoads?.find((r) => r.to === toNodeId);
 }
 
+/**
+ * Checks for illegal U-turns by calculating the angle difference between the
+ * current road edge and the upcoming edges along the path.
+ *
+ * @param adjacency - Road network graph mapping node IDs to their outgoing edges.
+ * @param incomingHeadingRad - Initial heading angle in radians entering this segment.
+ * @param nodeSequence - Ordered list of node IDs that forms the route segment.
+ * @returns True if any turn exeeds the maximum turn thershold, false otherwise
+ */
 export function routeHasIllegalUTurn(
     adjacency: Map<number, RoadEdge[]>,
     incomingHeadingRad: number | undefined,
@@ -85,6 +94,21 @@ export function buildDisplayCoordinatesForNodes(
     return visualCoordinates;
 }
 
+/**
+ * Calculates a single segment of a multi-stop trip between two waypoints,
+ * resolving both the node path and the visual road coordinates.
+ *
+ * @param adjacency - Road network graph mapping node IDs to their outgoing edges.
+ * @param nodeCoordsMapInstance - Fast lookup wrapper for node [lng, lat] coordinates along the path.
+ * @param geometryF32 - Raw binary buffer holding curved road geometry points for visuals.
+ * @param fromNodeId - Graph node ID where this segment starts.
+ * @param fromHeading - Starting heading angle of the truck.
+ * @param fromType  - Starting position ("road" or "yard").
+ * @param candidateEndNodes - List of potential graph node IDs near the target waypoint.
+ * @param targetCoords - Geographic [lng, lat] coordinates of the target waypoint.
+ * @param ownedDlcs - Array of owned DLC IDs allowed for routing.
+ * @returns A `TripSegment` object with path data and arrival headings, or `null` if unreachable
+ */
 export function calculateSingleTripSegment(
     adjacency: Map<number, RoadEdge[]>,
     nodeCoordsMapInstance: TypedNodeCoordsMap,
@@ -138,6 +162,18 @@ export function calculateSingleTripSegment(
     };
 }
 
+/**
+ * Executes a multi-stop route across all waypoints, stitching individual
+ * segments together and automatically skipping any intermediate stops that
+ * have illegal U-turns.
+ *
+ * @param payload - Multi-route parameters containing start position, waypoints, and game settings.
+ * @param adjacency - Road network graph mapping node IDs to their outgoing edges.
+ * @param nodeCoordsMapInstance - Fast lookup wrapper for node [lng, lat] coordinates along the path.
+ * @param geometryF32 - Raw binary buffer holding curved road geometry points for visuals.
+ * @returns Combined node sequence, complete visual path coordinates, snapped target coords,
+ * and a list of skipped waypoint indices, or `null` if copmletely unreachable.
+ */
 export function executeMultiRoute(
     payload: CalcMultiRoutePayload,
     adjacency: Map<number, RoadEdge[]>,
@@ -183,7 +219,6 @@ export function executeMultiRoute(
 
         const previousSegment = finishedSegments[finishedSegments.length - 1];
 
-        // Check if reaching this waypoint forced an illegal U-turn
         if (
             previousSegment &&
             routeHasIllegalUTurn(
@@ -268,6 +303,13 @@ export interface FinalizeRouteParams {
     nodeCoordsMap: TypedNodeCoordsMap;
 }
 
+/**
+ * Processes the raw route geometry (simplification, smoothing, distance/ETA caching,
+ * turn maneuver extraction) and transfers the final binary result to the main thread.
+ *
+ * @param params - Route parameters containing raw coordinates, node sequence, scale settings,
+ * and graph lookup references required for processing.
+ */
 export function finalizeAndSendRouteResult(params: FinalizeRouteParams) {
     const {
         rawCoordinates,
