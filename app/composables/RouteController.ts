@@ -233,13 +233,19 @@ export const useRouteController = (
 
             const waypointsNodeGroups: number[][] = [];
             for (const waypoint of waypointList.value) {
-                let candidates = getClosestNodes(waypoint, 10, 0.1);
+                let candidates = getClosestNodes(waypoint, 5, 0.001);
 
                 if (candidates.length === 0) {
-                    candidates = getClosestNodes(waypoint, 10, 0.4);
+                    candidates = getClosestNodes(waypoint, 5, 0.003);
                 }
                 if (candidates.length === 0) {
-                    candidates = getClosestNodes(waypoint, 10, 1.5);
+                    candidates = getClosestNodes(waypoint, 5, 0.015);
+                }
+                if (candidates.length === 0) {
+                    candidates = getClosestNodes(waypoint, 5, 0.05);
+                }
+                if (candidates.length === 0) {
+                    candidates = getClosestNodes(waypoint, 5, 0.1);
                 }
 
                 waypointsNodeGroups.push(candidates);
