@@ -45,6 +45,16 @@ export function getAngleDiff(angle1: number, angle2: number): number {
     return diff > 180 ? 360 - diff : diff;
 }
 
+export function getRadianAngleDiff(a: number, b: number): number {
+    const rawDiff = Math.abs(a - b) % (2 * Math.PI);
+    return rawDiff > Math.PI ? 2 * Math.PI - rawDiff : rawDiff;
+}
+
+export function radianToCompassDegrees(rad: number): number {
+    const deg = (rad * 180) / Math.PI;
+    return (((90 - deg) % 360) + 360) % 360;
+}
+
 export function getSqDistToSegment(
     p: [number, number],
     a: [number, number],

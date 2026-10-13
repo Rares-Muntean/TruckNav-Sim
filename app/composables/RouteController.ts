@@ -263,6 +263,12 @@ export const useRouteController = (
                 endNodeId.value = result.endId;
 
                 snappedWaypointNodeIds.value = result.snappedNodeIds || [];
+                const skipped: number[] = result.skippedWaypoints || [];
+                if (skipped.length > 0) {
+                    waypointList.value = waypointList.value.filter(
+                        (_, idx) => !skipped.includes(idx),
+                    );
+                }
 
                 const frozenRawPath = Object.freeze(result.displayPath);
                 currentRoutePath.value = frozenRawPath as any;

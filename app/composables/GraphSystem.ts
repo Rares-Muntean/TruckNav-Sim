@@ -1,18 +1,10 @@
 import { ref } from "vue";
 import RBush from "rbush";
 import { loadGraph } from "~/assets/utils/routing/clientGraph";
-import { haversine } from "~/assets/utils/routing/helpers";
+import type { NodeIndexItem, RoadEdge } from "~/types";
+import { getSquaredDist } from "~/assets/utils/map/maths";
 
-interface NodeIndexItem {
-    minX: number;
-    minY: number;
-    maxX: number;
-    maxY: number;
-    id: number;
-    coord: [number, number];
-}
-
-const adjacency = new Map<number, any>();
+const adjacency = new Map<number, RoadEdge[]>();
 const nodeCoords = new Map<number, [number, number]>();
 const nodeTree = new RBush<NodeIndexItem>();
 
@@ -38,11 +30,13 @@ export function useGraphSystem() {
             maxX: target[0] + radiusDeg,
             maxY: target[1] + radiusDeg,
         });
+
         if (candidates.length === 0) return [];
+
         return candidates
             .map((item) => ({
                 id: item.id,
-                dist: haversine(target, item.coord),
+                dist: getSquaredDist(target, item.coord),
             }))
             .sort((a, b) => a.dist - b.dist)
             .slice(0, limit)
@@ -80,12 +74,12 @@ export function useGraphSystem() {
             for (let i = 0; i < graphF32.length; i += 12) {
                 const u = graphF32[i]!;
                 const v = graphF32[i + 1]!;
-                const weight = graphF32[i + 2];
-                const hIn = graphF32[i + 3];
-                const hOut = graphF32[i + 4];
-                const isFerry = graphF32[i + 5];
-                const requiredDlc = graphF32[i + 6];
-                const vPrefabId = graphF32[i + 7];
+                const weight = graphF32[i + 2]!;
+                const hIn = graphF32[i + 3]!;
+                const hOut = graphF32[i + 4]!;
+                const isFerry = graphF32[i + 5] === 1;
+                const requiredDlc = graphF32[i + 6]!;
+                const vPrefabId = graphF32[i + 7]!;
                 const startIndex = graphF32[i + 8]!;
                 const pointCount = graphF32[i + 9]!;
                 const maneuverType = graphF32[i + 10]!;
@@ -100,6 +94,8 @@ export function useGraphSystem() {
                     isFerry: isFerry,
                     requiredDlc: requiredDlc,
                     vPrefabId: vPrefabId,
+                    startIndex,
+                    pointCount,
                     maneuverType,
                     exitNumber,
                 });
