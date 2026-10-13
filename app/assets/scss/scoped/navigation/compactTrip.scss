@@ -33,6 +33,10 @@
         position: static;
         margin: 0;
     }
+
+    @media (orientation: landscape) {
+        width: 45%;
+    }
 }
 
 .route-info {

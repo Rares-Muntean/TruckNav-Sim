@@ -14,6 +14,7 @@ const isTextThemeLight = computed(
 );
 
 const items = ref([
+    "Jakarta",
     "Quicksand",
     "Roboto",
     "Exo-2",

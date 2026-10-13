@@ -54,7 +54,7 @@ const DEFAULT_PROFILE: GameProfile = {
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
     lastDestination: null,
     hasTurnNavigation: true,
-    fontFamily: "Commissioner",
+    fontFamily: "Jakarta",
     activeMod: "none",
 };
 
