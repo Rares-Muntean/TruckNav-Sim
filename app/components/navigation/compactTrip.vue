@@ -7,10 +7,11 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div>
+    <div class="compact-trip-progress">
         <Icon name="lucide:flag-triangle-right" size="22" />
-        <div class="right">
-            <span>{{ routeDistanceConverted }} {{ distanceUnit }}, </span>
+        <div class="route-info">
+            <span>{{ routeDistanceConverted }} {{ distanceUnit }} </span>
+            <Icon name="lucide:dot" />
             <span>{{ routeEta }}</span>
         </div>
         <button class="nav-btn icon-btn">

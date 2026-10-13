@@ -1,9 +1,13 @@
 .compact-trip-progress {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+
     position: absolute;
-    top: -100px;
-    right: -2px;
+    bottom: 18px;
+    right: 0;
+    left: 0;
+    margin: 0 1.6rem;
     padding: 4px 12px 4px 12px;
 
     display: flex;
@@ -13,15 +17,14 @@
     color: $white-font-text;
 
     border: 1.5px solid var(--theme-color);
-    border-right: none;
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
+
+    border-radius: 8px;
 
     background-color: $primaryColor;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
     .icon-btn {
-        flex: 1;
+        align-self: flex-end;
         height: fit-content;
         padding: 0;
     }
@@ -30,4 +33,9 @@
         position: static;
         margin: 0;
     }
+}
+
+.route-info {
+    display: flex;
+    align-items: center;
 }

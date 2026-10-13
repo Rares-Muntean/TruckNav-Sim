@@ -60,6 +60,8 @@ const { isElectron, isMobile, isWeb } = usePlatform();
 const { loading, progress, adjacency, nodeCoords, initializeGraphData } =
     useGraphSystem();
 
+const { kmToUserUnits, distanceUnit } = useUnitConversion();
+
 // Maplibre Camera
 const {
     isCameraLocked,
@@ -404,6 +406,10 @@ onUnmounted(() => {
     }
 });
 
+const routeDistanceConverted = computed(() =>
+    kmToUserUnits(routeDistance.value),
+);
+
 function onTelemetryUpdate() {
     if (!truckCoords.value || !map.value) return;
 
@@ -645,6 +651,16 @@ const onCancelRoute = () => {
                         />
                     </div>
 
+                    <Transition name="fade">
+                        <CompactTrip
+                            v-if="isRouteActive && isSheetHidden"
+                            :route-distance-converted="routeDistanceConverted"
+                            :distance-unit="distanceUnit"
+                            :route-eta="routeEta"
+                            @click="isSheetHidden = false"
+                        />
+                    </Transition>
+
                     <Transition name="sheet-slide" @after-leave="onSheetClosed">
                         <SheetSlide
                             v-if="isRouteActive"
@@ -654,7 +670,7 @@ const onCancelRoute = () => {
                             :on-resume-navigation="onResumeNavigation"
                             :destination-name="destinationName"
                             v-model:is-sheet-hidden="isSheetHidden"
-                            :route-distance="routeDistance"
+                            :route-distance-converted="routeDistanceConverted"
                             :route-eta="routeEta"
                             :speed-limit="speedLimit"
                             :truck-speed="truckSpeed"

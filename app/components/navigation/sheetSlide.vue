@@ -5,22 +5,18 @@ const props = defineProps<{
     speedLimit: number;
     destinationName: string;
     routeEta: string;
-    routeDistance: number;
+    routeDistanceConverted: number;
     isNavigating: boolean;
     onStopNavigation: () => void;
     onStartNavigation: () => void;
     onResumeNavigation: () => void;
 }>();
 
-const { kmToUserUnits, distanceUnit } = useUnitConversion();
+const { distanceUnit } = useUnitConversion();
 const { t } = useTranslations();
 
 const countdown = ref(5);
 const progress = ref(100);
-
-const routeDistanceConverted = computed(() =>
-    kmToUserUnits(props.routeDistance),
-);
 
 const emit = defineEmits<{
     (e: "update:isSheetHidden", value: boolean): void;
@@ -97,17 +93,6 @@ watch(
 <template>
     <div class="bottom-sheet" :class="{ 'is-hidden': isSheetHidden }">
         <div class="sheet-body">
-            <Transition name="compact-slide">
-                <CompactTrip
-                    v-if="isSheetHidden"
-                    v-on:click="onToggleSheetHidden"
-                    class="compact-trip-progress"
-                    :route-distance-converted="routeDistanceConverted"
-                    :distance-unit="distanceUnit"
-                    :route-eta="routeEta"
-                />
-            </Transition>
-
             <div class="sheet-content">
                 <div class="top-row">
                     <h2 class="dest-name">{{ destinationName }}</h2>
