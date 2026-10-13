@@ -68,6 +68,7 @@ const {
     initCameraListeners,
     followTruck,
     startNavigationMode,
+    resumeCameraLock,
     stopNavigationMode,
     initMarker,
     updateMarkerSize,
@@ -426,6 +427,14 @@ function onStartNavigation() {
     isSheetHidden.value = true;
 }
 
+function onResumeNavigation() {
+    if (!truckCoords.value) return;
+
+    resumeCameraLock();
+
+    isSheetHidden.value = true;
+}
+
 function onSheetClosed() {
     isSheetHidden.value = false;
 }
@@ -642,6 +651,7 @@ const onCancelRoute = () => {
                             :on-stop-navigation="onCancelRoute"
                             :is-navigating="isNavigating"
                             :on-start-navigation="onStartNavigation"
+                            :on-resume-navigation="onResumeNavigation"
                             :destination-name="destinationName"
                             v-model:is-sheet-hidden="isSheetHidden"
                             :route-distance="routeDistance"

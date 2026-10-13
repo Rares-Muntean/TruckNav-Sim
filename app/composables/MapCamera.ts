@@ -169,6 +169,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             center: currentTruckCoords,
             bearing: currentTruckHeading,
             pitch: map.value.getPitch(),
+            zoom: map.value.getZoom(),
             duration: 350,
             padding: isNavigating.value ? PADDING_NAV : PADDING_FREE,
         });
@@ -232,7 +233,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             center: coords,
             bearing: isNavigating.value ? heading : 0,
             zoom: 11,
-            pitch: map.value.getPitch(),
+            pitch: 50,
             duration: 350,
             padding: PADDING_NAV,
         });

@@ -9,6 +9,7 @@ const props = defineProps<{
     isNavigating: boolean;
     onStopNavigation: () => void;
     onStartNavigation: () => void;
+    onResumeNavigation: () => void;
 }>();
 
 const { kmToUserUnits, distanceUnit } = useUnitConversion();
@@ -66,6 +67,17 @@ const startSmoothTimer = () => {
     };
 
     rafId = requestAnimationFrame(frame);
+};
+
+const handleStartOrResume = () => {
+    cancelAutoStart();
+
+    if (props.isNavigating) {
+        props.onResumeNavigation();
+        onToggleSheetHidden();
+    } else {
+        props.onStartNavigation();
+    }
 };
 
 onMounted(() => {
@@ -155,7 +167,7 @@ watch(
                     <button
                         class="start-btn nav-btn"
                         :style="{ '--progress': progress + `%` }"
-                        @click.prevent="onStartNavigation"
+                        @click.prevent="handleStartOrResume"
                     >
                         <Icon name="lucide:map-pin-check" size="24" />
                         <span>{{
