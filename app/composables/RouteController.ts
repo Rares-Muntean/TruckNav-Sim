@@ -199,15 +199,17 @@ export const useRouteController = (
      * @param truckHeading - Current truck heading to ensure navigation starts in the driving direction.
      * @param sdkScale - Game world scale (e.g. 1:19 or 1:15 UK) for accurate real-time/distance conversion.
      * @param avgSpeed - Average driving speed used to calculate realistic travel ETA.
+     * @param targetWaypoints - Temporary waypoints target to check if the route is reachable.
      */
     async function handleMultiRouteCalculation(
         truckCoords: [number, number],
         truckHeading: number,
         sdkScale: number,
         avgSpeed: number,
+        targetWaypoints: [number, number][] = waypointList.value,
     ) {
         if (
-            waypointList.value.length === 0 ||
+            targetWaypoints.length === 0 ||
             adjacency.size === 0 ||
             isCalculating.value ||
             !isWorkerReady.value
@@ -226,6 +228,7 @@ export const useRouteController = (
             );
             if (!startConfig) {
                 isCalculating.value = false;
+                routeFound.value = false;
                 return;
             }
 
@@ -233,7 +236,7 @@ export const useRouteController = (
             startNodeId.value = startConfig.toId;
 
             const waypointsNodeGroups: number[][] = [];
-            for (const waypoint of waypointList.value) {
+            for (const waypoint of targetWaypoints) {
                 let candidates = getClosestNodes(waypoint, 5, 0.001);
 
                 if (candidates.length === 0) {
@@ -256,7 +259,7 @@ export const useRouteController = (
 
             const result = await calculateMultiRouteInWorker(
                 startNodeId.value!,
-                waypointList.value,
+                targetWaypoints,
                 waypointsNodeGroups,
                 truckHeading,
                 startConfig.type as "road" | "yard",
@@ -268,14 +271,16 @@ export const useRouteController = (
             if (result) {
                 isRouteActive.value = true;
                 endNodeId.value = result.endId;
-
                 snappedWaypointNodeIds.value = result.snappedNodeIds || [];
+
+                let finalWaypoints = [...targetWaypoints];
                 const skipped: number[] = result.skippedWaypoints || [];
                 if (skipped.length > 0) {
-                    waypointList.value = waypointList.value.filter(
+                    finalWaypoints = finalWaypoints.filter(
                         (_, idx) => !skipped.includes(idx),
                     );
                 }
+                waypointList.value = finalWaypoints;
 
                 const frozenRawPath = Object.freeze(result.displayPath);
                 currentRoutePath.value = frozenRawPath as any;
@@ -473,15 +478,27 @@ export const useRouteController = (
         truckCoords: [number, number],
         truckHeading: number,
         sdkScale: number,
-        createEndMarker: boolean,
         avgSpeed: number,
+        isInsertMode: boolean = false,
     ) {
-        waypointList.value = [clickCoords];
+        let testList: [number, number][] = [];
+
+        if (!isRouteActive.value) {
+            testList = [clickCoords];
+        } else if (isInsertMode) {
+            const idx = findBestWaypointInsertionIndex(clickCoords);
+            testList = [...waypointList.value];
+            testList.splice(idx, 0, clickCoords);
+        } else {
+            testList = [...waypointList.value, clickCoords];
+        }
+
         await handleMultiRouteCalculation(
             truckCoords,
             truckHeading,
             sdkScale,
             avgSpeed,
+            testList,
         );
     }
 
@@ -493,6 +510,7 @@ export const useRouteController = (
         avgSpeed: number,
     ) {
         waypointList.value.splice(index, 1);
+        snappedWaypointNodeIds.value.splice(index, 1);
 
         if (waypointList.value.length === 0) {
             clearRouteState();
@@ -504,6 +522,7 @@ export const useRouteController = (
                 truckHeading,
                 sdkScale,
                 avgSpeed,
+                waypointList.value,
             );
         }
     }
@@ -1051,6 +1070,7 @@ export const useRouteController = (
                     truckHeading,
                     sdkScale,
                     avgSpeed,
+                    waypointList.value,
                 );
                 return;
             }

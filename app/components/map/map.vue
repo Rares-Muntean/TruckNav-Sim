@@ -159,7 +159,6 @@ watch(
                     truckCoords.value,
                     truckHeading.value,
                     scale.value,
-                    false,
                     averageSpeed.value,
                 );
             }
@@ -192,7 +191,6 @@ watch(
                 truckCoords.value,
                 truckHeading.value,
                 scale.value,
-                true,
                 averageSpeed.value,
             );
         }
@@ -371,23 +369,16 @@ onMounted(async () => {
                 scale.value > 0 ? scale.value : mapScaleConfig.value.ruralScale;
 
             const clickCoords: [number, number] = [e.lngLat.lng, e.lngLat.lat];
+            const isInsertMode = isRouteActive.value && isAddingStopMode.value;
+            isAddingStopMode.value = false;
 
-            if (isRouteActive.value && isAddingStopMode.value) {
-                const insertIndex = findBestWaypointInsertionIndex(clickCoords);
-                waypointList.value.splice(insertIndex, 0, clickCoords);
-
-                isAddingStopMode.value = false;
-            } else if (!isRouteActive.value) {
-                waypointList.value = [clickCoords];
-            } else {
-                waypointList.value.push(clickCoords);
-            }
-
-            await handleMultiRouteCalculation(
+            await handleRouteClick(
+                clickCoords,
                 truckCoords.value,
                 truckHeading.value,
                 currentScale,
                 averageSpeed.value,
+                isInsertMode,
             );
         });
 
