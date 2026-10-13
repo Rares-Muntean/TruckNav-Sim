@@ -47,6 +47,11 @@ const availableMods = computed(() => {
                 name: "RusMap",
                 url: "https://trucknavapp.com/rusmap.zip",
             },
+            {
+                id: "more-european-cities",
+                name: "More European Cities",
+                url: "https://trucknavapp.com/more-european-cities.zip",
+            },
         ],
         ats: [
             {
