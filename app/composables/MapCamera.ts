@@ -2,9 +2,6 @@ import { ref, onUnmounted } from "vue";
 import type { Ref } from "vue";
 import type { Map } from "maplibre-gl";
 
-const PADDING_NAV = { top: 180, bottom: 0, left: 0, right: 0 };
-const PADDING_FREE = { top: 0, bottom: 0, left: 0, right: 0 };
-
 export const useMapCamera = (map: Ref<Map | null>) => {
     const isCameraLocked = ref(false);
     const isAutoFollowEnabled = ref(false);
@@ -64,6 +61,32 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         }
     };
 
+    const getNavPadding = () => {
+        if (!map.value) return { top: 0, bottom: 0, left: 0, right: 0 };
+
+        const container = map.value.getContainer();
+        const height = container.clientHeight;
+        const width = container.clientWidth;
+        const isLandscape = width > height;
+
+        const topRatio = isLandscape ? 0.4 : 0.5;
+
+        return {
+            top: Math.round(height * topRatio),
+            bottom: 0,
+            left: 0,
+            right: 0,
+        };
+    };
+
+    const getPadding = () => {
+        if (!isNavigating.value) {
+            return { top: 0, bottom: 0, left: 0, right: 0 };
+        }
+
+        return getNavPadding();
+    };
+
     const renderLoop = (timestamp: number) => {
         const now = performance.now();
 
@@ -89,7 +112,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                     bearing: isAutoFollowEnabled.value
                         ? currentTruckHeading
                         : 0,
-                    padding: isNavigating.value ? PADDING_NAV : PADDING_FREE,
+                    padding: getPadding(),
                 });
             }
 
@@ -171,7 +194,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             pitch: map.value.getPitch(),
             zoom: map.value.getZoom(),
             duration: 350,
-            padding: isNavigating.value ? PADDING_NAV : PADDING_FREE,
+            padding: getPadding(),
         });
     };
 
@@ -235,7 +258,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             zoom: 11,
             pitch: 50,
             duration: 350,
-            padding: PADDING_NAV,
+            padding: getPadding(),
         });
     };
 
