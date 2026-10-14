@@ -6,9 +6,9 @@
     cursor: pointer;
     font-family: inherit;
 
-    background-color: rgb(38, 52, 68, 0.95);
-    border: 1px solid $secondaryColor;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: $backdrop-filter;
+    background-color: rgba($color: $primaryColor, $alpha: 0.8);
+    border: $el-border-design;
     border-radius: 8px;
     overflow: hidden;
     transition: background-color 0.2s ease, transform 0.1s ease;
@@ -23,19 +23,18 @@
         background-color: $primaryDarkerColor;
     }
 
+    &.dark {
+        background-color: $primaryDarkerColor;
+    }
+
     &.text-btn {
-        padding: 0.8rem 1rem;
-        font-weight: 600;
+        padding: 0 1rem;
 
         font-size: 1.6rem;
         display: flex;
         gap: 0.6rem;
 
-        border-radius: 5px;
-
-        &.darker {
-            background-color: $primaryDarlerColor10;
-        }
+        border-radius: 4px;
 
         &:active {
             background-color: $primaryDarkerColor;

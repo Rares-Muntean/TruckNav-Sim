@@ -1,11 +1,13 @@
-$primaryColor: #2b2b2b;
-$primaryDarlerColor10: #222f3d;
-$primaryDarkerColor: #141414;
+$primaryColor: #303030;
+$primaryAccentColor: #363636;
+
+$primaryDarkerColor: #292929;
 
 $secondaryColor: #3d546e;
 $secondaryDarkerColor: #222e3c;
 
 $white-font-text: #f2f2f2;
+$white-font-text-muted: #b5b5b5;
 $white-font-text60: rgb(242, 242, 242, 0.6);
 
 $default-background-color-dark: rgba(0, 0, 0, 0.25);
@@ -33,3 +35,7 @@ $sheet-z-index: 99;
 $loading-win-z-index: 999;
 
 $backdrop-filter: blur(2px);
+
+$el-border-design: 1px solid $primaryAccentColor;
+$el-box-shadow-design: inset 0 1px $primaryAccentColor;
+$behind-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);

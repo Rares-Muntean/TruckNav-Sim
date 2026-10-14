@@ -16,17 +16,16 @@
     font-size: var(--compact-trip-size);
     color: $white-font-text;
 
-    border: 1.5px solid var(--theme-color);
+    border: $el-border-design;
 
     border-radius: 8px;
 
-    background-color: $primaryColor;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    backdrop-filter: $backdrop-filter;
+    background-color: rgba($color: $primaryColor, $alpha: 0.9);
 
-    .icon-btn {
-        align-self: flex-end;
-        height: fit-content;
-        padding: 0;
+    .icon {
+        display: flex;
+        align-items: center;
     }
 
     &.preview {
@@ -42,4 +41,10 @@
 .route-info {
     display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+
+    .dot {
+        margin-bottom: 2px;
+    }
 }

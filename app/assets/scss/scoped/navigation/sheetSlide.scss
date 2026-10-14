@@ -7,6 +7,7 @@ $compact-bar-height: 35px;
 
 .action-buttons {
     display: flex;
+    align-items: center;
     gap: 1.2rem;
 
     .start-btn {
@@ -44,6 +45,13 @@ $compact-bar-height: 35px;
         padding-left: 10px;
         padding: 6px 18px;
     }
+
+    .close-icon {
+        display: flex;
+        align-items: center;
+        width: 3rem;
+        height: 3rem;
+    }
 }
 
 .sheet-header {
@@ -53,13 +61,6 @@ $compact-bar-height: 35px;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-
-    .drag-pill {
-        width: 40px;
-        height: 5px;
-        background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-    }
 }
 
 .sheet-body {
@@ -88,11 +89,12 @@ $compact-bar-height: 35px;
     z-index: $sheet-z-index;
 
     background-color: $primaryColor;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
+    border-top-left-radius: 1.8rem;
+    border-top-right-radius: 1.8rem;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
 
-    border: 2px solid var(--theme-color);
+    border: 2px solid $primaryAccentColor;
+    box-shadow: $el-box-shadow-design;
     border-bottom: none;
 
     display: flex;
@@ -138,13 +140,14 @@ $compact-bar-height: 35px;
 
 .separator {
     height: 1px;
-    background: rgba(255, 255, 255, 0.1);
+    background: $primaryAccentColor;
     margin: 10px 0 20px 0;
 }
 
 .full-stats {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 25px;
 
     .stat-block {

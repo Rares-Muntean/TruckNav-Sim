@@ -65,7 +65,7 @@ function stopHold() {
         </div>
         <div class="increase-option">
             <button
-                class="settings-btn default-color increase-decrease"
+                class="settings-btn primary-color increase-decrease"
                 @click.prevent="updateSize('-')"
                 @mousedown="startHold('-')"
                 @mouseup="stopHold"
@@ -81,7 +81,7 @@ function stopHold() {
             </div>
 
             <button
-                class="settings-btn default-color increase-decrease"
+                class="settings-btn primary-color increase-decrease"
                 @click.prevent="updateSize('+')"
                 @mousedown="startHold('+')"
                 @mouseup="stopHold"

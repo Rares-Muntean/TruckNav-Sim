@@ -13,7 +13,8 @@
 
     width: 65%;
 
-    border: 1px solid $secondaryColor;
+    border: $el-border-design;
+    box-shadow: $el-box-shadow-design;
     border-radius: 8px;
 
     backdrop-filter: $backdrop-filter;
@@ -47,10 +48,6 @@
 
     .unit {
         font-size: 1.2rem;
-        opacity: 0.6;
-    }
-
-    .instruction-text {
-        opacity: 1;
+        color: $white-font-text-muted;
     }
 }

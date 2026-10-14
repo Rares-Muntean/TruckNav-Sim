@@ -11,10 +11,10 @@ const props = defineProps<{
         <Icon name="lucide:flag-triangle-right" size="22" />
         <div class="route-info">
             <span>{{ routeDistanceConverted }} {{ distanceUnit }} </span>
-            <Icon name="lucide:dot" />
+            <span class="dot">·</span>
             <span>{{ routeEta }}</span>
         </div>
-        <button class="nav-btn icon-btn">
+        <button class="icon">
             <Icon name="lucide:chevron-up" />
         </button>
     </div>

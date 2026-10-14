@@ -52,20 +52,23 @@ input {
 }
 
 .nav-btn {
-    background-color: var(--theme-color);
+    background-color: $primaryColor;
+    background-color: #fb8d33;
     display: flex;
     gap: 0.4rem;
 
     font-family: inherit;
-    font-weight: 700;
     font-size: 1.6rem;
     color: var(--main-text-color);
+    color: $primaryColor;
+    font-weight: 700;
 
-    height: 38px;
+    width: fit-content;
+    height: fit-content;
     border: none;
-    border-radius: 5px;
-    padding: 4px 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    padding: 6px 1.6rem;
+    box-shadow: $behind-shadow;
 
     justify-content: center;
     align-items: center;
@@ -87,9 +90,16 @@ input {
         color: #222;
     }
 
-    &.default-color {
+    &.primary-color {
+        background-color: $primaryColor;
+        color: $white-font-text;
+    }
+
+    &.dark {
         background-color: $primaryDarkerColor;
         color: $white-font-text;
+        border: $el-border-design;
+        font-weight: 500;
     }
 
     &:disabled {

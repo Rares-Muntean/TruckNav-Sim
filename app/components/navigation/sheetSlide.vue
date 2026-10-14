@@ -101,14 +101,13 @@ watch(
                         <button
                             v-show="!isSheetHidden"
                             @click.prevent="onToggleSheetHidden"
-                            class="hide-sheet-btn nav-btn"
+                            class="hide-sheet-btn"
                         >
                             <Icon
                                 name="lucide:chevron-down"
                                 class="chevron-icon"
                                 size="20"
                             />
-                            {{ t("common.hide") }}
                         </button>
                     </div>
                 </div>
@@ -130,23 +129,22 @@ watch(
                         </div>
                     </div>
 
-                    <HudButton
-                        type="text-btn"
-                        class="darker"
+                    <button
+                        class="nav-btn dark"
                         v-on:click="handleAddStopClick"
                     >
                         <Icon name="lucide:map-pin-plus" size="22" />
                         <span>{{ t("map.addStop") }}</span>
-                    </HudButton>
+                    </button>
                 </div>
 
                 <div class="action-buttons">
                     <button
                         v-show="isNavigating"
-                        class="stop-btn nav-btn"
+                        class="close-icon"
                         @click.prevent="onStopNavigation"
                     >
-                        <span>{{ t("common.stop") }}</span>
+                        <Icon name="lucide:circle-x" size="28" />
                     </button>
 
                     <button

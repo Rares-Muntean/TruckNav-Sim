@@ -56,7 +56,7 @@ function resetColor() {
                     <div class="picker-footer">
                         <button
                             @click.prevent="resetColor"
-                            class="settings-btn default-color small-reset"
+                            class="settings-btn primary-color small-reset"
                             title="Reset to default"
                         >
                             <Icon name="lucide:refresh-ccw" size="18" />

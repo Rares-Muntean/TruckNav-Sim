@@ -570,9 +570,9 @@ const onCancelRoute = () => {
                     />
 
                     <div class="hud-buttons">
-                        <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
+                        <!-- <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
                             <Icon name="lucide:fullscreen" class="icon" />
-                        </HudButton>
+                        </HudButton> -->
 
                         <HudButton :onClick="onResetNorth">
                             <Icon name="lucide:compass" class="icon" />

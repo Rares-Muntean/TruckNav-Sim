@@ -19,6 +19,9 @@
     padding-bottom: 1.2rem;
 
     z-index: $bottom-pill-z-index;
+
+    border-top: $el-border-design;
+    box-shadow: $el-box-shadow-design;
 }
 
 .tab-item {
@@ -30,6 +33,7 @@
 
     font-size: 1.4rem;
     gap: 0.1rem;
+    color: $white-font-text-muted;
 
     .icon {
         width: 2.4rem;
@@ -37,6 +41,7 @@
     }
 
     &.is-active {
-        color: $red-color;
+        color: var(--theme-color);
+        opacity: 1;
     }
 }

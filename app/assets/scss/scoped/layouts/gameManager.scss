@@ -6,6 +6,7 @@
 
     display: flex;
     flex-direction: column;
+    background-color: $primaryDarkerColor;
 }
 
 .title {
@@ -16,7 +17,6 @@
     gap: 0.8rem;
 
     font-size: 1.8rem;
-    font-weight: 600;
 
     .icon {
         margin-top: 2px;
@@ -32,6 +32,7 @@
     display: flex;
     flex-direction: column;
     align-self: center;
+    align-items: center;
     justify-content: space-between;
     gap: 3rem;
 
@@ -47,19 +48,34 @@
 .top-content {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 2.4rem;
+}
+
+.mod-btn {
+    width: 100%;
+}
+
+.success-btn {
+    width: 100%;
 }
 
 .top-buttons {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    width: fit-content;
     gap: 0.8rem;
 }
 
 .bottom-download-button {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 1rem;
+}
+
+.download-btn {
+    width: 100%;
 }
 
 .progress-bar {

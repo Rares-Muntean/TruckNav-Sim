@@ -322,13 +322,13 @@ export function useCityData() {
             const threshold = 0.3;
 
             const fullName = bestCountry
-                ? `${bestName}, ${bestCountry}`
+                ? `${bestName} · ${bestCountry}`
                 : bestName;
 
             if (minDistance < threshold) {
                 return fullName;
             } else {
-                return `Near ${fullName}`;
+                return `${fullName}`;
             }
         }
 

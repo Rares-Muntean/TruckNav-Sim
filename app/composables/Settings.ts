@@ -44,12 +44,12 @@ export interface AppSettingsState {
 }
 
 const DEFAULT_PROFILE: GameProfile = {
-    themeColor: "#fbc02d",
+    themeColor: "#F27A24",
     textColor: "light",
-    routeColor: "#22d3ee",
-    roadColor: "#4a5f7a",
+    routeColor: "#FF8C00",
+    roadColor: "#515151",
     backgroundColor: "#24467b",
-    landColor: "#272d39",
+    landColor: "#232323",
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
     lastDestination: null,
@@ -64,18 +64,15 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     profiles: {
         ets2: {
             ...DEFAULT_PROFILE,
-            themeColor: "#fbc02d",
-            textColor: "dark",
             units: "metric",
         },
         ats: {
             ...DEFAULT_PROFILE,
-            themeColor: "#d32f2f",
             ownedDlcs: Array.from({ length: 18 }, (_, i) => i + 1),
             units: "imperial",
         },
     },
-    hudBtnSize: 30,
+    hudBtnSize: 28,
     truckMarkerSize: 40,
     compactTripFontSize: 1.8,
     activeUiComponents: [

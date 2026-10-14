@@ -197,7 +197,7 @@ function toggleModPanel() {
 
                     <button
                         @click="uninstallMap()"
-                        class="btn nav-btn mod-btn default-color"
+                        class="btn nav-btn mod-btn primary-color"
                     >
                         <Icon name="lucide:trash-2" size="20" />
                         <span>Uninstall Base Map</span>
@@ -241,7 +241,7 @@ function toggleModPanel() {
                                 `https://trucknavapp.com/${selectedGame}.zip`,
                             )
                         "
-                        class="btn nav-btn"
+                        class="btn nav-btn download-btn"
                         :disabled="isDownloading"
                     >
                         <span>Download Base Map</span>
@@ -347,7 +347,7 @@ function toggleModPanel() {
                                     </button>
 
                                     <button
-                                        class="nav-btn uninstall-btn"
+                                        class="nav-btn dark"
                                         @click="uninstallMap(mod.id)"
                                     >
                                         <Icon name="lucide:trash-2" size="16" />
@@ -414,11 +414,6 @@ function toggleModPanel() {
 
             .download-btn {
                 background: #10b981;
-                color: white;
-            }
-
-            .uninstall-btn {
-                background: #ef4444;
                 color: white;
             }
 
