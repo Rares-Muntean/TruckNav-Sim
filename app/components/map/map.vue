@@ -580,7 +580,7 @@ const onCancelRoute = () => {
 
                         <HudButton
                             :is-active="isAutoFollowEnabled"
-                            :class="{ 'green-icon': isAutoFollowEnabled }"
+                            :class="{ 'theme-color': isAutoFollowEnabled }"
                             :onClick="toggleAutoFollow"
                         >
                             <Icon
@@ -593,9 +593,7 @@ const onCancelRoute = () => {
 
                         <HudButton
                             :is-active="isClickingEnabled"
-                            :class="
-                                isClickingEnabled ? 'green-icon' : 'red-icon'
-                            "
+                            :class="isClickingEnabled ? 'theme-color' : ''"
                             :onClick="toggleEnableClicking"
                         >
                             <Icon

@@ -67,8 +67,8 @@
         color: $red-color;
     }
 
-    .green-icon {
-        color: $green-color;
+    .theme-color {
+        color: var(--theme-color);
     }
 }
 

@@ -195,10 +195,7 @@ function toggleModPanel() {
                         </span>
                     </button>
 
-                    <button
-                        @click="uninstallMap()"
-                        class="btn nav-btn mod-btn primary-color"
-                    >
+                    <button @click="uninstallMap()" class="btn nav-btn dark">
                         <Icon name="lucide:trash-2" size="20" />
                         <span>Uninstall Base Map</span>
                     </button>
@@ -267,12 +264,11 @@ function toggleModPanel() {
                     <div class="mod-list-container">
                         <div class="mod-item">
                             <div class="mod-info">
-                                <strong>Default Map</strong>
-                                <p>Standard game map (No Mods)</p>
+                                <strong>Vanilla</strong>
                             </div>
                             <div class="mod-actions">
                                 <button
-                                    class="nav-btn select-btn"
+                                    class="nav-btn dark"
                                     @click="selectMod('none')"
                                     :disabled="
                                         activeSettings.activeMod === 'none' ||
@@ -313,11 +309,10 @@ function toggleModPanel() {
                                         !downloadedMods[mod.id] &&
                                         downloadingId !== mod.id
                                     "
-                                    class="nav-btn download-btn"
+                                    class="nav-btn icon map-mod-icon"
                                     @click="startDownload(mod.id, mod.url)"
                                 >
                                     <Icon name="lucide:download" size="20" />
-                                    Download
                                 </button>
 
                                 <span
@@ -333,7 +328,7 @@ function toggleModPanel() {
 
                                 <template v-else>
                                     <button
-                                        class="nav-btn select-btn"
+                                        class="nav-btn"
                                         @click="selectMod(mod.id)"
                                         :disabled="
                                             activeSettings.activeMod === mod.id
@@ -347,10 +342,10 @@ function toggleModPanel() {
                                     </button>
 
                                     <button
-                                        class="nav-btn dark"
+                                        class="nav-btn dark icon map-mod-icon"
                                         @click="uninstallMap(mod.id)"
                                     >
-                                        <Icon name="lucide:trash-2" size="16" />
+                                        <Icon name="lucide:trash-2" size="20" />
                                     </button>
                                 </template>
                             </div>
@@ -419,8 +414,11 @@ function toggleModPanel() {
 
             .downloading-text {
                 opacity: 0.8;
-                font-weight: bold;
                 padding: 0 10px;
+            }
+
+            .map-mod-icon {
+                padding: 8px 10px;
             }
         }
     }

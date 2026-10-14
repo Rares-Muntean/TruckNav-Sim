@@ -59,7 +59,6 @@ input {
 
     font-family: inherit;
     font-size: 1.6rem;
-    color: var(--main-text-color);
     color: $primaryColor;
     font-weight: 700;
 
@@ -100,6 +99,10 @@ input {
         color: $white-font-text;
         border: $el-border-design;
         font-weight: 500;
+    }
+
+    &.icon {
+        padding: 4px 6px;
     }
 
     &:disabled {

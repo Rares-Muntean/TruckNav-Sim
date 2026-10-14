@@ -44,7 +44,7 @@ const cancelAutoStart = () => {
 
 let rafId: number | null = null;
 const startSmoothTimer = () => {
-    const duration = 5000;
+    const duration = 10000;
     const startTime = Date.now();
 
     const frame = () => {
@@ -116,12 +116,8 @@ watch(
 
                 <div class="full-stats">
                     <div class="stat-block">
-                        <Icon
-                            name="lucide:clock-check"
-                            size="26"
-                            class="icon-eta"
-                        />
-                        <div>
+                        <Icon name="lucide:clock-check" size="26" />
+                        <div class="route-info">
                             <div class="value">{{ routeEta }}</div>
                             <div class="label route-distance">
                                 {{ routeDistanceConverted }} {{ distanceUnit }}
@@ -160,19 +156,19 @@ watch(
                         }}</span>
                         <span
                             v-if="countdown > 0 && !isNavigating"
-                            style="margin-left: 5px; opacity: 0.8"
+                            class="countdown"
+                            style="margin-left: 5px"
                         >
                             ({{ countdown }}s)
                         </span>
                     </button>
 
-                    <button v-show="countdown > 0" @click="cancelAutoStart">
-                        <Icon
-                            name="lucide:x"
-                            size="28"
-                            class="cancel-timer-icon"
-                        />
-                    </button>
+                    <Icon
+                        v-show="countdown > 0"
+                        @click="cancelAutoStart"
+                        name="lucide:x"
+                        size="28"
+                    />
                 </div>
             </div>
         </div>

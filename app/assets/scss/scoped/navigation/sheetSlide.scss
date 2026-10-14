@@ -54,6 +54,10 @@ $compact-bar-height: 35px;
     }
 }
 
+.countdown {
+    font-variant-numeric: tabular-nums;
+}
+
 .sheet-header {
     width: 100%;
     height: 24px;
@@ -76,7 +80,6 @@ $compact-bar-height: 35px;
 .dest-name {
     margin: 0;
     font-size: 2rem;
-    font-weight: 700;
     color: $white-font-text;
 }
 
@@ -138,6 +141,10 @@ $compact-bar-height: 35px;
     }
 }
 
+.route-info {
+    font-variant-numeric: tabular-nums;
+}
+
 .separator {
     height: 1px;
     background: $primaryAccentColor;
@@ -159,17 +166,12 @@ $compact-bar-height: 35px;
             margin-top: -6px;
         }
 
-        .icon-eta {
-            color: var(--theme-color);
-        }
-
         .icon-dist {
             color: var(--theme-color);
         }
 
         .value {
             font-size: 1.9rem;
-            font-weight: 700;
             color: $white-font-text;
         }
 
