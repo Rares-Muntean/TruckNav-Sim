@@ -39,13 +39,6 @@ $compact-bar-height: 35px;
         }
     }
 
-    .stop-btn {
-        background-color: $red-color;
-        color: $white-font-text;
-        padding-left: 10px;
-        padding: 6px 18px;
-    }
-
     .close-icon {
         display: flex;
         align-items: center;
@@ -73,8 +66,8 @@ $compact-bar-height: 35px;
 
 .top-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 }
 
 .dest-name {
@@ -128,7 +121,7 @@ $compact-bar-height: 35px;
 }
 
 .chevron-icon {
-    color: var(--main-text-color);
+    color: $white-font-text;
 }
 
 .hide-sheet {

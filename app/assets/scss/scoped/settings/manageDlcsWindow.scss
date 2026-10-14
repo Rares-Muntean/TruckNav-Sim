@@ -39,17 +39,12 @@
     font-size: 2rem;
     display: flex;
     justify-content: space-between;
+    background: $menu-item-gradient;
 
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-    border: 2px solid $secondaryColor;
     border-radius: 6px;
-
-    &.is-selected {
-        border-color: var(--theme-color);
-        background-color: rgba($secondaryColor, 20%);
-    }
 
     @include for-tablet {
         flex-direction: column;
@@ -93,15 +88,15 @@
     width: 100%;
     height: 100%;
 
-    background: $primaryDarkerColor;
+    background: $primaryBackgroundColor;
 
     background: linear-gradient(
         90deg,
-        $primaryDarkerColor 0%,
-        $primaryDarkerColor 20%,
+        $primaryBackgroundColor 0%,
+        $primaryBackgroundColor 20%,
         $primaryColor 50%,
-        $primaryDarkerColor 80%,
-        $primaryDarkerColor 100%
+        $primaryBackgroundColor 80%,
+        $primaryBackgroundColor 100%
     );
 
     background-size: 200% 100%;
@@ -148,7 +143,7 @@
     margin: 0 0.8rem 0.8rem 0;
     width: 26px;
     height: 26px;
-    color: $secondaryColor;
+    color: $primaryLightButtonColor;
     &.is-selected {
         color: var(--theme-color);
     }

@@ -38,7 +38,7 @@
 
 .left-buttons {
     position: absolute;
-    top: calc($game-info-bar-height + 1.8rem);
+    top: 1.8rem;
     left: 10px;
 
     display: flex;
@@ -46,13 +46,13 @@
     gap: 0.6rem;
 
     @media (orientation: portrait) {
-        top: calc($game-info-bar-height + 1.8rem);
+        top: 1.8rem;
     }
 }
 
 .hud-buttons {
     position: absolute;
-    top: calc($game-info-bar-height + 1.8rem);
+    top: 1.8rem;
     right: 10px;
 
     display: flex;
@@ -60,11 +60,7 @@
     gap: 0.6rem;
 
     @media (orientation: portrait) {
-        top: calc($game-info-bar-height + 1.8rem);
-    }
-
-    .red-icon {
-        color: $red-color;
+        top: +1.8rem;
     }
 
     .theme-color {
@@ -80,7 +76,7 @@
 
 .warnings {
     position: absolute;
-    bottom: calc(30px + $game-info-bar-height);
+    bottom: calc(var(--bottom-pill-tabs-height) + 5rem);
     right: -2px;
 
     display: flex;

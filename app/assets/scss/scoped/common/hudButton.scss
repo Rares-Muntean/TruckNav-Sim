@@ -13,18 +13,9 @@
     overflow: hidden;
     transition: background-color 0.2s ease, transform 0.1s ease;
 
-    @media (hover: hover) {
-        &:hover {
-            background-color: $secondaryColor;
-        }
-    }
-
+    &:hover,
     &:active {
-        background-color: $primaryDarkerColor;
-    }
-
-    &.dark {
-        background-color: $primaryDarkerColor;
+        background-color: $primaryBackgroundColor;
     }
 
     &.text-btn {
@@ -37,7 +28,7 @@
         border-radius: 4px;
 
         &:active {
-            background-color: $primaryDarkerColor;
+            background-color: $primaryBackgroundColor;
             transform: translateY(1px);
         }
     }

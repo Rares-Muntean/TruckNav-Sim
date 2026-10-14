@@ -102,8 +102,9 @@ onMounted(async () => {
                 class="selector"
                 :ui="{
                     trailingIcon: 'shrink-0 size-[20px] text-white !px-6',
-                    content: 'bg-[#222e3c] shadow-xl rounded-md',
-                    item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#3d546e] rounded cursor-pointer transition-colors',
+                    content:
+                        'bg-[#333333] shadow-xl rounded-md ring-0 border-0 outline-none',
+                    item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#333333] rounded cursor-pointer transition-colors',
                     itemTrailingIcon: 'text-white',
                 }"
             >
@@ -144,10 +145,7 @@ onMounted(async () => {
                 <p>{{ t("settings.resetToDefaults") }}</p>
             </div>
 
-            <button
-                @click.prevent="resetSettings"
-                class="nav-btn settings-btn red-color"
-            >
+            <button @click.prevent="resetSettings" class="nav-btn dark">
                 {{ t("common.reset") }}
             </button>
         </div>

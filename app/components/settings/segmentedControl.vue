@@ -4,7 +4,6 @@ const props = defineProps<{
     size: "small" | "normal";
     leftOption: string;
     rightOption: string;
-    isSameColor?: boolean;
 }>();
 const emit = defineEmits(["connect"]);
 </script>
@@ -19,8 +18,7 @@ const emit = defineEmits(["connect"]);
             class="segment-btn"
             :class="[
                 {
-                    active: !active && isSameColor,
-                    activeOff: !active && !isSameColor,
+                    active: !active,
                 },
             ]"
         >

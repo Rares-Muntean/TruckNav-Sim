@@ -1,7 +1,7 @@
 .segmented-control {
     display: flex;
     gap: 0.8rem;
-    background: $default-background-color-dark;
+    background: $primaryBackgroundColor;
     border-radius: 5px;
     cursor: pointer;
 
@@ -36,20 +36,15 @@
         align-items: center;
         cursor: pointer;
 
-        color: $white-font-text60;
+        color: $white-font-text;
         border-radius: 4px;
         transition: all 0.2s ease;
 
         &.active {
-            background: var(--theme-color);
             color: var(--main-text-color);
-            box-shadow: $default-box-shadow;
-        }
-
-        &.activeOff {
-            background-color: $red-color;
-            color: $white-font-text;
-            box-shadow: $default-box-shadow;
+            background: var(--theme-color);
+            box-shadow: $behind-shadow;
+            font-weight: 700;
         }
     }
 }

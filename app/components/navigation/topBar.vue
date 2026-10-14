@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<!-- <script lang="ts" setup>
 const props = defineProps<{
     truckSpeed: number;
     gameConnected: boolean;
@@ -82,4 +82,4 @@ const fuelConverted = computed(() => literToUserUnits(props.fuel));
     lang="scss"
     scoped
     src="~/assets/scss/scoped/navigation/topBar.scss"
-></style>
+></style> -->

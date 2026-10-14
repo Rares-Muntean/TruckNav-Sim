@@ -505,27 +505,6 @@ const onCancelRoute = () => {
                         <LoadingScreen v-if="loading" :progress="progress" />
                     </Transition>
 
-                    <TopBar
-                        v-show="settings.activeUiComponents.includes('topBar')"
-                        :fuel="fuel"
-                        :game-connected="gameConnected"
-                        :game-time="gameTime"
-                        :rest-stop-minutes="restStopMinutes"
-                        :rest-stop-time="restStoptime"
-                        :truck-speed="truckSpeed"
-                        :is-web="isWeb"
-                    />
-
-                    <!-- <div class="left-buttons">
-                        <HudButton :onClick="goHome">
-                            <Icon name="lucide:arrow-left" class="icon" />
-                        </HudButton>
-
-                        <HudButton :onClick="toggleSettingsPanel">
-                            <Icon name="lucide:settings" class="icon" />
-                        </HudButton>
-                    </div> -->
-
                     <ManeuverCard
                         v-show="
                             isNavigating && activeSettings.hasTurnNavigation

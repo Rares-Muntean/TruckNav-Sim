@@ -16,40 +16,11 @@ const components = computed<Component[]>(() => [
         description: t("uiComponents.speedDescription"),
         iconName: "lucide:gauge",
     },
-
-    {
-        id: "fuel",
-        title: t("uiComponents.fuelTitle"),
-        description: t("uiComponents.fuelDescription"),
-        iconName: "lucide:fuel",
-    },
-
-    {
-        id: "sleep",
-        title: t("uiComponents.sleepTitle"),
-        description: t("uiComponents.sleepDescription"),
-        iconName: "lucide:bed-double",
-    },
-
-    {
-        id: "time",
-        title: t("uiComponents.gameTimeTitle"),
-        description: t("uiComponents.gameTimeDescription"),
-        iconName: "lucide:clock",
-    },
-
     {
         id: "speedLimit",
         title: t("uiComponents.speedLimitTitle"),
         description: t("uiComponents.speedLimitDescription"),
         iconName: "lucide:octagon-alert",
-    },
-
-    {
-        id: "topBar",
-        title: t("uiComponents.topBarTitle"),
-        description: t("uiComponents.topBarDescription"),
-        iconName: "lucide:info",
     },
 ]);
 
@@ -121,11 +92,7 @@ function toggleUiComponent(componentId: UiComponent) {
 
     <div v-if="false">
         <Icon name="lucide:gauge" />
-        <Icon name="lucide:fuel" />
-        <Icon name="lucide:bed-double" />
-        <Icon name="lucide:clock" />
         <Icon name="lucide:octagon-alert" />
-        <Icon name="lucide:info" />
     </div>
 </template>
 

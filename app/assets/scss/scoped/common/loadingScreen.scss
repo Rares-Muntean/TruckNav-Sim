@@ -4,10 +4,11 @@
     left: 0;
     width: 100%;
     height: 100%;
+    font-weight: 600;
 
     z-index: $loading-win-z-index;
 
-    background-color: #272d39;
+    background-color: $primaryBackgroundColor;
 
     display: flex;
     flex-direction: column;
@@ -18,7 +19,6 @@
 
 .progress-text {
     font-size: 24px;
-    color: $secondaryColor;
     margin-top: 10px;
     margin-bottom: 6px;
     font-family: inherit;

@@ -14,7 +14,7 @@ html {
 body {
     font-family: var(--app-font);
     font-weight: 500;
-    background-color: $primaryColor;
+    background-color: $primaryBackgroundColor;
     -webkit-tap-highlight-color: transparent;
     padding-top: env(safe-area-inset-top);
     color: $white-font-text;
@@ -53,13 +53,13 @@ input {
 
 .nav-btn {
     background-color: $primaryColor;
-    background-color: #fb8d33;
+    background-color: #fb8d33; //#F27A24
     display: flex;
     gap: 0.4rem;
 
     font-family: inherit;
     font-size: 1.6rem;
-    color: $primaryColor;
+    color: var(--main-text-color);
     font-weight: 700;
 
     width: fit-content;
@@ -76,6 +76,10 @@ input {
 
     transition: 0.1s ease all;
 
+    &.full-width {
+        width: 100%;
+    }
+
     &:active {
         filter: brightness(0.8);
         transform: translateY(1px);
@@ -84,20 +88,14 @@ input {
         user-select: none;
     }
 
-    &.red-color {
-        background-color: $red-color;
-        color: #222;
-    }
-
     &.primary-color {
         background-color: $primaryColor;
         color: $white-font-text;
     }
 
     &.dark {
-        background-color: $primaryDarkerColor;
+        background-color: $primaryAccentColor;
         color: $white-font-text;
-        border: $el-border-design;
         font-weight: 500;
     }
 

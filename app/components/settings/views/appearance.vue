@@ -113,7 +113,6 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             <SegmentedControl
                 :left-option="t('settings.light')"
                 :right-option="t('settings.dark')"
-                :is-same-color="true"
                 @connect="toggleTextColor"
                 :active="isTextThemeLight"
                 size="normal"
@@ -134,7 +133,8 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                 class="selector"
                 :ui="{
                     trailingIcon: 'shrink-0 size-[20px] text-white !px-6',
-                    content: 'bg-[#222e3c] shadow-xl rounded-md',
+                    content:
+                        'bg-[#333333] ring-0 border-0 shadow-xl rounded-md',
                     item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#3d546e] rounded cursor-pointer transition-colors',
                     itemTrailingIcon: 'text-white',
                 }"
@@ -222,7 +222,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                     class="nav-btn settings-btn"
                 >
                     {{ settings.activeUiComponents.length }} /
-                    {{ DEFAULT_SETTINGS.activeUiComponents.length }}
+                    {{ DEFAULT_SETTINGS.activeUiComponents.length + 1 }}
                     {{ t("common.active") }}
                 </button>
             </div>

@@ -213,7 +213,7 @@ function toggleModPanel() {
                 <button
                     v-else
                     @click.prevent="emit('connected')"
-                    class="btn nav-btn success-btn"
+                    class="btn nav-btn full-width"
                 >
                     <span>Start Navigation</span>
                     <Icon name="lucide:map-pinned" size="20" />
@@ -238,7 +238,7 @@ function toggleModPanel() {
                                 `https://trucknavapp.com/${selectedGame}.zip`,
                             )
                         "
-                        class="btn nav-btn download-btn"
+                        class="btn nav-btn full-width"
                         :disabled="isDownloading"
                     >
                         <span>Download Base Map</span>
@@ -379,10 +379,9 @@ function toggleModPanel() {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: $menu-item-gradient;
         padding: 12px;
-        border-radius: 8px;
+        border-radius: 5px;
 
         .mod-info {
             display: flex;

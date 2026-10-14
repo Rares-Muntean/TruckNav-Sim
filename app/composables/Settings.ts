@@ -3,13 +3,7 @@ import type { GameType } from "~/types";
 export type UnitSystem = "metric" | "imperial";
 export type TextTheme = "light" | "dark";
 export type RouteTimeMode = "game" | "real";
-export type UiComponent =
-    | "speed"
-    | "fuel"
-    | "sleep"
-    | "time"
-    | "speedLimit"
-    | "topBar";
+export type UiComponent = "speed" | "speedLimit";
 export type ActiveComponents = UiComponent[];
 export type LocaleCode = "en" | "de" | "nl" | "cs" | "sk" | "ko" | "ro";
 
@@ -44,11 +38,11 @@ export interface AppSettingsState {
 }
 
 const DEFAULT_PROFILE: GameProfile = {
-    themeColor: "#F27A24",
-    textColor: "light",
+    themeColor: "#fb8d33",
+    textColor: "dark",
     routeColor: "#FF8C00",
     roadColor: "#515151",
-    backgroundColor: "#24467b",
+    backgroundColor: "#1A1A1A",
     landColor: "#232323",
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
@@ -75,14 +69,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     hudBtnSize: 28,
     truckMarkerSize: 40,
     compactTripFontSize: 1.8,
-    activeUiComponents: [
-        "speed",
-        "speedLimit",
-        "fuel",
-        "time",
-        "sleep",
-        "topBar",
-    ],
+    activeUiComponents: ["speedLimit"],
     locale: "en",
     routeTimeMode: "game",
 };
@@ -109,7 +96,7 @@ export const useSettings = () => {
 
         document.documentElement.style.setProperty(
             "--main-text-color",
-            isLight ? "#f2f2f2" : "#333",
+            isLight ? "#f2f2f2" : "#2d2d2d",
         );
 
         document.documentElement.style.setProperty(
@@ -125,13 +112,6 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--compact-trip-size",
             `${settings.value.compactTripFontSize}rem`,
-        );
-
-        document.documentElement.style.setProperty(
-            "--top-bar-height",
-            !settings.value.activeUiComponents.includes("topBar")
-                ? "0px"
-                : "40px",
         );
     };
 

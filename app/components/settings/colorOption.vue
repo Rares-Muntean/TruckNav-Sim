@@ -33,7 +33,11 @@ function resetColor() {
             <p>{{ optionTitle }}</p>
         </div>
         <div class="color-options">
-            <UPopover>
+            <UPopover
+                :ui="{
+                    content: 'ring-0 border-0 outline-none',
+                }"
+            >
                 <UButton
                     class="change-color-btn nav-btn settings-btn"
                     :style="{ backgroundColor: currentColor }"

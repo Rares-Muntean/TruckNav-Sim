@@ -6,7 +6,7 @@
 
     display: flex;
     flex-direction: column;
-    background-color: $primaryDarkerColor;
+    background-color: $primaryBackgroundColor;
 }
 
 .title {
@@ -56,10 +56,6 @@
     width: 100%;
 }
 
-.success-btn {
-    width: 100%;
-}
-
 .top-buttons {
     display: flex;
     flex-direction: column;
@@ -72,10 +68,6 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-}
-
-.download-btn {
-    width: 100%;
 }
 
 .progress-bar {

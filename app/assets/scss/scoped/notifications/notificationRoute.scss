@@ -4,7 +4,7 @@
 // =====> STYLING <======
 .notification-container {
     position: absolute;
-    top: calc($game-info-bar-height + 15px);
+    top: 15px;
     left: 0;
     width: 100%;
 
@@ -15,19 +15,20 @@
 
     &.is-web {
         @media (orientation: portrait) {
-            top: calc($game-info-bar-height + env(safe-area-inset-top) + 15px);
+            top: calc(env(safe-area-inset-top) + 15px);
         }
     }
 
     @media (orientation: portrait) {
-        top: calc($game-info-bar-height + env(safe-area-inset-top));
+        top: calc(env(safe-area-inset-top));
     }
 }
 
 .notification-wrapper {
     width: 210px;
 
-    border: 2px solid $secondaryColor;
+    border: 1px solid $primaryAccentColor;
+    box-shadow: $el-box-shadow-design;
     border-radius: 8px;
 
     background-color: $primaryColor;

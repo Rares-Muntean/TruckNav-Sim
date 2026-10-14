@@ -1,30 +1,16 @@
-$primaryColor: #303030;
-$primaryAccentColor: #363636;
-
-$primaryDarkerColor: #292929;
-
-$secondaryColor: #3d546e;
-$secondaryDarkerColor: #222e3c;
+$primaryBackgroundColor: #232323;
+$primaryColor: #2d2d2d;
+$primaryAccentColor: #333333;
+$primaryLightButtonColor: #373737;
 
 $white-font-text: #f2f2f2;
 $white-font-text-muted: #b5b5b5;
-$white-font-text60: rgb(242, 242, 242, 0.6);
-
-$default-background-color-dark: rgba(0, 0, 0, 0.25);
-$default-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
 $red-color: #dd4a34;
 $green-color: #4caf50;
 $warning-color: #f59e0b;
 $blue-color: #7dd3fc;
 
-$ats-color: #d32f2f;
-$ets2-color: #fbc02d;
-
-$game-info-bar-height: var(--top-bar-height);
-
-$expanded-sheet-height: 215px;
-$collapsed-sheet-height: 90px;
 $notification-height: 20px;
 
 $map-z-index: 0;
@@ -39,3 +25,9 @@ $backdrop-filter: blur(2px);
 $el-border-design: 1px solid $primaryAccentColor;
 $el-box-shadow-design: inset 0 1px $primaryAccentColor;
 $behind-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+
+$menu-item-gradient: linear-gradient(
+    to right,
+    rgba($primaryColor, 0.9) 15%,
+    rgba($primaryColor, 0.4) 45%
+);

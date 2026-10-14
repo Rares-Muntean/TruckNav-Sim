@@ -98,7 +98,7 @@ const handleConnect = async () => {
         </div>
 
         <button
-            class="btn nav-btn"
+            class="btn nav-btn full-width"
             @click="handleConnect"
             :disabled="!canConnect"
         >

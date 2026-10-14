@@ -106,7 +106,7 @@ watch(
                             <Icon
                                 name="lucide:chevron-down"
                                 class="chevron-icon"
-                                size="20"
+                                size="22"
                             />
                         </button>
                     </div>

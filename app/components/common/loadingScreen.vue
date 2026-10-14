@@ -12,7 +12,7 @@ const { t } = useTranslations();
         <div
             class="progress-text"
             :style="{
-                color: darkenColor(activeSettings.themeColor, 0.2),
+                color: activeSettings.themeColor,
             }"
         >
             {{ progress }}%
