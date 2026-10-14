@@ -1,6 +1,6 @@
-$primaryColor: #263444;
+$primaryColor: #2b2b2b;
 $primaryDarlerColor10: #222f3d;
-$primaryDarkerColor: #151d25;
+$primaryDarkerColor: #141414;
 
 $secondaryColor: #3d546e;
 $secondaryDarkerColor: #222e3c;
@@ -24,3 +24,10 @@ $game-info-bar-height: var(--top-bar-height);
 $expanded-sheet-height: 215px;
 $collapsed-sheet-height: 90px;
 $notification-height: 20px;
+
+$map-z-index: 0;
+$ui-z-index: 5;
+$ui-priority-index: 10;
+$bottom-pill-z-index: 15;
+$sheet-z-index: 99;
+$loading-win-z-index: 999;

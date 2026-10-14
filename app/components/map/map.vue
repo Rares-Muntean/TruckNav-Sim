@@ -15,12 +15,12 @@ defineProps<{ goHome: () => void }>();
 // MAP STATE
 const mapEl = shallowRef<HTMLElement | null>(null);
 const map = shallowRef<maplibregl.Map | null>(null);
-const isSettingsPanelOpened = ref(false);
 const isClickingEnabled = ref(true);
 const isAddingStopMode = ref(false);
 
 // UI STATE
 const isSheetHidden = ref(false);
+const activeTab = ref<"drive" | "trip" | "settings">("drive");
 
 // JOB STATE
 const currentJobKey = ref<string>("");
@@ -95,9 +95,6 @@ const {
     routeFound,
     fullRouteDirections,
     nextTurnDistance,
-    waypointList,
-    removeWaypointAtIndex,
-    findBestWaypointInsertionIndex,
 } = useRouteController(map, adjacency, nodeCoords, stopNavigationMode);
 
 // Settings Controller
@@ -487,10 +484,6 @@ const onToggleFullscreen = async () => {
     }
 };
 
-const toggleSettingsPanel = () => {
-    isSettingsPanelOpened.value = !isSettingsPanelOpened.value;
-};
-
 const onCancelRoute = () => {
     clearRouteState();
     stopNavigationMode();
@@ -507,7 +500,7 @@ const onCancelRoute = () => {
 
         <div class="ui-safe-container">
             <Transition name="ui-layer-fade">
-                <div v-show="!isSettingsPanelOpened" class="map-ui-layer">
+                <div class="map-ui-layer">
                     <Transition name="fade">
                         <LoadingScreen v-if="loading" :progress="progress" />
                     </Transition>
@@ -523,7 +516,7 @@ const onCancelRoute = () => {
                         :is-web="isWeb"
                     />
 
-                    <div class="left-buttons">
+                    <!-- <div class="left-buttons">
                         <HudButton :onClick="goHome">
                             <Icon name="lucide:arrow-left" class="icon" />
                         </HudButton>
@@ -531,7 +524,7 @@ const onCancelRoute = () => {
                         <HudButton :onClick="toggleSettingsPanel">
                             <Icon name="lucide:settings" class="icon" />
                         </HudButton>
-                    </div>
+                    </div> -->
 
                     <ManeuverCard
                         v-show="
@@ -681,11 +674,10 @@ const onCancelRoute = () => {
             </Transition>
 
             <Transition name="panel-pop">
-                <SettingsPanel
-                    v-show="isSettingsPanelOpened"
-                    :close-panel="toggleSettingsPanel"
-                />
+                <SettingsPanel v-show="activeTab === 'settings'" />
             </Transition>
+
+            <BottomPillTabs v-model="activeTab" />
         </div>
     </div>
 </template>

@@ -3,30 +3,16 @@ type settingsView = "main" | "general" | "appearance" | "navigation";
 
 const { t } = useTranslations();
 
-const props = defineProps<{ closePanel: () => void }>();
-
 const currentView = ref<settingsView>("main");
 
 function setView(view: settingsView) {
     currentView.value = view;
-}
-
-function handleBack() {
-    if (currentView.value === "main") {
-        props.closePanel();
-    } else {
-        currentView.value = "main";
-    }
 }
 </script>
 
 <template>
     <div class="settings-panel">
         <div class="settings-title">
-            <div class="icon-btn" v-on:click="handleBack">
-                <Icon name="lucide:arrow-left" size="26" />
-            </div>
-
             <div class="title-icon">
                 <Icon name="lucide:settings" size="38" />
 

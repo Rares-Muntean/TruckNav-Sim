@@ -8,6 +8,8 @@
 
     background-color: #272d39;
     touch-action: none;
+
+    z-index: $map-z-index;
 }
 
 .map-container * {
@@ -22,7 +24,7 @@
 
     height: calc(100dvh - env(safe-area-inset-top));
     pointer-events: none;
-    z-index: 10;
+    z-index: $ui-z-index;
 }
 
 .ui-safe-container > * {

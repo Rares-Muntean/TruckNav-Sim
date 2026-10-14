@@ -13,11 +13,13 @@ html {
 
 body {
     font-family: var(--app-font);
-    font-weight: 800;
+    font-weight: 500;
     background-color: $primaryColor;
     -webkit-tap-highlight-color: transparent;
     padding-top: env(safe-area-inset-top);
     color: $white-font-text;
+
+    font-size: 1.6rem;
 }
 
 html,
@@ -94,4 +96,8 @@ input {
         opacity: 0.5;
         pointer-events: none;
     }
+}
+
+:root {
+    --bottom-pill-tabs-height: 65px;
 }

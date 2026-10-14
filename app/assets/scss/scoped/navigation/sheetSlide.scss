@@ -85,7 +85,7 @@ $compact-bar-height: 35px;
     bottom: 0;
     left: 0;
     width: 100%;
-    z-index: 2000;
+    z-index: $sheet-z-index;
 
     background-color: $primaryColor;
     border-top-left-radius: 24px;

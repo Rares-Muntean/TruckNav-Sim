@@ -4,6 +4,7 @@ $button-padding: 8px 10px;
  * GENERAL
  */
 .settings-panel {
+    position: fixed;
     background-color: $primaryColor;
     height: 100dvh;
     width: 100dvw;
@@ -13,6 +14,8 @@ $button-padding: 8px 10px;
 
     display: flex;
     flex-direction: column;
+
+    z-index: $ui-priority-index;
 }
 
 .settings-wrapper {
