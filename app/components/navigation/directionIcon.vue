@@ -13,19 +13,13 @@ const props = defineProps<{
         | "roundabout"
         | "destination"
         | "exit-highway";
-    active?: boolean;
-    activeColor?: string;
     exitCount?: number | undefined;
 }>();
 </script>
 
 <template>
-    <div class="icon-wrapper" :style="{ '--active-color': props.activeColor }">
-        <svg
-            viewBox="0 0 24 24"
-            class="direction-icon"
-            :class="{ 'is-active': active }"
-        >
+    <div class="icon-wrapper">
+        <svg viewBox="0 0 24 24" class="direction-icon">
             <g class="icon-content">
                 <path
                     v-if="props.type === 'left'"
@@ -123,7 +117,6 @@ const props = defineProps<{
         <span
             v-if="props.type === 'roundabout' && exitCount"
             class="exit-number"
-            :class="{ 'is-active': active }"
         >
             {{ exitCount }}
         </span>

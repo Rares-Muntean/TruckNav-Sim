@@ -1,25 +1,24 @@
 .card {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem;
 
     position: absolute;
     top: calc($game-info-bar-height + 1.8rem);
-    left: 50%;
-    transform: translate(-50%, 0);
+    left: 2rem;
 
     color: $white-font-text;
+    background-color: rgba($color: $primaryColor, $alpha: 0.6);
 
-    width: 53%;
-    height: 90px;
+    width: 65%;
 
-    background-color: rgb(38, 52, 68, 0.95);
     border: 1px solid $secondaryColor;
     border-radius: 8px;
 
-    backdrop-filter: blur(2px);
+    backdrop-filter: $backdrop-filter;
 
-    font-size: 1.7rem;
+    font-size: 1.6rem;
 
     @media (orientation: landscape) {
         width: 30%;
@@ -32,19 +31,6 @@
     }
 }
 
-.turn-directions {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 2.1rem;
-    width: 100%;
-    padding: 0.4rem 1.6rem;
-    background-color: rgba($color: #000000, $alpha: 0.15);
-}
-
 .direction-arrow {
     width: 32px;
     height: 32px;
@@ -52,8 +38,19 @@
 
 .turn-info {
     display: flex;
-    justify-content: space-between;
-    line-height: 1.23;
-    margin-bottom: 0.4rem;
-    padding: 0.6rem 1.4rem;
+    flex-direction: column;
+    line-height: 1.1;
+
+    .distance {
+        word-spacing: -1px;
+    }
+
+    .unit {
+        font-size: 1.2rem;
+        opacity: 0.6;
+    }
+
+    .instruction-text {
+        opacity: 1;
+    }
 }
