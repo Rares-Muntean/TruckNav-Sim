@@ -40,7 +40,7 @@ export interface AppSettingsState {
 const DEFAULT_PROFILE: GameProfile = {
     themeColor: "#fb8d33",
     textColor: "dark",
-    routeColor: "#FF8C00",
+    routeColor: "#fb8d33",
     roadColor: "#515151",
     backgroundColor: "#1A1A1A",
     landColor: "#232323",

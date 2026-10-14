@@ -44,6 +44,8 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             markerEl.style.zIndex = "10";
             markerEl.style.willChange = "transform";
 
+            markerEl.style.display = "none";
+
             map.value.getContainer().appendChild(markerEl);
         }
     };
@@ -116,14 +118,23 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                 });
             }
 
-            if (markerEl && !isTargetAtOrigin) {
-                const pos = map.value.project(currentTruckCoords);
-                const pitch = map.value.getPitch();
-                const bearing = map.value.getBearing();
+            if (markerEl) {
+                if (isTargetAtOrigin) {
+                    markerEl.style.display = "none";
+                } else {
+                    markerEl.style.display = "block";
 
-                const screenRot = currentTruckHeading - bearing;
+                    const pos = map.value.project(currentTruckCoords);
+                    const pitch = map.value.getPitch();
+                    const bearing = map.value.getBearing();
 
-                markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${pitch}deg) rotateZ(${screenRot}deg)`;
+                    const screenRot = currentTruckHeading - bearing;
+                    markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${pitch}deg) rotateZ(${screenRot}deg)`;
+                }
+            }
+        } else {
+            if (markerEl) {
+                markerEl.style.display = "none";
             }
         }
 
@@ -140,6 +151,15 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null;
+        }
+    };
+
+    const resetTruck = () => {
+        targetCoords = null;
+        previousCoords = null;
+        currentTruckCoords = null;
+        if (markerEl) {
+            markerEl.style.display = "none";
         }
     };
 
@@ -289,5 +309,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         toggleAutoFollow,
         lockCamera,
         startNavigationMode,
+        resetTruck,
     };
 };

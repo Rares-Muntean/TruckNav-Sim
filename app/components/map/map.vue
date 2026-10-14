@@ -76,6 +76,7 @@ const {
     updateMarkerSize,
     updateMarkerImage,
     toggleAutoFollow,
+    resetTruck,
 } = useMapCamera(map);
 
 const {
@@ -323,6 +324,7 @@ watch(gameConnected, (isConnected) => {
     if (!isConnected) {
         isCameraLocked.value = false;
         clearRouteState();
+        resetTruck();
     }
 });
 
