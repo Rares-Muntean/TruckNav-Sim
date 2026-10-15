@@ -183,7 +183,10 @@ function toggleModPanel() {
                     v-if="isBaseDownloaded && selectedGame"
                     class="top-buttons"
                 >
-                    <button @click="toggleModPanel" class="btn nav-btn mod-btn">
+                    <button
+                        @click="toggleModPanel"
+                        class="btn nav-btn full-width dark"
+                    >
                         <Icon name="lucide:settings" size="20" />
                         <span>
                             Map Mods ({{
@@ -215,8 +218,9 @@ function toggleModPanel() {
                     @click.prevent="emit('connected')"
                     class="btn nav-btn full-width"
                 >
-                    <span>Start Navigation</span>
                     <Icon name="lucide:map-pinned" size="20" />
+
+                    <span>Start Navigation</span>
                 </button>
             </template>
 
@@ -241,8 +245,8 @@ function toggleModPanel() {
                         class="btn nav-btn full-width"
                         :disabled="isDownloading"
                     >
-                        <span>Download Base Map</span>
                         <Icon name="lucide:download" size="20" />
+                        <span>Download Base Map</span>
                     </button>
 
                     <ProgressBar

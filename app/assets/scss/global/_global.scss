@@ -52,8 +52,7 @@ input {
 }
 
 .nav-btn {
-    background-color: $primaryColor;
-    background-color: #fb8d33; //#F27A24
+    background-color: var(--theme-color);
     display: flex;
     gap: 0.4rem;
 

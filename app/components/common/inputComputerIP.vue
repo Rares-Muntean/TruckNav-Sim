@@ -102,10 +102,10 @@ const handleConnect = async () => {
             @click="handleConnect"
             :disabled="!canConnect"
         >
+            <Icon name="lucide:link" size="20" />
             <span>{{
                 isConnecting ? t("common.connecting") : t("common.connect")
             }}</span>
-            <Icon name="lucide:link" size="20" />
         </button>
     </div>
 </template>

@@ -6,7 +6,7 @@
     background-color: $primaryColor;
 
     &.is-selected {
-        outline: 2px solid var(--theme-color);
+        outline: 2px solid $primaryAccentColor;
         color: $white-font-text;
         opacity: 1;
     }
