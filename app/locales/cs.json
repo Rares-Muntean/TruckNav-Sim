@@ -46,9 +46,8 @@
     },
     "input": {
         "bridgeNotReachable": "Bridge nedosažitelný",
-        "couldNotConnect": "Nedaří se připojit...",
         "description": "Vlož IP adresu ukázanou v TruckNav na tvém počítači",
-        "ipAddress": "IP adresa:",
+        "ipAddress": "IP adresa",
         "missingValue": "Prosím, vyplň toto pole.",
         "placeholder": "Piš sem..."
     },

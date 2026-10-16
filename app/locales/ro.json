@@ -46,9 +46,8 @@
     },
     "input": {
         "bridgeNotReachable": "Nu se poate stabili conexiunea cu Bridge-ul",
-        "couldNotConnect": "Conectare nereușită...",
         "description": "Introduceți IP-ul afișat în aplicația TruckNav de pe calculator",
-        "ipAddress": "Adresă IP:",
+        "ipAddress": "Adresă IP",
         "missingValue": "Vă rugăm introduceți o valoare.",
         "placeholder": "Scrieți aici..."
     },

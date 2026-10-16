@@ -1,24 +1,35 @@
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted } from "vue";
+import { animate } from "motion";
 
 import {
     downloadMapData,
     isMapDownloaded,
     uninstallMapData,
 } from "~/assets/utils/shared/fileManager";
+import { generateTruckIcon } from "~/assets/utils/map/markers";
 
 const { selectedGame } = useGameSelection();
+const { commitSelection } = useGameSelection();
 const { updateProfile, activeSettings } = useSettings();
 const { isMobile, isElectron } = usePlatform();
 const { t } = useTranslations();
 
 const emit = defineEmits(["connected", "goBack"]);
 
+const truckRef = ref<HTMLElement | null>(null);
+const liveDotRef = ref<HTMLElement | null>(null);
+
 const isDownloading = ref(false);
 const downloadProgress = ref(0);
 const downloadingId = ref<string | null>(null);
 const isBaseDownloaded = ref(false);
 const isModPanelOpen = ref(false);
+const truckImgSrc = ref("");
+const isConnected = ref(false);
+
+let truckAnimControl: ReturnType<typeof animate> | null = null;
+let liveDotAnimControl: ReturnType<typeof animate> | null = null;
 
 const downloadedMods = ref<Record<string, boolean>>({});
 
@@ -96,6 +107,105 @@ onMounted(async () => {
     }
 });
 
+onUnmounted(() => {
+    liveDotAnimControl?.stop();
+    truckAnimControl?.stop();
+});
+
+watch(truckRef, (el) => {
+    if (el) {
+        truckAnimControl?.stop();
+
+        const trackWidth = (el.parentElement?.clientWidth || 180) - 24;
+
+        truckAnimControl = animate(
+            [
+                [
+                    truckRef.value,
+                    { x: [0, trackWidth] },
+                    {
+                        duration: 4,
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        ease: "easeInOut",
+                    },
+                ],
+                [
+                    truckRef.value,
+                    { rotate: 180 },
+                    {
+                        duration: 1,
+                        ease: "backInOut",
+                    },
+                ],
+                [
+                    truckRef.value,
+                    { x: [trackWidth, 0] },
+                    {
+                        duration: 4,
+                        ease: "easeInOut",
+                    },
+                ],
+                [
+                    truckRef.value,
+                    { rotate: 0 },
+                    {
+                        duration: 1,
+                        ease: "backInOut",
+                    },
+                ],
+            ],
+            {
+                repeat: Infinity,
+            },
+        );
+    } else {
+        truckAnimControl?.stop();
+    }
+});
+
+watch([liveDotRef, isConnected], ([el, connected]) => {
+    if (el) {
+        liveDotAnimControl?.stop();
+        const sonar = el.querySelector(".sonar");
+        if (!sonar) return;
+
+        const animDuration = connected ? 3.4 : 5;
+
+        liveDotAnimControl = animate(
+            [
+                [
+                    liveDotRef.value,
+                    { opacity: [0.4, 1, 0.4], scale: [0.7, 1, 0.7] },
+                    {
+                        repeat: Infinity,
+                        duration: animDuration,
+                        ease: "backInOut",
+                        repeatType: "reverse",
+                    },
+                ],
+                [
+                    sonar,
+                    {
+                        scale: [1, 2],
+                        opacity: [0.8, 0],
+                    },
+                    {
+                        duration: animDuration,
+                        ease: "easeOut",
+                        at: "<",
+                    },
+                ],
+            ],
+            {
+                repeat: Infinity,
+            },
+        );
+    } else {
+        liveDotAnimControl?.stop();
+    }
+});
+
 watch(selectedGame, async (newGame) => {
     if (newGame) {
         isBaseDownloaded.value = await isMapDownloaded(newGame);
@@ -108,6 +218,17 @@ watch(isModPanelOpen, async (isOpen) => {
         await checkModStatuses();
     }
 });
+
+watch(
+    () => activeSettings.value?.themeColor,
+    async (newColor) => {
+        if (newColor) {
+            const img = await generateTruckIcon(newColor);
+            truckImgSrc.value = img.src;
+        }
+    },
+    { immediate: true },
+);
 
 async function checkModStatuses() {
     for (const mod of availableMods.value) {
@@ -156,6 +277,22 @@ async function uninstallMap(mapId?: string) {
     }, 300);
 }
 
+const activeModName = computed(() => {
+    const modId = activeSettings.value?.activeMod;
+
+    if (!modId || modId === "none") {
+        return "Vanilla";
+    }
+
+    const matchedMod = availableMods.value.find((mod) => mod.id === modId);
+    return matchedMod ? matchedMod.name : modId;
+});
+
+const handleConnect = () => {
+    commitSelection();
+    emit("connected");
+};
+
 function selectMod(modId: string | "none") {
     updateProfile("activeMod", modId);
     toggleModPanel();
@@ -168,73 +305,149 @@ function toggleModPanel() {
 
 <template>
     <section class="section-mobile-menu">
-        <div class="title">
-            <div class="back-btn" @click="emit('goBack')">
-                <Icon name="lucide:arrow-left" size="24" />
+        <div class="title-wrapper">
+            <div class="title">
+                <div v-if="isElectron" class="back-btn" @click="emit('goBack')">
+                    <Icon name="lucide:arrow-left" size="24" />
+                </div>
+                <Icon class="icon" name="lucide:cast" size="20" />
+                <span>{{ t("mobile.pairWithComputer") }}</span>
             </div>
-            <Icon class="icon" name="lucide:cast" size="20" />
-            <span>{{ t("mobile.pairWithComputer") }}</span>
+
+            <div
+                ref="liveDotRef"
+                class="live"
+                :class="isConnected ? 'connected' : 'disconnected'"
+            >
+                <div
+                    class="sonar"
+                    :class="isConnected ? 'connected' : 'disconnected'"
+                ></div>
+            </div>
         </div>
+
+        <div class="separator"></div>
 
         <div class="content">
             <div class="top-content">
-                <GameSelection v-model="selectedGame" :width="150" />
+                <div class="select-sim-wrapper">
+                    <p class="category-title">
+                        {{ t("common.selectSimulator") }}
+                    </p>
+                    <GameSelection v-model="selectedGame" :width="150" />
+                </div>
+
                 <div
                     v-if="isBaseDownloaded && selectedGame"
                     class="top-buttons"
                 >
-                    <button
-                        @click="toggleModPanel"
-                        class="btn nav-btn full-width dark"
-                    >
-                        <Icon name="lucide:settings" size="20" />
-                        <span>
-                            Map Mods ({{
-                                activeSettings.activeMod === "none" ||
-                                !activeSettings.activeMod
-                                    ? "None"
-                                    : activeSettings.activeMod
-                            }})
-                        </span>
-                    </button>
+                    <p class="category-title">
+                        {{ t("common.maps") }}
+                    </p>
 
-                    <button @click="uninstallMap()" class="btn nav-btn dark">
-                        <Icon name="lucide:trash-2" size="20" />
-                        <span>Uninstall Base Map</span>
-                    </button>
+                    <div class="selected-map pill">
+                        {{ activeModName }}
+                    </div>
+
+                    <div class="choose-map-wrapper">
+                        <button
+                            @click="toggleModPanel"
+                            class="btn nav-btn full-width primary-color"
+                        >
+                            <Icon name="lucide:map-plus" size="20" />
+                            <span>
+                                {{ t("common.chooseMap") }}
+                            </span>
+                        </button>
+                        <button
+                            @click="uninstallMap()"
+                            class="btn nav-btn primary-color icon"
+                        >
+                            <Icon name="lucide:trash-2" size="20" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <template v-if="isBaseDownloaded && selectedGame">
-                <InputComputerIP
-                    v-if="isMobile"
-                    @connected="emit('connected')"
-                    :style="{ width: '100%', marginTop: '10px' }"
-                    :require-game="true"
-                />
+                <div class="connect" v-if="isMobile">
+                    <p class="category-title">
+                        {{ t("common.connection") }}
+                    </p>
 
-                <button
-                    v-else
-                    @click.prevent="emit('connected')"
-                    class="btn nav-btn full-width"
-                >
-                    <Icon name="lucide:map-pinned" size="20" />
+                    <div class="input-ip">
+                        <InputComputerIP
+                            v-model="isConnected"
+                            :require-game="true"
+                        />
+                    </div>
+                </div>
 
-                    <span>Start Navigation</span>
-                </button>
+                <div class="live-route">
+                    <p class="category-title">{{ t("common.liveRoute") }}</p>
+
+                    <div class="route-card-anim">
+                        <div class="road-labels">
+                            <span class="route-caption">{{
+                                t("common.readyForDeparture")
+                            }}</span>
+                        </div>
+
+                        <div class="route-widget">
+                            <div class="route-anim">
+                                <div class="route-line">
+                                    <div ref="truckRef" class="route-truck">
+                                        <img
+                                            class="truck-icon"
+                                            :src="truckImgSrc"
+                                            alt=""
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="start-btn-wrapper">
+                    <button
+                        @click.prevent="handleConnect"
+                        class="btn nav-btn full-width"
+                    >
+                        <Icon name="lucide:map-pinned" size="20" />
+
+                        <span>Start Navigation</span>
+                    </button>
+                </div>
             </template>
 
             <template v-else-if="!isBaseDownloaded && selectedGame">
-                <div class="bottom-download-button">
-                    <InfoBox type="note">
-                        <template #content>
-                            <p>
-                                Please make sure that TruckNav PC Companion is
-                                running before downloading
-                            </p>
-                        </template></InfoBox
-                    >
+                <div class="middle-wrapper">
+                    <div class="icon-wrapper">
+                        <Icon name="lucide:map-plus" size="80" class="icon" />
+                    </div>
 
+                    <div class="bottom-text">
+                        <div class="header-wrapper">
+                            <span class="header">Base Map Required</span>
+                            <InfoBox
+                                position="left"
+                                type="note"
+                                class="info-box"
+                            >
+                                <template #content>
+                                    <p>{{ t("common.companionActive") }}.</p>
+                                </template></InfoBox
+                            >
+                        </div>
+
+                        <span class="sub-header">
+                            Download the map data to enable live GPS navigation.
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bottom-download-wrapper">
                     <button
                         @click.prevent="
                             startDownload(
@@ -242,20 +455,22 @@ function toggleModPanel() {
                                 `https://trucknavapp.com/${selectedGame}.zip`,
                             )
                         "
-                        class="btn nav-btn full-width"
+                        class="btn nav-btn full-width bottom-download-button"
                         :disabled="isDownloading"
                     >
                         <Icon name="lucide:download" size="20" />
-                        <span>Download Base Map</span>
-                    </button>
+                        <span> {{ t("common.downloadBaseMap") }}</span>
 
-                    <ProgressBar
-                        class="progress-bar"
-                        v-if="isDownloading && downloadingId === selectedGame"
-                        :progress="
-                            downloadProgress === -1 ? 99 : downloadProgress
-                        "
-                    />
+                        <ProgressBar
+                            class="progress-bar"
+                            v-if="
+                                isDownloading && downloadingId == selectedGame
+                            "
+                            :progress="
+                                downloadProgress === -1 ? 99 : downloadProgress
+                            "
+                        />
+                    </button>
                 </div>
             </template>
 

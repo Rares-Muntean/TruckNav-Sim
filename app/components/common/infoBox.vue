@@ -1,19 +1,30 @@
 <script lang="ts" setup>
-import { capitalize } from "vue";
+const props = withDefaults(
+    defineProps<{
+        position?: "left" | "center" | "right";
+    }>(),
+    {
+        position: "right",
+    },
+);
 
-const props = defineProps<{
-    type: "note" | "warning" | "caution";
-}>();
+const popupOpened = ref(false);
 </script>
 
 <template>
     <div class="info-box">
-        <div class="title">
+        <button
+            type="button"
+            class="icon-wrapper"
+            @blur="popupOpened = false"
+            @click="popupOpened = !popupOpened"
+        >
             <Icon name="lucide:info" class="icon" />
-            <p>{{ capitalize(type) }}</p>
-        </div>
 
-        <slot name="content"></slot>
+            <div v-if="popupOpened" class="popup" :class="position">
+                <slot name="content"></slot>
+            </div>
+        </button>
     </div>
 </template>
 

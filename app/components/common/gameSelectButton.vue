@@ -2,20 +2,16 @@
 defineProps<{
     gameName: "ats" | "ets2";
     selectCard: (game: "ets2" | "ats" | null) => void;
-    width: number;
 }>();
 </script>
 
 <template>
-    <div
-        @click.prevent="selectCard(gameName)"
-        class="game-btn"
-        :style="{ maxWidth: `${width}px` }"
-    >
-        <img :src="`/images/game-covers/${gameName}.webp`" alt="" />
-        <div class="game-name-wrapper">
-            <p class="game-name">{{ gameName }}</p>
-            <slot name="icon"></slot>
+    <div @click.prevent="selectCard(gameName)" class="game-btn">
+        <div class="game-card-wrapper">
+            <div class="game-name-wrapper">
+                <p class="game-name">{{ gameName }}</p>
+                <slot name="icon"></slot>
+            </div>
         </div>
     </div>
 </template>

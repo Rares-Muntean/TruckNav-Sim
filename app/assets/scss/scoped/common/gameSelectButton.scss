@@ -6,7 +6,8 @@
     background-color: $primaryColor;
 
     &.is-selected {
-        outline: 2px solid $primaryAccentColor;
+        border-bottom: 2px solid var(--theme-color);
+
         color: $white-font-text;
         opacity: 1;
     }
@@ -16,18 +17,28 @@
 
     opacity: 0.5;
     transition: 0.3s opacity;
-    color: gray;
+    color: $white-font-text-muted;
 
     cursor: pointer;
 }
 
-.game-name-wrapper {
+.game-card-wrapper {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 0.8rem;
 
-    padding: 12px;
+    padding: 8px;
+
+    .icon {
+        height: 100%;
+    }
+}
+
+.game-name-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
 }
 
 .game-name {

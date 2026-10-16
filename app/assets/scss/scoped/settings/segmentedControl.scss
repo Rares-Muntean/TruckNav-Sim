@@ -44,7 +44,7 @@
             color: var(--main-text-color);
             background: var(--theme-color);
             box-shadow: $behind-shadow;
-            font-weight: 700;
+            font-weight: var(--button-font-weight);
         }
     }
 }

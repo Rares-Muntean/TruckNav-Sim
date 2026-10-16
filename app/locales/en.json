@@ -2,22 +2,30 @@
     "common": {
         "active": "Active",
         "chooseDlcs": "Choose DLCs",
+        "companionActive": "PC Companion must be active",
         "connect": "Connect",
         "connected": "Connected",
         "connecting": "Connecting...",
+        "connection": "Connection",
+        "chooseMap": "Choose Map",
         "currentStatus": "Current Status:",
-        "disconnected": "Disconnected",
+        "disconnected": "Offline",
         "distance": "Distance",
+        "downloadBaseMap": "Download Base Map",
         "estimatedTime": "Estimated Time",
         "gameOffline": "Game Offline",
         "hide": "Hide",
+        "liveRoute": "Live Route",
         "loadingRouteData": "Loading Route Data...",
+        "maps": "Maps",
         "missing": "Missing",
         "note": "Note",
         "offlineTryAgain": "Offline, try opening again.",
+        "readyForDeparture": "Ready for Departure",
         "reset": "Reset",
         "resume": "Resume",
         "selectGame": "Select Game",
+        "selectSimulator": "Simulators",
         "startNavigation": "Start Navigation",
         "stop": "Stop"
     },
@@ -45,12 +53,11 @@
         "troubleshoot": "If you're using a cracked version or a repack, the plugin may show as 'Missing' even after setup"
     },
     "input": {
-        "bridgeNotReachable": "Bridge not reachable",
-        "couldNotConnect": "Could not connect...",
-        "description": "Enter the IP shown in TruckNav from your computer",
-        "ipAddress": "IP Address:",
-        "missingValue": "Please input a value.",
-        "placeholder": "Type here..."
+        "bridgeNotReachable": "Unreachable",
+        "description": "Find this IP in the PC Companion",
+        "ipAddress": "IP Address",
+        "missingValue": "Missing IP",
+        "placeholder": "e.g. 192.168.1.100"
     },
     "map": {
         "externalRouteDetected": "External Route Detected: Set Waypoint",
@@ -60,7 +67,7 @@
         "addStop": "Add Stop"
     },
     "mobile": {
-        "pairWithComputer": "Pair with Computer"
+        "pairWithComputer": "Pair with PC"
     },
     "notifications": {
         "locatingRoute": "Locating Route",

@@ -92,6 +92,16 @@ export const useSettings = () => {
             activeSettings.value.themeColor,
         );
 
+        document.documentElement.style.setProperty(
+            "--route-color",
+            activeSettings.value.routeColor,
+        );
+
+        document.documentElement.style.setProperty(
+            "--button-font-weight",
+            activeSettings.value.textColor === "dark" ? "700" : "500",
+        );
+
         const isLight = activeSettings.value.textColor === "light";
 
         document.documentElement.style.setProperty(

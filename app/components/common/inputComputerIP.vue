@@ -2,22 +2,14 @@
 import { isBridgeRunning } from "~/assets/utils/telemetry/helpers";
 const props = defineProps<{ requireGame?: boolean }>();
 
-const { selectedGame, commitSelection } = useGameSelection();
+const isConnected = defineModel<boolean>({ default: false });
+
 const { settings, updateGlobal } = useSettings();
 const { t } = useTranslations();
 
 const connectionError = ref(t("common.disconnected"));
 const ipInput = ref(settings.value.savedIP || "");
-const isConnecting = ref(false);
-const isConnected = ref(false);
-
-const emit = defineEmits(["connected"]);
-
-watch(isConnected, (connected) => {
-    if (connected) {
-        emit("connected");
-    }
-});
+const isLoading = ref(false);
 
 watch(
     () => settings.value.savedIP,
@@ -28,85 +20,117 @@ watch(
     },
 );
 
-const canConnect = computed(() => {
-    if (isConnecting.value) return false;
-    if (props.requireGame) return !!selectedGame.value;
-    return true;
+onMounted(() => {
+    if (ipInput.value) {
+        handleConnect();
+    }
 });
 
-const handleConnect = async () => {
-    connectionError.value = t("common.disconnected");
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-    if (!ipInput.value) {
+watch(ipInput, (nVal) => {
+    isLoading.value = true;
+    if (debounceTimer) clearTimeout(debounceTimer);
+
+    if (!nVal) {
         connectionError.value = t("input.missingValue");
+        isConnected.value = false;
+        isLoading.value = false;
         return;
     }
 
-    isConnecting.value = true;
+    debounceTimer = setTimeout(() => {
+        handleConnect();
+    }, 300);
+});
+
+const handleConnect = async () => {
+    const currentIp = ipInput.value.trim();
+    if (!currentIp) {
+        connectionError.value = t("input.missingValue");
+        isLoading.value = false;
+        return;
+    }
+
+    isLoading.value = true;
 
     try {
-        if (!(await isBridgeRunning(ipInput.value)))
-            throw new Error(t("input.bridgeNotReachable"));
+        const isRunning = await isBridgeRunning(currentIp);
+        if (currentIp !== ipInput.value.trim()) return;
 
-        updateGlobal("savedIP", ipInput.value);
+        if (!isRunning) throw new Error(t("input.bridgeNotReachable"));
+
         isConnected.value = true;
-        commitSelection();
-
-        emit("connected");
-
-        setTimeout(() => {
-            isConnecting.value = false;
-        }, 500);
+        isLoading.value = false;
+        updateGlobal("savedIP", ipInput.value);
     } catch (error) {
+        if (currentIp !== ipInput.value.trim()) return;
         isConnected.value = false;
-        connectionError.value = t("input.couldNotConnect");
-        isConnecting.value = false;
+        isLoading.value = false;
+
+        connectionError.value = t("common.disconnected");
     }
 };
+
+const connectedValue = computed(() => {
+    return isConnected.value ? t("common.connected") : connectionError.value;
+});
 </script>
 
 <template>
     <div class="connect-pc-module">
         <div class="input-ip">
             <div class="form-details">
-                <form @submit.prevent="handleConnect" action="">
-                    <label for="ip">{{ t("input.ipAddress") }}</label>
-                    <input
-                        id="ip"
-                        v-model="ipInput"
-                        type="text"
-                        name="ip"
-                        :placeholder="t('input.placeholder')"
-                        :disabled="isConnecting"
-                    />
-                </form>
-                <p class="status">
-                    <span v-if="!connectionError"
-                        >{{ t("common.currentStatus") }} &nbsp;</span
-                    >
-                    <span :class="isConnected ? 'connected' : 'disconnected'">{{
-                        isConnected ? t("common.connected") : connectionError
-                    }}</span>
-                </p>
+                <div class="form-info-wrapper">
+                    <form action="">
+                        <div class="label-wrapper">
+                            <div class="label-left">
+                                <label for="ip">{{
+                                    t("input.ipAddress")
+                                }}</label>
+
+                                <InfoBox>
+                                    <template #content>
+                                        <p>{{ t("input.description") }}.</p>
+                                    </template>
+                                </InfoBox>
+                            </div>
+
+                            <div class="connected-value">
+                                <Icon
+                                    v-if="isLoading"
+                                    name="svg-spinners:ring-resize"
+                                    size="16"
+                                />
+
+                                <div class="status">
+                                    <div
+                                        class="pill"
+                                        :class="
+                                            isConnected
+                                                ? 'connected'
+                                                : 'disconnected'
+                                        "
+                                    >
+                                        <span>
+                                            {{ connectedValue }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input
+                            id="ip"
+                            v-model="ipInput"
+                            type="text"
+                            name="ip"
+                            :placeholder="t('input.placeholder')"
+                        />
+                    </form>
+                </div>
             </div>
-
-            <InfoBox type="note">
-                <template #content>
-                    <p>{{ t("input.description") }}</p>
-                </template>
-            </InfoBox>
         </div>
-
-        <button
-            class="btn nav-btn full-width"
-            @click="handleConnect"
-            :disabled="!canConnect"
-        >
-            <Icon name="lucide:link" size="20" />
-            <span>{{
-                isConnecting ? t("common.connecting") : t("common.connect")
-            }}</span>
-        </button>
     </div>
 </template>
 

@@ -46,9 +46,8 @@
     },
     "input": {
         "bridgeNotReachable": "Bridge nicht erreichbar",
-        "couldNotConnect": "Verbindung fehlgeschlagen...",
         "description": "Gib die IP ein, die TruckNav auf deinem Computer anzeigt",
-        "ipAddress": "IP-Adresse:",
+        "ipAddress": "IP-Adresse",
         "missingValue": "Bitte gib einen Wert ein.",
         "placeholder": "Hier eingeben..."
     },

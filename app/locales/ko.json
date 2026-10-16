@@ -46,9 +46,8 @@
     },
     "input": {
         "bridgeNotReachable": "브릿지에 연결할 수 없음",
-        "couldNotConnect": "연결할 수 없습니다...",
         "description": "PC용 TruckNav에 표시된 IP 주소를 입력해 주세요",
-        "ipAddress": "아이피 주소:",
+        "ipAddress": "아이피 주소",
         "missingValue": "값을 입력해 주세요.",
         "placeholder": "여기에 입력..."
     },

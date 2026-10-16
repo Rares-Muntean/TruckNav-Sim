@@ -38,6 +38,13 @@ input {
     font-family: var(--app-font);
 }
 
+button {
+    &:focus {
+        outline: none;
+        border: none;
+    }
+}
+
 .btn {
     border-style: none;
     padding: 4px 8px;
@@ -51,6 +58,30 @@ input {
     }
 }
 
+.pill {
+    color: var(--main-text-color);
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 1px 8px;
+
+    width: fit-content;
+}
+
+.separator {
+    height: 2px;
+
+    margin: 0 -3rem;
+
+    background-color: $primaryAccentColor;
+}
+
+.category-title {
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    color: $white-font-text-muted;
+    font-weight: 600;
+}
+
 .nav-btn {
     background-color: var(--theme-color);
     display: flex;
@@ -59,7 +90,7 @@ input {
     font-family: inherit;
     font-size: 1.6rem;
     color: var(--main-text-color);
-    font-weight: 700;
+    font-weight: var(--button-font-weight);
 
     width: fit-content;
     height: fit-content;
@@ -90,10 +121,11 @@ input {
     &.primary-color {
         background-color: $primaryColor;
         color: $white-font-text;
+        font-weight: 500;
     }
 
     &.dark {
-        background-color: $primaryAccentColor;
+        background-color: $primaryLightButtonColor;
         color: $white-font-text;
         font-weight: 500;
     }
