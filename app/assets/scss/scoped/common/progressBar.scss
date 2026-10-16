@@ -9,4 +9,9 @@
 .progress-bar-fill {
     height: 100%;
     transition: width 0.2s ease-out;
+    transform-origin: left;
+
+    transform: scaleX(0);
+
+    background-color: var(--theme-color);
 }
