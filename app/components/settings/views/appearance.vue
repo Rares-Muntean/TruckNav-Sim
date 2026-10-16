@@ -228,14 +228,8 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             </div>
         </div>
 
-        <Transition name="panel-pop">
-            <PopupPanel
-                v-if="isDriveInfoOpened"
-                :title="t('settings.selectComponents')"
-                @close="toggleDriveInfoPanel"
-            >
-                <ManageDriveInfoPanel />
-            </PopupPanel>
-        </Transition>
+        <PopupPanel v-if="isDriveInfoOpened" @close="toggleDriveInfoPanel">
+            <ManageDriveInfoPanel />
+        </PopupPanel>
     </div>
 </template>

@@ -67,6 +67,28 @@ button {
     width: fit-content;
 }
 
+.section {
+    height: calc(100dvh - env(safe-area-inset-top));
+    padding: 8px 2.4rem;
+}
+
+.section-title {
+    height: 4rem;
+
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    font-size: 1.8rem;
+
+    .icon {
+        margin-top: 2px;
+        color: var(--theme-color);
+        width: 20px;
+        height: 20px;
+    }
+}
+
 .separator {
     height: 2px;
 
@@ -131,7 +153,14 @@ button {
     }
 
     &.icon {
+        aspect-ratio: 1;
         padding: 4px 6px;
+    }
+
+    &.icon-close {
+        aspect-ratio: 1;
+        padding: 0.4rem;
+        height: 2.8rem;
     }
 
     &:disabled {

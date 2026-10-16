@@ -18,7 +18,6 @@ const { t } = useTranslations();
 const emit = defineEmits(["connected", "goBack"]);
 
 const truckRef = ref<HTMLElement | null>(null);
-const liveDotRef = ref<HTMLElement | null>(null);
 
 const isDownloading = ref(false);
 const downloadProgress = ref(0);
@@ -29,38 +28,52 @@ const truckImgSrc = ref("");
 const isConnected = ref(false);
 
 let truckAnimControl: ReturnType<typeof animate> | null = null;
-let liveDotAnimControl: ReturnType<typeof animate> | null = null;
 
 const downloadedMods = ref<Record<string, boolean>>({});
 
 const availableMods = computed(() => {
     if (!selectedGame.value) return [];
 
-    const mods: Record<string, { id: string; name: string; url: string }[]> = {
+    const vanillaMod = {
+        id: "none",
+        name: "Vanilla",
+        description: "Base Game Map",
+        url: `https://trucknavapp.com/${selectedGame.value}.zip`,
+    };
+
+    const mods: Record<
+        string,
+        { id: string; name: string; description: string; url: string }[]
+    > = {
         ets2: [
             {
                 id: "promods-europe",
                 name: "ProMods Europe",
+                description: "Europe & Iceland Overhaul",
                 url: "https://trucknavapp.com/promods-europe.zip",
             },
             {
                 id: "grand-utopia",
                 name: "Grand Utopia",
                 url: "https://trucknavapp.com/grand-utopia.zip",
+                description: "1:1 Fictional Island Map",
             },
             {
                 id: "ro-extended",
                 name: "Ro-Extended",
+                description: "Eastern Europe & Black Sea",
                 url: "https://trucknavapp.com/ro-extended.zip",
             },
             {
                 id: "rusmap",
                 name: "RusMap",
+                description: "Russia & Belarus Expansion",
                 url: "https://trucknavapp.com/rusmap.zip",
             },
             {
                 id: "more-european-cities",
                 name: "More European Cities",
+                description: "Extra Cities & Delivery Hubs",
                 url: "https://trucknavapp.com/more-european-cities.zip",
             },
         ],
@@ -68,36 +81,43 @@ const availableMods = computed(() => {
             {
                 id: "ats-expansion",
                 name: "ATS Expansion",
+                description: "Rural Towns & Farm Routes",
                 url: "https://trucknavapp.com/ats-expansion.zip",
             },
             {
                 id: "coast-to-coast",
                 name: "Coast To Coast",
+                description: "Full Continental US Map",
                 url: "https://trucknavapp.com/coast-to-coast.zip",
             },
             {
                 id: "promods-canada",
                 name: "ProMods Canada",
+                description: "British Columbia, Canada",
                 url: "https://trucknavapp.com/promods-canada.zip",
             },
             {
                 id: "reforma",
                 name: "Reforma",
+                description: "Mexico & Baja Overhaul",
                 url: "https://trucknavapp.com/reforma.zip",
             },
             {
                 id: "reforma-esterlon",
                 name: "Reforma Esterlon",
+                description: "Fictional Island Country",
                 url: "https://trucknavapp.com/reforma-esterlon.zip",
             },
             {
                 id: "reforma-sierra-nevada",
                 name: "Reforma Sierra Nevada",
+                description: "California Mountain Passes",
                 url: "https://trucknavapp.com/reforma-sierra-nevada.zip",
             },
         ],
     };
-    return mods[selectedGame.value] || [];
+
+    return [vanillaMod, ...(mods[selectedGame.value] || [])];
 });
 
 onMounted(async () => {
@@ -108,7 +128,6 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-    liveDotAnimControl?.stop();
     truckAnimControl?.stop();
 });
 
@@ -164,48 +183,6 @@ watch(truckRef, (el) => {
     }
 });
 
-watch([liveDotRef, isConnected], ([el, connected]) => {
-    if (el) {
-        liveDotAnimControl?.stop();
-        const sonar = el.querySelector(".sonar");
-        if (!sonar) return;
-
-        const animDuration = connected ? 3.4 : 5;
-
-        liveDotAnimControl = animate(
-            [
-                [
-                    liveDotRef.value,
-                    { opacity: [0.4, 1, 0.4], scale: [0.7, 1, 0.7] },
-                    {
-                        repeat: Infinity,
-                        duration: animDuration,
-                        ease: "backInOut",
-                        repeatType: "reverse",
-                    },
-                ],
-                [
-                    sonar,
-                    {
-                        scale: [1, 2],
-                        opacity: [0.8, 0],
-                    },
-                    {
-                        duration: animDuration,
-                        ease: "easeOut",
-                        at: "<",
-                    },
-                ],
-            ],
-            {
-                repeat: Infinity,
-            },
-        );
-    } else {
-        liveDotAnimControl?.stop();
-    }
-});
-
 watch(selectedGame, async (newGame) => {
     if (newGame) {
         isBaseDownloaded.value = await isMapDownloaded(newGame);
@@ -231,7 +208,13 @@ watch(
 );
 
 async function checkModStatuses() {
+    if (!selectedGame.value) return;
+
     for (const mod of availableMods.value) {
+        isBaseDownloaded.value = await isMapDownloaded(selectedGame.value);
+        downloadedMods.value["none"] = isBaseDownloaded.value;
+
+        if (mod.id === "none") continue;
         downloadedMods.value[mod.id] = await isMapDownloaded(mod.id);
     }
 }
@@ -241,6 +224,9 @@ async function startDownload(mapId: string, zipUrl: string) {
     downloadingId.value = mapId;
     downloadProgress.value = 0;
 
+    const actualId = mapId === "none" ? selectedGame.value : mapId;
+    if (!actualId) return;
+
     const success = await downloadMapData(mapId, zipUrl, (percent) => {
         downloadProgress.value = percent;
     });
@@ -249,8 +235,9 @@ async function startDownload(mapId: string, zipUrl: string) {
     downloadingId.value = null;
 
     if (success) {
-        if (mapId === selectedGame.value) {
+        if (mapId === "none" || mapId === selectedGame.value) {
             isBaseDownloaded.value = true;
+            downloadedMods.value["none"] = true;
         } else {
             downloadedMods.value[mapId] = true;
         }
@@ -258,12 +245,20 @@ async function startDownload(mapId: string, zipUrl: string) {
 }
 
 async function uninstallMap(mapId?: string) {
-    const idToUninstall = mapId || selectedGame.value;
+    const idToUninstall =
+        mapId === "none" || !mapId ? selectedGame.value : mapId;
     if (!idToUninstall) return;
 
     await uninstallMapData(idToUninstall);
 
-    if (activeSettings.value.activeMod === idToUninstall) {
+    if (mapId === "none" || !mapId) {
+        isModPanelOpen.value = false;
+    }
+
+    if (
+        activeSettings.value.activeMod === mapId ||
+        activeSettings.value.activeMod === idToUninstall
+    ) {
         updateProfile("activeMod", "none");
     }
 
@@ -271,6 +266,7 @@ async function uninstallMap(mapId?: string) {
         const stillExists = await isMapDownloaded(idToUninstall);
         if (idToUninstall === selectedGame.value) {
             isBaseDownloaded.value = stillExists;
+            downloadedMods.value["none"] = stillExists;
         } else {
             downloadedMods.value[idToUninstall] = stillExists;
         }
@@ -294,36 +290,32 @@ const handleConnect = () => {
 };
 
 function selectMod(modId: string | "none") {
-    updateProfile("activeMod", modId);
-    toggleModPanel();
+    if (downloadedMods.value[modId]) {
+        updateProfile("activeMod", modId);
+    }
 }
 
 function toggleModPanel() {
     isModPanelOpen.value = !isModPanelOpen.value;
 }
+
+const isModActive = (modId: string) => {
+    return (activeSettings.value?.activeMod || "none") === modId;
+};
 </script>
 
 <template>
-    <section class="section-mobile-menu">
+    <section class="section section-mobile-menu">
         <div class="title-wrapper">
-            <div class="title">
+            <div class="section-title">
                 <div v-if="isElectron" class="back-btn" @click="emit('goBack')">
                     <Icon name="lucide:arrow-left" size="24" />
                 </div>
-                <Icon class="icon" name="lucide:cast" size="20" />
+                <Icon class="icon" name="lucide:cast" />
                 <span>{{ t("mobile.pairWithComputer") }}</span>
             </div>
 
-            <div
-                ref="liveDotRef"
-                class="live"
-                :class="isConnected ? 'connected' : 'disconnected'"
-            >
-                <div
-                    class="sonar"
-                    :class="isConnected ? 'connected' : 'disconnected'"
-                ></div>
-            </div>
+            <LiveDot :is-active="isConnected" />
         </div>
 
         <div class="separator"></div>
@@ -474,108 +466,77 @@ function toggleModPanel() {
                 </div>
             </template>
 
-            <Transition name="panel-pop">
-                <PopupPanel
-                    v-if="isModPanelOpen"
-                    title="Select Map Mod"
-                    @close="toggleModPanel"
-                >
-                    <div class="mod-list-container">
-                        <div class="mod-item">
-                            <div class="mod-info">
-                                <strong>Vanilla</strong>
-                            </div>
-                            <div class="mod-actions">
-                                <button
-                                    class="nav-btn dark"
-                                    @click="selectMod('none')"
-                                    :disabled="
-                                        activeSettings.activeMod === 'none' ||
-                                        !activeSettings.activeMod
-                                    "
-                                >
-                                    {{
-                                        activeSettings.activeMod === "none" ||
-                                        !activeSettings.activeMod
-                                            ? "Selected"
-                                            : "Select"
-                                    }}
-                                </button>
-                            </div>
-                        </div>
+            <PopupPanel v-if="isModPanelOpen" @close="toggleModPanel">
+                <template #icon
+                    ><Icon name="lucide:map-plus" class="icon"
+                /></template>
 
+                <template #title>Select Map Mod</template>
+
+                <div class="mods-content">
+                    <p class="category-title">
+                        {{ selectedGame }} {{ t("common.mods") }}
+                    </p>
+                    <div class="mod-list-container">
                         <div
                             v-for="mod in availableMods"
                             :key="mod.id"
                             class="mod-item"
+                            :class="{ active: isModActive(mod.id) }"
+                            @click="selectMod(mod.id)"
                         >
                             <div class="mod-info">
-                                <strong>{{ mod.name }}</strong>
-                                <ProgressBar
-                                    v-if="downloadingId === mod.id"
-                                    :progress="
-                                        downloadProgress === -1
-                                            ? 99
-                                            : downloadProgress
-                                    "
-                                    style="margin-top: 8px"
-                                />
+                                <span>{{ mod.name }}</span>
+
+                                <span v-if="isModActive(mod.id)" class="">
+                                    <LiveDot :is-active="isModActive(mod.id)" />
+                                </span>
                             </div>
 
                             <div class="mod-actions">
+                                <div class="mod-desc">
+                                    {{ mod.description }}
+                                </div>
+
+                                <span
+                                    class="downloading-text"
+                                    v-if="downloadingId === mod.id"
+                                >
+                                    {{ (downloadProgress || 0) + "%" }}
+                                </span>
+
                                 <button
-                                    v-if="
-                                        !downloadedMods[mod.id] &&
-                                        downloadingId !== mod.id
-                                    "
-                                    class="nav-btn icon map-mod-icon"
-                                    @click="startDownload(mod.id, mod.url)"
+                                    v-else-if="!downloadedMods[mod.id]"
+                                    class="nav-btn dark icon map-mod-icon"
+                                    @click.stop="startDownload(mod.id, mod.url)"
                                 >
                                     <Icon name="lucide:download" size="20" />
                                 </button>
 
-                                <span
-                                    class="downloading-text"
-                                    v-else-if="downloadingId === mod.id"
-                                >
-                                    {{
-                                        downloadProgress === -1
-                                            ? "In Progress"
-                                            : (downloadProgress || 0) + "%"
-                                    }}
-                                </span>
-
-                                <template v-else>
+                                <div v-else class="mod-installed">
                                     <button
-                                        class="nav-btn"
-                                        @click="selectMod(mod.id)"
-                                        :disabled="
-                                            activeSettings.activeMod === mod.id
-                                        "
-                                    >
-                                        {{
-                                            activeSettings.activeMod === mod.id
-                                                ? "Selected"
-                                                : "Select"
-                                        }}
-                                    </button>
-
-                                    <button
-                                        class="nav-btn dark icon map-mod-icon"
-                                        @click="uninstallMap(mod.id)"
+                                        class="nav-btn primary-color icon map-mod-icon"
+                                        @click.stop="uninstallMap(mod.id)"
                                     >
                                         <Icon name="lucide:trash-2" size="20" />
                                     </button>
-                                </template>
+                                </div>
                             </div>
-                        </div>
 
-                        <div v-if="availableMods.length === 0" class="no-mods">
-                            No mods are currently available for this game.
+                            <ProgressBar
+                                class="download-bar"
+                                v-if="downloadingId === mod.id"
+                                :progress="
+                                    downloadProgress === -1
+                                        ? 99
+                                        : downloadProgress
+                                "
+                                style="margin-top: 8px"
+                            />
                         </div>
                     </div>
-                </PopupPanel>
-            </Transition>
+                </div>
+            </PopupPanel>
         </div>
     </section>
 </template>
@@ -585,67 +546,3 @@ function toggleModPanel() {
     lang="scss"
     src="~/assets/scss/scoped/layouts/gameManager.scss"
 ></style>
-
-<style scoped lang="scss">
-/* Adding some basic styles for the mod list popup layout */
-.mod-list-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 10px 0;
-
-    .mod-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: $menu-item-gradient;
-        padding: 12px;
-        border-radius: 5px;
-
-        .mod-info {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            margin-right: 12px;
-
-            p {
-                margin: 0;
-                font-size: 1.2rem;
-                opacity: 0.6;
-            }
-        }
-
-        .mod-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-
-            .select-btn {
-                background: #3b82f6;
-                color: white;
-            }
-
-            .download-btn {
-                background: #10b981;
-                color: white;
-            }
-
-            .downloading-text {
-                opacity: 0.8;
-                padding: 0 10px;
-            }
-
-            .map-mod-icon {
-                padding: 8px 10px;
-            }
-        }
-    }
-
-    .no-mods {
-        text-align: center;
-        padding: 20px;
-        opacity: 0.6;
-        font-size: 0.9rem;
-    }
-}
-</style>

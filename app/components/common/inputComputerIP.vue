@@ -27,10 +27,12 @@ onMounted(() => {
 });
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+let handleConntectTimer: ReturnType<typeof setInterval> | null = null;
 
 watch(ipInput, (nVal) => {
     isLoading.value = true;
     if (debounceTimer) clearTimeout(debounceTimer);
+    if (handleConntectTimer) clearInterval(handleConntectTimer);
 
     if (!nVal) {
         connectionError.value = t("input.missingValue");
@@ -44,7 +46,13 @@ watch(ipInput, (nVal) => {
     }, 300);
 });
 
+onUnmounted(() => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    if (handleConntectTimer) clearInterval(handleConntectTimer);
+});
+
 const handleConnect = async () => {
+    if (handleConntectTimer) clearInterval(handleConntectTimer);
     const currentIp = ipInput.value.trim();
     if (!currentIp) {
         connectionError.value = t("input.missingValue");
@@ -69,6 +77,10 @@ const handleConnect = async () => {
         isLoading.value = false;
 
         connectionError.value = t("common.disconnected");
+
+        handleConntectTimer = setInterval(() => {
+            handleConnect();
+        }, 5000);
     }
 };
 
@@ -98,8 +110,9 @@ const connectedValue = computed(() => {
 
                             <div class="connected-value">
                                 <Icon
-                                    v-if="isLoading"
+                                    v-show="isLoading"
                                     name="svg-spinners:ring-resize"
+                                    class="loading-icon"
                                     size="16"
                                 />
 

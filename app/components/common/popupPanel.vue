@@ -1,20 +1,27 @@
 <script lang="ts" setup>
 const emit = defineEmits(["close"]);
-
-const props = defineProps<{ title: string }>();
 </script>
 
 <template>
     <div class="popup-overlay">
         <div class="backdrop" @click="emit('close')"></div>
 
-        <div class="popup-window">
-            <div class="popup-header">
-                <h3>{{ title }}</h3>
-                <div class="close-icon" @click="emit('close')">
-                    <Icon name="lucide:x" size="24" />
+        <div class="section popup-window">
+            <div class="title-wrapper">
+                <div class="section-title">
+                    <slot name="icon"></slot>
+                    <slot name="title"></slot>
                 </div>
+
+                <button
+                    class="nav-btn icon-close primary-color"
+                    @click="emit('close')"
+                >
+                    <Icon name="lucide:x" size="18" />
+                </button>
             </div>
+
+            <div class="separator"></div>
 
             <div class="popup-content">
                 <slot />

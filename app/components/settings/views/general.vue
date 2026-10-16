@@ -150,14 +150,8 @@ onMounted(async () => {
             </button>
         </div>
 
-        <Transition name="panel-pop">
-            <PopupPanel
-                v-if="isDlcPanelOpened"
-                :title="t('common.chooseDlcs')"
-                @close="toggleDlcPanel"
-            >
-                <ManageDlcsWindow />
-            </PopupPanel>
-        </Transition>
+        <PopupPanel v-if="isDlcPanelOpened" @close="toggleDlcPanel">
+            <ManageDlcsWindow />
+        </PopupPanel>
     </div>
 </template>

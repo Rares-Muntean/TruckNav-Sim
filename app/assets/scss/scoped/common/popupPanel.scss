@@ -1,10 +1,8 @@
 .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-
-    width: 100vw;
-    height: 100vh;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
 
     display: flex;
     align-items: center;
@@ -13,6 +11,7 @@
     ::-webkit-scrollbar {
         display: none;
     }
+
     scrollbar-width: none;
     -ms-overflow-style: none;
     z-index: 10;
@@ -28,39 +27,31 @@
 }
 
 .popup-window {
-    width: 85vw;
-    height: 70vh;
-
+    height: 100%;
+    width: 100%;
     position: relative;
 
     overflow-y: auto;
 
     color: $white-font-text;
     background-color: $primaryBackgroundColor;
-    border: $el-border-design;
-    box-shadow: $el-box-shadow-design;
-    border-radius: 8px;
-
-    padding: 1.5rem;
 
     display: flex;
     flex-direction: column;
-    gap: 1.4rem;
+}
 
-    .popup-header {
-        font-size: 2.2rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+.popup-header {
+    justify-content: space-between;
+}
 
-        .close-icon {
-            display: flex;
-        }
-    }
+.title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .popup-content {
-    padding: 1.5rem;
+    padding: 2rem 0;
     overflow-y: auto;
     flex: 1;
 }
