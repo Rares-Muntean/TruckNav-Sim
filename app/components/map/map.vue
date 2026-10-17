@@ -551,9 +551,9 @@ const onCancelRoute = () => {
                     />
 
                     <div class="hud-buttons">
-                        <!-- <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
+                        <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
                             <Icon name="lucide:fullscreen" class="icon" />
-                        </HudButton> -->
+                        </HudButton>
 
                         <HudButton :onClick="onResetNorth">
                             <Icon name="lucide:compass" class="icon" />
@@ -633,22 +633,20 @@ const onCancelRoute = () => {
                         />
                     </Transition>
 
-                    <Transition name="sheet-slide" @after-leave="onSheetClosed">
-                        <SheetSlide
-                            v-if="isRouteActive"
-                            :on-stop-navigation="onCancelRoute"
-                            :is-navigating="isNavigating"
-                            :on-start-navigation="onStartNavigation"
-                            :on-resume-navigation="onResumeNavigation"
-                            :destination-name="destinationName"
-                            v-model:is-sheet-hidden="isSheetHidden"
-                            :route-distance-converted="routeDistanceConverted"
-                            :route-eta="routeEta"
-                            :speed-limit="speedLimit"
-                            :truck-speed="truckSpeed"
-                            @update:add-stop-clicked="toggleAddStopClicked"
-                        />
-                    </Transition>
+                    <SheetSlide
+                        v-if="isRouteActive"
+                        :on-stop-navigation="onCancelRoute"
+                        :is-navigating="isNavigating"
+                        :on-start-navigation="onStartNavigation"
+                        :on-resume-navigation="onResumeNavigation"
+                        :destination-name="destinationName"
+                        v-model:is-sheet-hidden="isSheetHidden"
+                        :route-distance-converted="routeDistanceConverted"
+                        :route-eta="routeEta"
+                        :speed-limit="speedLimit"
+                        :truck-speed="truckSpeed"
+                        @update:add-stop-clicked="toggleAddStopClicked"
+                    />
                 </div>
             </Transition>
 

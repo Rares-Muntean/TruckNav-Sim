@@ -351,6 +351,7 @@ const isModActive = (modId: string) => {
                                 {{ t("common.chooseMap") }}
                             </span>
                         </button>
+
                         <button
                             @click="uninstallMap()"
                             class="btn nav-btn primary-color icon"

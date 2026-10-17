@@ -16,7 +16,7 @@ watch(
         animate(
             fillRef.value,
             { scaleX: targetScale },
-            { duration: 0.4, ease: EASE.circInOut },
+            { duration: 0.3, ease: EASE.sineOut },
         );
     },
 );

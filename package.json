@@ -33,6 +33,7 @@
         "extract-zip": "^2.0.1",
         "maplibre-gl": "^5.14.0",
         "motion": "^14.2.0",
+        "motion-v": "^2.8.0",
         "nuxt": "^4.3.1",
         "nuxt-color-picker": "^1.2.8",
         "pmtiles": "^4.3.0",

@@ -5,10 +5,27 @@
 
 $compact-bar-height: 35px;
 
+.drag-pill-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+
+    .drag-pill {
+        background-color: $primaryLightButtonColor;
+        width: 15%;
+
+        height: 4px;
+        border-radius: 4px;
+    }
+
+    margin-bottom: 0.6rem;
+}
+
 .action-buttons {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 0.8rem;
 
     .start-btn {
         flex: 1;
@@ -17,17 +34,12 @@ $compact-bar-height: 35px;
         position: relative;
         overflow: hidden;
 
-        &::before {
-            content: "";
+        .btn-progress {
             position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: var(--progress, 0%);
-
-            background-color: rgba(0, 0, 0, 0.2);
-
-            z-index: 0;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.15);
+            transform-origin: left;
+            transform: scaleX(0);
         }
 
         span,
@@ -39,11 +51,10 @@ $compact-bar-height: 35px;
         }
     }
 
-    .close-icon {
-        display: flex;
-        align-items: center;
-        width: 3rem;
-        height: 3rem;
+    .icon-close {
+        align-self: stretch;
+        aspect-ratio: 1;
+        height: auto;
     }
 }
 
@@ -61,7 +72,17 @@ $compact-bar-height: 35px;
 }
 
 .sheet-body {
+    display: flex;
+    flex-direction: column;
     padding: 10px 20px 18px 20px;
+    touch-action: none;
+    user-select: none;
+}
+
+.top-sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
 }
 
 .top-row {
@@ -70,9 +91,16 @@ $compact-bar-height: 35px;
     justify-content: space-between;
 }
 
+.dest-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
 .dest-name {
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.8rem;
+    line-height: 1.1;
     color: $white-font-text;
 }
 
@@ -89,35 +117,13 @@ $compact-bar-height: 35px;
     border-top-right-radius: 1.8rem;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
 
-    border: 2px solid $primaryAccentColor;
-    box-shadow: $el-box-shadow-design;
+    border-top: 1px solid $primaryAccentColor;
+    box-shadow: $el-box-shadow-design,
+        0 -4px 15px rgba($color: #000000, $alpha: 0.06);
     border-bottom: none;
 
     display: flex;
     flex-direction: column;
-    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-
-    &.is-hidden {
-        transform: translateY(100%);
-        border-color: transparent;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0);
-
-        .trip-info {
-            opacity: 0;
-        }
-
-        .hide-sheet {
-            position: absolute;
-            top: -46px;
-            right: 6px;
-            z-index: 9;
-        }
-
-        .hide-sheet-btn {
-            height: calc($compact-bar-height - 8px);
-            padding: 6px 6px;
-        }
-    }
 }
 
 .chevron-icon {
@@ -139,16 +145,18 @@ $compact-bar-height: 35px;
 }
 
 .separator {
+    width: auto;
     height: 1px;
     background: $primaryAccentColor;
-    margin: 10px 0 20px 0;
+    margin: 1rem -3rem;
+    display: flex;
 }
 
 .full-stats {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 2rem;
 
     .stat-block {
         display: flex;

@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import type { PanInfo } from "motion";
+import { animate } from "motion";
+import { motion, useDragControls } from "motion-v";
+
 const props = defineProps<{
     isSheetHidden: boolean;
     truckSpeed: number;
@@ -15,54 +19,89 @@ const props = defineProps<{
 const { distanceUnit } = useUnitConversion();
 const { t } = useTranslations();
 
-const countdown = ref(5);
-const progress = ref(100);
-
 const emit = defineEmits<{
     (e: "update:isSheetHidden", value: boolean): void;
     (e: "update:isSheetExpanded", value: boolean): void;
     (e: "update:addStopClicked"): void;
 }>();
 
+const controls = useDragControls();
+const progressBarRef = ref<HTMLElement | null>(null);
+const countdown = ref(0);
+
+let progressAnim: ReturnType<typeof animate> | null = null;
+let countdownTimer: ReturnType<typeof setInterval> | null = null;
+
+const cancelAutoStart = () => {
+    progressAnim?.stop();
+    progressAnim = null;
+
+    if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+    }
+
+    countdown.value = 0;
+};
+
+const startCountdown = () => {
+    cancelAutoStart();
+    countdown.value = 10;
+
+    countdownTimer = setInterval(() => {
+        countdown.value = countdown.value - 1;
+        if (countdown.value === 0) {
+            cancelAutoStart();
+        }
+    }, 1000);
+
+    if (progressBarRef.value) {
+        progressAnim = animate(
+            progressBarRef.value,
+            { scaleX: [1, 0] },
+            { duration: 10, ease: "linear" },
+        );
+
+        progressAnim.finished
+            .then(() => {
+                cancelAutoStart();
+                props.onStartNavigation();
+            })
+            .catch(() => {});
+    }
+};
+
+onMounted(() => {
+    if (!props.isNavigating) {
+        startCountdown();
+    }
+});
+
+onUnmounted(() => {
+    cancelAutoStart();
+});
+
+watch(
+    () => props.isNavigating,
+    (navigating) => {
+        if (navigating) cancelAutoStart();
+    },
+);
+
 const onToggleSheetHidden = () => {
     emit("update:isSheetHidden", !props.isSheetHidden);
+};
+
+const handleDragEnd = (_event: PointerEvent, info: PanInfo) => {
+    if (info.offset.y > 80 || info.velocity.y > 500) {
+        cancelAutoStart();
+        emit("update:isSheetHidden", true);
+    }
 };
 
 const handleAddStopClick = () => {
     onToggleSheetHidden();
     emit("update:addStopClicked");
-};
-
-const cancelAutoStart = () => {
-    if (rafId) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-    }
-    countdown.value = 0;
-    progress.value = 0;
-};
-
-let rafId: number | null = null;
-const startSmoothTimer = () => {
-    const duration = 10000;
-    const startTime = Date.now();
-
-    const frame = () => {
-        const timePassed = Date.now() - startTime;
-        const remaining = Math.max(0, duration - timePassed);
-
-        countdown.value = Math.ceil(remaining / 1000);
-        progress.value = (remaining / duration) * 100;
-
-        if (remaining > 0) {
-            rafId = requestAnimationFrame(frame);
-        } else {
-            cancelAutoStart();
-            props.onStartNavigation();
-        }
-    };
-
-    rafId = requestAnimationFrame(frame);
 };
 
 const handleStartOrResume = () => {
@@ -75,45 +114,39 @@ const handleStartOrResume = () => {
         props.onStartNavigation();
     }
 };
-
-onMounted(() => {
-    if (!props.isNavigating) {
-        startSmoothTimer();
-    }
-});
-
-watch(
-    () => props.isNavigating,
-    (navigating) => {
-        if (navigating) cancelAutoStart();
-    },
-);
 </script>
 
 <template>
-    <div class="bottom-sheet" :class="{ 'is-hidden': isSheetHidden }">
-        <div class="sheet-body">
-            <div class="sheet-content">
-                <div class="top-row">
-                    <h2 class="dest-name">{{ destinationName }}</h2>
+    <motion.div
+        drag="y"
+        drag-snap-to-origin
+        :drag-constraints="{ top: 0 }"
+        :drag-elastic="{ top: 0, bottom: 0.1 }"
+        :drag-listener="false"
+        :drag-controls="controls"
+        :initial="{ y: '100%' }"
+        :animate="{ y: isSheetHidden ? '100%' : '0%' }"
+        :transition="{ type: 'spring', damping: 32, stiffness: 300 }"
+        class="bottom-sheet"
+        @drag-end="handleDragEnd"
+    >
+        <div class="sheet-body" @pointerdown="(e) => controls.start(e)">
+            <div class="top-sheet">
+                <div class="drag-pill-wrapper">
+                    <div class="drag-pill"></div>
+                </div>
 
-                    <div class="hide-sheet">
-                        <button
-                            v-show="!isSheetHidden"
-                            @click.prevent="onToggleSheetHidden"
-                            class="hide-sheet-btn"
-                        >
-                            <Icon
-                                name="lucide:chevron-down"
-                                class="chevron-icon"
-                                size="22"
-                            />
-                        </button>
+                <div class="top-row">
+                    <div class="dest-name-wrapper">
+                        <Icon name="lucide:map-pin" size="20" class="icon" />
+                        <h2 class="dest-name">{{ destinationName }}</h2>
                     </div>
                 </div>
 
                 <div class="separator"></div>
+            </div>
 
+            <div class="sheet-content">
                 <div class="full-stats">
                     <div class="stat-block">
                         <Icon name="lucide:clock-check" size="26" />
@@ -126,34 +159,42 @@ watch(
                     </div>
 
                     <button
+                        @pointerdown.stop
                         class="nav-btn dark"
                         v-on:click="handleAddStopClick"
                     >
-                        <Icon name="lucide:map-pin-plus" size="22" />
+                        <Icon name="lucide:plus" size="22" />
                         <span>{{ t("map.addStop") }}</span>
                     </button>
                 </div>
 
-                <div class="action-buttons">
+                <div class="action-buttons" @pointerdown.stop>
                     <button
                         v-show="isNavigating"
-                        class="close-icon"
+                        class="nav-btn dark icon-close"
                         @click.prevent="onStopNavigation"
                     >
-                        <Icon name="lucide:circle-x" size="28" />
+                        <Icon name="lucide:x" size="26" class="icon" />
                     </button>
 
                     <button
                         class="start-btn nav-btn"
-                        :style="{ '--progress': progress + `%` }"
                         @click.prevent="handleStartOrResume"
                     >
+                        <div
+                            v-show="countdown > 0 && !isNavigating"
+                            ref="progressBarRef"
+                            class="btn-progress"
+                        />
+
                         <Icon name="lucide:map-pin-check" size="24" />
+
                         <span>{{
                             isNavigating
                                 ? t("common.resume")
                                 : t("common.startNavigation")
                         }}</span>
+
                         <span
                             v-if="countdown > 0 && !isNavigating"
                             class="countdown"
@@ -172,7 +213,7 @@ watch(
                 </div>
             </div>
         </div>
-    </div>
+    </motion.div>
 </template>
 
 <style
