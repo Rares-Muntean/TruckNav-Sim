@@ -29,9 +29,19 @@ onMounted(async () => {
 
 <template>
     <div class="section settings-panel">
-        <div class="section-title">
-            <Icon name="lucide:settings" class="icon" />
-            <p>{{ t("settings.title") }}</p>
+        <div class="section-title wrapper">
+            <div class="title-text">
+                <Icon name="lucide:settings" class="icon" />
+                <p>{{ t("settings.title") }}</p>
+            </div>
+
+            <button
+                v-if="currentView !== 'main'"
+                class="nav-btn primary-color icon-close"
+                @click="handleBack"
+            >
+                <Icon name="lucide:arrow-left" size="18" />
+            </button>
         </div>
 
         <div class="separator"></div>

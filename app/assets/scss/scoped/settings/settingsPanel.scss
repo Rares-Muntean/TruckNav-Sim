@@ -18,6 +18,10 @@ $button-padding: 8px 10px;
     z-index: $ui-priority-index;
 }
 
+.wrapper {
+    justify-content: space-between;
+}
+
 .settings-panel-content {
     flex: 1;
     min-height: 0;
@@ -80,7 +84,7 @@ $button-padding: 8px 10px;
     min-width: 150px;
     max-width: 200px;
 
-    background: $primaryBackgroundColor;
+    background: $primaryAccentColor;
     border-radius: $default-border-radius;
 
     padding: $button-padding;
@@ -91,17 +95,10 @@ $button-padding: 8px 10px;
     cursor: pointer;
 }
 
-.settings-title {
-    padding-left: 2rem;
-
-    font-size: 1.4rem;
-
+.title-text {
     display: flex;
-    align-content: center;
     align-items: center;
-    gap: 1.8rem;
-
-    width: 100%;
+    gap: 0.8rem;
 }
 
 .icon-btn {
@@ -126,28 +123,26 @@ $button-padding: 8px 10px;
     width: 90%;
     align-self: center;
     flex-shrink: 0;
-    background-color: $primaryAccentColor;
+    background-color: $primaryColor;
     opacity: 0.7;
     border-radius: 3px;
 }
 
 .settings-btn {
     display: flex;
-
     align-items: center;
+
     justify-content: center;
     border-radius: $default-border-radius;
+    background-color: $primaryAccentColor;
+    color: $white-font-text;
+    font-weight: 500;
     transition: 0s;
     box-shadow: none;
-    padding: $button-padding;
+    padding: 6px 10px;
     font-size: 1.6rem;
 
     transition: 0.2s ease all;
-
-    &.primary-color {
-        background-color: $primaryBackgroundColor;
-        color: $white-font-text;
-    }
 
     &.increase-decrease {
         display: flex;
@@ -190,6 +185,12 @@ $button-padding: 8px 10px;
         height: 20px;
         background-color: var(--theme-color);
     }
+}
+
+.setting {
+    font-size: 1.6rem;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .option-text {

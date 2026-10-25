@@ -1,37 +1,19 @@
 .segmented-control {
     display: flex;
     gap: 0.8rem;
-    background: $primaryBackgroundColor;
+    background: $primaryAccentColor;
     border-radius: $default-border-radius;
     cursor: pointer;
 
-    &.normal {
-        padding: 4px;
+    padding: 4px;
 
-        .label {
-            font-size: 1.6rem;
-        }
-
-        .segment-btn {
-            padding: 4px 6px;
-        }
-    }
-
-    &.small {
-        padding: 3px;
-
-        .label {
-            font-size: 1.4rem;
-        }
-
-        .segment-btn {
-            padding: 2px 5px;
-            line-height: 1;
-        }
+    .label {
+        font-size: 1.6rem;
     }
 
     .segment-btn {
         display: flex;
+        padding: 4px 6px;
         justify-content: center;
         align-items: center;
         cursor: pointer;
@@ -41,10 +23,9 @@
         transition: all 0.2s ease;
 
         &.active {
-            color: var(--main-text-color);
-            background: var(--theme-color);
+            color: $white-font-text;
+            background: $primaryBackgroundColor;
             box-shadow: $behind-shadow;
-            font-weight: var(--button-font-weight);
         }
     }
 }

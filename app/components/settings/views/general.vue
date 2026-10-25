@@ -56,98 +56,119 @@ onMounted(async () => {
 
 <template>
     <div>
-        <div v-if="activeSettings.activeMod === 'none'" class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:map-plus" size="24" />
-                <p>{{ t("settings.ownedDlcs") }}</p>
-            </div>
-            <div class="owned-dlcs">
-                <button
-                    @click.prevent="toggleDlcPanel"
-                    class="nav-btn settings-btn"
-                >
-                    {{ activeSettings.ownedDlcs.length }} /
-                    {{ Object.keys(selectedExpansion).length }}
-                    {{ t("common.active") }}
-                </button>
-            </div>
-        </div>
+        <div class="menu-list">
+            <div class="category-wrapper">
+                <p class="category-title">Regional & Game</p>
 
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:ruler" size="24" />
-                <p>{{ t("settings.units") }}</p>
-            </div>
+                <div class="items-wrapper">
+                    <div
+                        v-if="activeSettings.activeMod === 'none'"
+                        class="option setting"
+                    >
+                        <div class="option-title">
+                            <Icon name="lucide:map-plus" class="icon" />
+                            <p>{{ t("settings.ownedDlcs") }}</p>
+                        </div>
 
-            <SegmentedControl
-                :left-option="t('settings.metric')"
-                :right-option="t('settings.imperial')"
-                @connect="toggleUnits"
-                size="normal"
-                :active="isMetric"
-            />
-        </div>
+                        <div class="owned-dlcs">
+                            <button
+                                @click.prevent="toggleDlcPanel"
+                                class="nav-btn settings-btn"
+                            >
+                                {{ activeSettings.ownedDlcs.length }} /
+                                {{ Object.keys(selectedExpansion).length }}
+                            </button>
+                        </div>
+                    </div>
 
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:languages" size="24" />
-                <p>{{ t("settings.language") }}</p>
-            </div>
+                    <div class="option setting">
+                        <div class="option-title">
+                            <Icon name="lucide:ruler" class="icon"" />
+                            <p>{{ t("settings.units") }}</p>
+                        </div>
 
-            <USelect
-                :model-value="locale"
-                @update:model-value="(val: any) => setLocale(val)"
-                :items="languageItems"
-                variant="none"
-                class="selector"
-                :ui="{
-                    trailingIcon: 'shrink-0 size-[20px] text-white !px-6',
-                    content:
-                        'bg-[#333333] shadow-xl rounded-md ring-0 border-0 outline-none',
-                    item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#333333] rounded cursor-pointer transition-colors',
-                    itemTrailingIcon: 'text-white',
-                }"
-            >
-                <template #default>
-                    <span>
-                        {{ currentLanguageLabel }}
-                    </span>
-                </template>
+                        <SegmentedControl
+                            :left-option="t('settings.metric')"
+                            :right-option="t('settings.imperial')"
+                            @connect="toggleUnits"
+                            size="normal"
+                            :active="isMetric"
+                        />
+                    </div>
 
-                <template #item="{ item }">
-                    <span>
-                        {{ item.label }}
-                    </span>
-                </template>
-            </USelect>
-        </div>
+                    <div class="option setting">
+                        <div class="option-title">
+                            <Icon name="lucide:languages" class="icon" />
+                            <p>{{ t("settings.language") }}</p>
+                        </div>
 
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="fa6-brands:discord" size="24" />
-                <p>{{ t("desktop.discordRpc") }}</p>
-            </div>
+                        <USelect
+                            :model-value="locale"
+                            @update:model-value="(val: any) => setLocale(val)"
+                            :items="languageItems"
+                            variant="none"
+                            class="selector"
+                            :ui="{
+                                trailingIcon:
+                                    'shrink-0 size-[20px] text-white !px-6',
+                                content:
+                                    'bg-[#333333] shadow-xl rounded-md ring-0 border-0 outline-none',
+                                item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#333333] rounded cursor-pointer transition-colors',
+                                itemTrailingIcon: 'text-white',
+                            }"
+                        >
+                            <template #default>
+                                <span>
+                                    {{ currentLanguageLabel }}
+                                </span>
+                            </template>
 
-            <SegmentedControl
-                :left-option="t('settings.on')"
-                :right-option="t('settings.off')"
-                @connect="updateDesktopSetting('rpcEnabled', !rpcEnabled)"
-                size="normal"
-                :active="rpcEnabled"
-            />
-        </div>
-
-        <div class="small-separator"></div>
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:rotate-ccw" size="24" />
-                <p>{{ t("settings.resetToDefaults") }}</p>
+                            <template #item="{ item }">
+                                <span>
+                                    {{ item.label }}
+                                </span>
+                            </template>
+                        </USelect>
+                    </div>
+                </div>
             </div>
 
-            <button @click.prevent="resetSettings" class="nav-btn dark">
-                {{ t("common.reset") }}
-            </button>
+            <div class="category-wrapper">
+                <p class="category-title">System</p>
+
+                <div class="items-wrapper">
+                    <div class="option setting">
+                        <div class="option-title">
+                            <Icon name="fa6-brands:discord" class="icon" />
+                            <p>{{ t("desktop.discordRpc") }}</p>
+                        </div>
+
+                        <SegmentedControl
+                            :left-option="t('settings.on')"
+                            :right-option="t('settings.off')"
+                            @connect="
+                                updateDesktopSetting('rpcEnabled', !rpcEnabled)
+                            "
+                            size="normal"
+                            :active="rpcEnabled"
+                        />
+                    </div>
+
+                    <div class="option setting">
+                        <div class="option-title">
+                            <Icon name="lucide:rotate-ccw" class="icon" />
+                            <p>{{ t("settings.resetToDefaults") }}</p>
+                        </div>
+
+                        <button
+                            @click.prevent="resetSettings"
+                            class="nav-btn settings-btn"
+                        >
+                            {{ t("common.reset") }}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <PopupPanel v-if="isDlcPanelOpened" @close="toggleDlcPanel">
