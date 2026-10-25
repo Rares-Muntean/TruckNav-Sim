@@ -58,7 +58,7 @@ onMounted(async () => {
     <div>
         <div class="menu-list">
             <div class="category-wrapper">
-                <p class="category-title">Regional & Game</p>
+                <p class="category-title">{{ t("settings.regionalGame") }}</p>
 
                 <div class="items-wrapper">
                     <div
@@ -134,7 +134,7 @@ onMounted(async () => {
             </div>
 
             <div class="category-wrapper">
-                <p class="category-title">System</p>
+                <p class="category-title">{{ t("settings.system") }}</p>
 
                 <div class="items-wrapper">
                     <div class="option setting">
