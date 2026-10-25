@@ -6,29 +6,38 @@ $button-padding: 8px 10px;
 .settings-panel {
     position: fixed;
     background-color: $primaryBackgroundColor;
-    height: 100dvh;
-    width: 100dvw;
+    inset: 0;
+    width: 100%;
+    height: 100%;
 
     display: flex;
     flex-direction: column;
+
+    padding-top: calc(env(safe-area-inset-top) + 8px);
 
     z-index: $ui-priority-index;
 }
 
 .settings-panel-content {
     flex: 1;
+    min-height: 0;
+    height: 100%;
+
     padding: 2rem 0;
 
     display: flex;
     flex-direction: column;
 
-    margin-bottom: calc(var(--bottom-pill-tabs-height) - 1.8rem);
+    margin-bottom: calc(var(--bottom-pill-tabs-height) - 18px);
 }
 
 .main-content {
     display: flex;
     flex-direction: column;
+
     flex: 1;
+    min-height: 0;
+    height: 100%;
 
     justify-content: space-between;
 }
@@ -49,6 +58,8 @@ $button-padding: 8px 10px;
     display: flex;
     flex-direction: column;
     gap: 2.2rem;
+
+    @include no-scrollbar;
 }
 
 .category-wrapper {
