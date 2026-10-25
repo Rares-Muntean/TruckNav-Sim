@@ -1,9 +1,18 @@
 <script lang="ts" setup>
-const props = defineProps<{ height: number }>();
+const props = withDefaults(
+    defineProps<{ height: number; hasBoxShadow?: boolean }>(),
+    { hasBoxShadow: true },
+);
 </script>
 
 <template>
-    <div class="preview" :style="{ 'min-height': `${height}px` }">
+    <div
+        class="preview"
+        :class="{ shadow: hasBoxShadow }"
+        :style="{
+            'min-height': `${height}px`,
+        }"
+    >
         <slot />
     </div>
 </template>

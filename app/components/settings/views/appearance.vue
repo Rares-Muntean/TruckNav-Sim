@@ -51,185 +51,209 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
 <template>
     <div>
-        <ColorOption
-            :option-title="t('settings.theme')"
-            color-element="themeColor"
-        >
-            <template #icon>
-                <Icon name="lucide:palette" size="24" />
-            </template>
-        </ColorOption>
+        <div class="menu-list">
+            <div class="category-wrapper">
+                <p class="category-title">COLORS & MAP</p>
 
-        <ColorOption
-            :option-title="t('settings.route')"
-            color-element="routeColor"
-        >
-            <template #icon>
-                <Icon name="lucide:milestone" size="24" />
-            </template>
-        </ColorOption>
+                <div class="items-wrapper">
+                    <ColorOption
+                        :option-title="t('settings.theme')"
+                        color-element="themeColor"
+                    >
+                        <template #icon>
+                            <Icon name="lucide:palette" class="icon" />
+                        </template>
+                    </ColorOption>
 
-        <div class="small-separator"></div>
+                    <ColorOption
+                        :option-title="t('settings.route')"
+                        color-element="routeColor"
+                    >
+                        <template #icon>
+                            <Icon name="lucide:milestone" class="icon" />
+                        </template>
+                    </ColorOption>
 
-        <ColorOption
-            :option-title="t('settings.background')"
-            color-element="backgroundColor"
-        >
-            <template #icon>
-                <Icon name="lucide:waves" size="24" />
-            </template>
-        </ColorOption>
+                    <ColorOption
+                        :option-title="t('settings.background')"
+                        color-element="backgroundColor"
+                    >
+                        <template #icon>
+                            <Icon name="lucide:waves" class="icon" />
+                        </template>
+                    </ColorOption>
 
-        <ColorOption
-            :option-title="t('settings.land')"
-            color-element="landColor"
-        >
-            <template #icon>
-                <Icon name="lucide:mountain" size="24" />
-            </template>
-        </ColorOption>
+                    <ColorOption
+                        :option-title="t('settings.land')"
+                        color-element="landColor"
+                    >
+                        <template #icon>
+                            <Icon name="lucide:mountain" class="icon" />
+                        </template>
+                    </ColorOption>
 
-        <ColorOption
-            :option-title="t('settings.roads')"
-            color-element="roadColor"
-        >
-            <template #icon>
-                <Icon name="lucide:route" size="24" />
-            </template>
-        </ColorOption>
+                    <ColorOption
+                        :option-title="t('settings.roads')"
+                        color-element="roadColor"
+                    >
+                        <template #icon>
+                            <Icon name="lucide:route" class="icon" />
+                        </template>
+                    </ColorOption>
 
-        <PreviewSetting :height="240">
-            <MapColorPreview />
-        </PreviewSetting>
-
-        <div class="small-separator"></div>
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:type-outline" size="24" />
-                <p>{{ t("settings.textTheme") }}</p>
+                    <PreviewSetting :height="240">
+                        <MapColorPreview />
+                    </PreviewSetting>
+                </div>
             </div>
 
-            <SegmentedControl
-                :left-option="t('settings.light')"
-                :right-option="t('settings.dark')"
-                @connect="toggleTextColor"
-                :active="isTextThemeLight"
-                size="normal"
-            />
+            <div class="category-wrapper">
+                <p class="category-title">Typography</p>
+
+                <div class="items-wrapper">
+                    <div class="option setting">
+                        <div class="option-title">
+                            <Icon name="lucide:type-outline" class="icon" />
+                            <p>{{ t("settings.textTheme") }}</p>
+                        </div>
+
+                        <SegmentedControl
+                            :left-option="t('settings.light')"
+                            :right-option="t('settings.dark')"
+                            @connect="toggleTextColor"
+                            :active="isTextThemeLight"
+                            size="normal"
+                        />
+                    </div>
+
+                    <div class="option setting">
+                        <div class="option-title">
+                            <Icon name="lucide:type" class="icon" />
+                            <p>{{ t("settings.appFont") }}</p>
+                        </div>
+
+                        <USelect
+                            :model-value="activeSettings.fontFamily"
+                            @update:model-value="(val: string) => updateFont(val)"
+                            :items="items"
+                            variant="none"
+                            class="selector"
+                            :ui="{
+                                trailingIcon:
+                                    'shrink-0 size-[20px] text-white !px-6',
+                                content:
+                                    'bg-[#333333] ring-0 border-0 shadow-xl rounded-md',
+                                item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#3d546e] rounded cursor-pointer transition-colors',
+                                itemTrailingIcon: 'text-white',
+                            }"
+                        >
+                            <template #item="{ item }">
+                                <span :style="{ fontFamily: item }">
+                                    {{ item }}
+                                </span>
+                            </template>
+                        </USelect>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-wrapper">
+                <p class="category-title">Hud & Sizing</p>
+
+                <div class="items-wrapper hud">
+                    <div class="preview-increase">
+                        <IncreaseOption
+                            :option-title="t('settings.hudButtonSize')"
+                            setting-name="hudBtnSize"
+                            :max-value="40"
+                            :min-value="20"
+                            :amount="1"
+                        >
+                            <template #icon>
+                                <Icon name="lucide:square-plus" class="icon" />
+                            </template>
+                        </IncreaseOption>
+
+                        <PreviewSetting :height="40">
+                            <HudButton v-on:click="null">
+                                <Icon name="lucide:star" class="icon" />
+                            </HudButton>
+                        </PreviewSetting>
+                    </div>
+
+                    <div class="preview-increase">
+                        <IncreaseOption
+                            :option-title="t('settings.truckMarkerSize')"
+                            setting-name="truckMarkerSize"
+                            :max-value="70"
+                            :min-value="25"
+                            :amount="1"
+                        >
+                            <template #icon>
+                                <Icon name="lucide:map-pin-plus" class="icon" />
+                            </template>
+                        </IncreaseOption>
+
+                        <PreviewSetting :height="40">
+                            <div
+                                class="actual-truck-preview"
+                                :style="{
+                                    width: settings.truckMarkerSize + 'px',
+                                    height: settings.truckMarkerSize + 'px',
+                                    backgroundImage: `url('${truckImgSrc}')`,
+                                }"
+                            ></div>
+                        </PreviewSetting>
+                    </div>
+
+                    <div class="preview-increase">
+                        <IncreaseOption
+                            :option-title="t('settings.compactTripSize')"
+                            setting-name="compactTripFontSize"
+                            :max-value="2.5"
+                            :min-value="1.2"
+                            :amount="0.1"
+                        >
+                            <template #icon>
+                                <Icon name="lucide:circle-plus" class="icon" />
+                            </template>
+                        </IncreaseOption>
+
+                        <PreviewSetting :height="100">
+                            <CompactTrip
+                                class="compact-trip-progress preview"
+                                :route-distance-converted="999"
+                                distance-unit="mi"
+                                route-eta="9h 59min"
+                            />
+                        </PreviewSetting>
+                    </div>
+
+                    <div class="option setting">
+                        <div class="option-title">
+                            <Icon name="lucide:circle-gauge" class="icon" />
+                            <p>{{ t("settings.drivingInfo") }}</p>
+                        </div>
+                        <div class="owned-dlcs">
+                            <button
+                                @click.prevent="toggleDriveInfoPanel"
+                                class="nav-btn settings-btn"
+                            >
+                                {{ settings.activeUiComponents.length }} /
+                                {{
+                                    DEFAULT_SETTINGS.activeUiComponents.length +
+                                    1
+                                }}
+                                {{ t("common.active") }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <PopupPanel v-if="isDriveInfoOpened" @close="toggleDriveInfoPanel">
+                <ManageDriveInfoPanel />
+            </PopupPanel>
         </div>
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:type" size="24" />
-                <p>{{ t("settings.appFont") }}</p>
-            </div>
-
-            <USelect
-                :model-value="activeSettings.fontFamily"
-                @update:model-value="(val: string) => updateFont(val)"
-                :items="items"
-                variant="none"
-                class="selector"
-                :ui="{
-                    trailingIcon: 'shrink-0 size-[20px] text-white !px-6',
-                    content:
-                        'bg-[#333333] ring-0 border-0 shadow-xl rounded-md',
-                    item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#3d546e] rounded cursor-pointer transition-colors',
-                    itemTrailingIcon: 'text-white',
-                }"
-            >
-                <template #item="{ item }">
-                    <span :style="{ fontFamily: item }">
-                        {{ item }}
-                    </span>
-                </template>
-            </USelect>
-        </div>
-
-        <div class="small-separator"></div>
-
-        <IncreaseOption
-            :option-title="t('settings.hudButtonSize')"
-            setting-name="hudBtnSize"
-            :max-value="40"
-            :min-value="20"
-            :amount="1"
-        >
-            <template #icon>
-                <Icon name="lucide:square-plus" size="24" />
-            </template>
-        </IncreaseOption>
-
-        <PreviewSetting :height="70">
-            <HudButton v-on:click="null">
-                <Icon name="lucide:star" class="icon" />
-            </HudButton>
-        </PreviewSetting>
-
-        <IncreaseOption
-            :option-title="t('settings.truckMarkerSize')"
-            setting-name="truckMarkerSize"
-            :max-value="70"
-            :min-value="25"
-            :amount="1"
-        >
-            <template #icon>
-                <Icon name="lucide:map-pin-plus" size="24" />
-            </template>
-        </IncreaseOption>
-
-        <PreviewSetting :height="70">
-            <div
-                class="actual-truck-preview"
-                :style="{
-                    width: settings.truckMarkerSize + 'px',
-                    height: settings.truckMarkerSize + 'px',
-                    backgroundImage: `url('${truckImgSrc}')`,
-                }"
-            ></div>
-        </PreviewSetting>
-
-        <IncreaseOption
-            :option-title="t('settings.compactTripSize')"
-            setting-name="compactTripFontSize"
-            :max-value="2.5"
-            :min-value="1.2"
-            :amount="0.1"
-        >
-            <template #icon>
-                <Icon name="lucide:circle-plus" size="24" />
-            </template>
-        </IncreaseOption>
-
-        <PreviewSetting :height="100">
-            <CompactTrip
-                class="compact-trip-progress preview"
-                :route-distance-converted="999"
-                distance-unit="mi"
-                route-eta="9h 59min"
-            />
-        </PreviewSetting>
-
-        <div class="option setting">
-            <div class="option-title">
-                <Icon name="lucide:circle-gauge" size="24" />
-                <p>{{ t("settings.drivingInfo") }}</p>
-            </div>
-            <div class="owned-dlcs">
-                <button
-                    @click.prevent="toggleDriveInfoPanel"
-                    class="nav-btn settings-btn"
-                >
-                    {{ settings.activeUiComponents.length }} /
-                    {{ DEFAULT_SETTINGS.activeUiComponents.length + 1 }}
-                    {{ t("common.active") }}
-                </button>
-            </div>
-        </div>
-
-        <PopupPanel v-if="isDriveInfoOpened" @close="toggleDriveInfoPanel">
-            <ManageDriveInfoPanel />
-        </PopupPanel>
     </div>
 </template>

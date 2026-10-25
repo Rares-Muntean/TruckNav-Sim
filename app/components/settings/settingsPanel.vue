@@ -137,11 +137,7 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <General
-                v-else-if="currentView === 'general'"
-                class="menu-list"
-                key="general"
-            />
+            <General v-else-if="currentView === 'general'" key="general" />
 
             <Appearance
                 v-else-if="currentView === 'appearance'"
