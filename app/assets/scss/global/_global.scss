@@ -102,6 +102,8 @@ button {
     font-size: 1.5rem;
     color: $white-font-text-muted;
     font-weight: 600;
+
+    letter-spacing: 0.3px;
 }
 
 .nav-btn {
@@ -117,7 +119,7 @@ button {
     width: fit-content;
     height: fit-content;
     border: none;
-    border-radius: 4px;
+    border-radius: $default-border-radius;
     padding: 6px 1.6rem;
     box-shadow: $behind-shadow;
 

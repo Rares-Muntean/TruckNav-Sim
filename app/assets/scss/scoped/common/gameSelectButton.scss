@@ -2,7 +2,7 @@
     height: 100%;
     width: 100%;
 
-    border-radius: 6px;
+    border-radius: $default-border-radius;
     background-color: $primaryColor;
 
     &.is-selected {
@@ -46,11 +46,4 @@
     letter-spacing: 0.4px;
 
     text-transform: uppercase;
-}
-
-img {
-    width: 100%;
-    object-fit: cover;
-
-    border-radius: 6px;
 }

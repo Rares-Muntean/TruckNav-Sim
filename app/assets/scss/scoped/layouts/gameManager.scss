@@ -39,7 +39,7 @@
 
         background: $menu-item-gradient;
         padding: 8px 10px;
-        border-radius: 4px;
+        border-radius: $default-border-radius;
 
         .download-bar {
             height: 4px;
@@ -149,7 +149,7 @@
 .input-ip {
     background-color: $primaryColor;
     padding: 1.2rem;
-    border-radius: 4px;
+    border-radius: $default-border-radius;
     width: 100%;
 }
 
@@ -189,7 +189,7 @@
 .route-card-anim {
     padding: 1.2rem 1.2rem;
     background-color: $primaryColor;
-    border-radius: 4px;
+    border-radius: $default-border-radius;
 
     display: flex;
     flex-direction: column;
@@ -200,7 +200,7 @@
 .route-widget {
     background-color: $primaryBackgroundColor;
     padding: 1.6rem 1.6rem;
-    border-radius: 4px;
+    border-radius: $default-border-radius;
 }
 
 .route-anim {

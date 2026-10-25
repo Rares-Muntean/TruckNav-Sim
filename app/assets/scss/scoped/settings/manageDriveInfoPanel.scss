@@ -12,7 +12,7 @@
 
     padding: 8px 12px;
 
-    border-radius: 6px;
+    border-radius: $default-border-radius;
 
     &.is-active {
         outline: 2px solid var(--theme-color);

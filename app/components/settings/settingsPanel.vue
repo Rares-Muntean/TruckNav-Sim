@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { App } from "@capacitor/app";
+
 type settingsView = "main" | "general" | "appearance" | "navigation";
 
 const { t } = useTranslations();
@@ -12,84 +14,136 @@ function setView(view: settingsView) {
 function handleBack() {
     currentView.value = "main";
 }
+
+const appVersion = ref("0.5.2");
+
+onMounted(async () => {
+    try {
+        const info = await App.getInfo();
+        if (info?.version) {
+            appVersion.value = info.version;
+        }
+    } catch {}
+});
 </script>
 
 <template>
-    <div class="settings-panel">
-        <div class="settings-title">
-            <div class="icon-btn" v-on:click="handleBack">
-                <Icon name="lucide:arrow-left" size="26" />
-            </div>
-            <div class="title-icon">
-                <Icon name="lucide:settings" size="38" />
-
-                <div>
-                    <p class="panel-title">{{ t("settings.title") }}</p>
-                    <p class="panel-description">
-                        {{ t("settings.description") }}
-                    </p>
-                </div>
-            </div>
+    <div class="section settings-panel">
+        <div class="section-title">
+            <Icon name="lucide:settings" class="icon" />
+            <p>{{ t("settings.title") }}</p>
         </div>
 
         <div class="separator"></div>
 
-        <div class="settings-wrapper">
-            <Transition name="page-fade" mode="out-in">
-                <div
-                    v-if="currentView === 'main'"
-                    class="menu-list main"
-                    key="main"
-                >
-                    <div class="option setting" @click="setView('general')">
-                        <Icon name="lucide:settings-2" size="28" />
-                        <span>{{ t("settings.general") }}</span>
-                        <Icon
-                            name="lucide:chevron-right"
-                            size="24"
-                            class="arrow"
-                        />
+        <div class="settings-panel-content">
+            <div v-if="currentView === 'main'" class="main-content" key="main">
+                <div class="menu-list">
+                    <div class="category-wrapper">
+                        <p class="category-title">{{ t("preferences") }}</p>
+
+                        <div class="items-wrapper">
+                            <div class="option" @click="setView('general')">
+                                <div class="option-text">
+                                    <Icon
+                                        name="lucide:settings-2"
+                                        class="icon"
+                                    />
+
+                                    <div class="option-text-wrapper">
+                                        <span>{{ t("settings.general") }}</span>
+
+                                        <p class="option-description">
+                                            {{ t("settings.languageUnits") }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="option" @click="setView('appearance')">
+                                <div class="option-text">
+                                    <Icon name="lucide:palette" class="icon" />
+
+                                    <div class="option-text-wrapper">
+                                        <span>{{
+                                            t("settings.appearance")
+                                        }}</span>
+                                        <p class="option-description">
+                                            {{ t("settings.themesMapStyling") }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="option" @click="setView('navigation')">
+                                <div class="option-text">
+                                    <Icon
+                                        name="lucide:navigation"
+                                        class="icon"
+                                    />
+
+                                    <div class="option-text-wrapper">
+                                        <span>{{
+                                            t("settings.navigation")
+                                        }}</span>
+                                        <p class="option-description">
+                                            {{ t("settings.timeHud") }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="option setting" @click="setView('appearance')">
-                        <Icon name="lucide:palette" size="28" />
-                        <span>{{ t("settings.appearance") }}</span>
-                        <Icon
-                            name="lucide:chevron-right"
-                            size="24"
-                            class="arrow"
-                        />
-                    </div>
+                    <div class="category-wrapper">
+                        <p class="category-title">{{ t("session") }}</p>
 
-                    <div class="option setting" @click="setView('navigation')">
-                        <Icon name="lucide:navigation" size="28" />
-                        <span>{{ t("settings.navigation") }}</span>
-                        <Icon
-                            name="lucide:chevron-right"
-                            size="24"
-                            class="arrow"
-                        />
+                        <div class="items-wrapper">
+                            <div class="option" @click="setView('general')">
+                                <div class="option-text">
+                                    <Icon
+                                        name="lucide:door-open"
+                                        class="icon"
+                                    />
+
+                                    <div class="option-text-wrapper">
+                                        <span>{{
+                                            t("settings.backToMainMenu")
+                                        }}</span>
+
+                                        <p class="option-description">
+                                            {{ t("settings.switchGameMaps") }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <General
-                    v-else-if="currentView === 'general'"
-                    class="menu-list"
-                    key="general"
-                />
+                <div class="footer">
+                    <p>{{ t("common.trucknav") }} {{ appVersion }}</p>
+                    <p>{{ t("common.trucknavMoto") }}</p>
+                </div>
+            </div>
 
-                <Appearance
-                    v-else-if="currentView === 'appearance'"
-                    class="menu-list"
-                    key="appearance"
-                />
+            <General
+                v-else-if="currentView === 'general'"
+                class="menu-list"
+                key="general"
+            />
 
-                <Navigation
-                    v-else-if="currentView === 'navigation'"
-                    class="menu-list"
-                    key="navigation"
-                />
-            </Transition>
+            <Appearance
+                v-else-if="currentView === 'appearance'"
+                class="menu-list"
+                key="appearance"
+            />
+
+            <Navigation
+                v-else-if="currentView === 'navigation'"
+                class="menu-list"
+                key="navigation"
+            />
         </div>
     </div>
 </template>

@@ -81,7 +81,7 @@ form {
         font-weight: 600;
 
         border-style: none;
-        border-radius: 6px;
+        border-radius: $default-border-radius;
 
         background-color: $primaryBackgroundColor;
     }

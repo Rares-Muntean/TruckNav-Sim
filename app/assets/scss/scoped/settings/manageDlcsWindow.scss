@@ -44,7 +44,7 @@
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-    border-radius: 6px;
+    border-radius: $default-border-radius;
 
     @include for-tablet {
         flex-direction: column;
@@ -64,7 +64,7 @@
 .dlc-image {
     position: relative;
     aspect-ratio: 310.5 / 150.13;
-    border-radius: 6px;
+    border-radius: $default-border-radius;
     width: 310.5px;
 
     @include for-tablet {
@@ -77,7 +77,7 @@
     height: 100%;
 
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: $default-border-radius;
 }
 
 .skeleton-loader {
@@ -101,7 +101,7 @@
 
     background-size: 200% 100%;
 
-    border-radius: 6px;
+    border-radius: $default-border-radius;
     animation: shimmer 3s infinite ease-out;
 }
 

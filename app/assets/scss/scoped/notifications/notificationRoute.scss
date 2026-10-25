@@ -29,7 +29,7 @@
 
     border: 1px solid $primaryAccentColor;
     box-shadow: $el-box-shadow-design;
-    border-radius: 8px;
+    border-radius: $default-border-radius;
 
     background-color: $primaryColor;
     padding: 6px 12px;

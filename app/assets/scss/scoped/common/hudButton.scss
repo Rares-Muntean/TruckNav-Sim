@@ -9,7 +9,7 @@
     backdrop-filter: $backdrop-filter;
     background-color: rgba($color: $primaryColor, $alpha: 0.8);
     border: $el-border-design;
-    border-radius: 7px;
+    border-radius: $default-border-radius;
     overflow: hidden;
     transition: background-color 0.2s ease, transform 0.1s ease;
     box-shadow: $el-box-shadow-design,
@@ -26,8 +26,6 @@
         font-size: 1.6rem;
         display: flex;
         gap: 0.6rem;
-
-        border-radius: 4px;
 
         &:active {
             background-color: $primaryBackgroundColor;

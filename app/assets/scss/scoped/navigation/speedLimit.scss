@@ -43,7 +43,7 @@ $speed-limit-height: 72px;
     &.square {
         border: 3px solid #222;
 
-        border-radius: 6px;
+        border-radius: $default-border-radius;
 
         width: calc($speed-limit-height - 12px);
         height: $speed-limit-height;
@@ -80,6 +80,6 @@ $speed-limit-height: 72px;
 
         border: 2px solid #304257;
 
-        border-radius: 4px;
+        border-radius: $default-border-radius;
     }
 }

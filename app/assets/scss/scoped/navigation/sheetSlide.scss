@@ -16,7 +16,7 @@ $compact-bar-height: 35px;
         width: 15%;
 
         height: 4px;
-        border-radius: 4px;
+        border-radius: $default-border-radius;
     }
 
     margin-bottom: 0.6rem;
@@ -74,7 +74,9 @@ $compact-bar-height: 35px;
 .sheet-body {
     display: flex;
     flex-direction: column;
+
     padding: 10px 20px 18px 20px;
+
     touch-action: none;
     user-select: none;
 }
@@ -113,8 +115,8 @@ $compact-bar-height: 35px;
     z-index: $sheet-z-index;
 
     background-color: $primaryColor;
-    border-top-left-radius: 1.8rem;
-    border-top-right-radius: 1.8rem;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
 
     border-top: 1px solid $primaryAccentColor;
