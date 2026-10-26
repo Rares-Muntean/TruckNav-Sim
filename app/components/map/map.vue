@@ -501,171 +501,156 @@ const onCancelRoute = () => {
         <div ref="mapEl" class="map-container"></div>
 
         <div class="ui-safe-container">
-            <Transition name="ui-layer-fade">
-                <div class="map-ui-layer">
-                    <Transition name="fade">
-                        <LoadingScreen v-if="loading" :progress="progress" />
-                    </Transition>
+            <div class="map-ui-layer">
+                <LoadingScreen v-if="loading" :progress="progress" />
 
-                    <div class="maneuver-notifications-wrapper">
-                        <ManeuverCard
-                            v-show="
-                                isNavigating && activeSettings.hasTurnNavigation
-                            "
-                            :upcoming-turns="fullRouteDirections"
-                            :distance-to-next-turn="nextTurnDistance"
-                            :next-instruction="
-                                fullRouteDirections[1]?.text ||
-                                t('map.followRoute')
-                            "
-                        />
+                <div class="maneuver-notifications-wrapper">
+                    <ManeuverCard
+                        v-show="
+                            isNavigating && activeSettings.hasTurnNavigation
+                        "
+                        :upcoming-turns="fullRouteDirections"
+                        :distance-to-next-turn="nextTurnDistance"
+                        :next-instruction="
+                            fullRouteDirections[1]?.text || t('map.followRoute')
+                        "
+                    />
 
-                        <NotificationRoute
-                            v-if="routeFound !== null || isCalculatingRoute"
-                            :is-route-found="routeFound"
-                            :is-calculating-route="isCalculatingRoute"
-                        />
+                    <NotificationRoute
+                        v-if="routeFound !== null || isCalculatingRoute"
+                        :is-route-found="routeFound"
+                        :is-calculating-route="isCalculatingRoute"
+                    />
 
-                        <NotificationGeneral
-                            v-else
-                            :trigger="clickingNotificationTrigger"
-                            :text="
-                                isClickingEnabled
-                                    ? t('map.tappingEnabled')
-                                    : t('map.tappingDisabled')
-                            "
-                        >
-                            <template #icon>
-                                <Icon
-                                    v-if="isClickingEnabled"
-                                    class="notification-icon"
-                                    name="lucide:pointer"
-                                    size="24"
-                                    :style="{ color: '#0ea674' }"
-                                />
-
-                                <Icon
-                                    v-else
-                                    class="notification-icon"
-                                    name="lucide:pointer-off"
-                                    size="24"
-                                    :style="{ color: '#dd4a34' }"
-                                />
-                            </template>
-                        </NotificationGeneral>
-                    </div>
-
-                    <div class="hud-buttons">
-                        <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
-                            <Icon name="lucide:fullscreen" class="icon" />
-                        </HudButton>
-
-                        <HudButton :onClick="onResetNorth">
-                            <Icon name="lucide:compass" class="icon" />
-                        </HudButton>
-
-                        <HudButton
-                            :is-active="isAutoFollowEnabled"
-                            :class="{ 'theme-color': isAutoFollowEnabled }"
-                            :onClick="toggleAutoFollow"
-                        >
-                            <Icon
-                                v-if="isAutoFollowEnabled"
-                                name="lucide:locate-fixed"
-                                class="icon"
-                            />
-                            <Icon v-else name="lucide:locate" class="icon" />
-                        </HudButton>
-
-                        <HudButton
-                            :is-active="isClickingEnabled"
-                            :class="isClickingEnabled ? 'theme-color' : ''"
-                            :onClick="toggleEnableClicking"
-                        >
+                    <NotificationGeneral
+                        v-else
+                        :trigger="clickingNotificationTrigger"
+                        :text="
+                            isClickingEnabled
+                                ? t('map.tappingEnabled')
+                                : t('map.tappingDisabled')
+                        "
+                    >
+                        <template #icon>
                             <Icon
                                 v-if="isClickingEnabled"
+                                class="notification-icon"
                                 name="lucide:pointer"
-                                class="icon"
+                                size="24"
+                                :style="{ color: '#0ea674' }"
                             />
+
                             <Icon
                                 v-else
+                                class="notification-icon"
                                 name="lucide:pointer-off"
-                                class="icon"
+                                size="24"
+                                :style="{ color: '#dd4a34' }"
                             />
-                        </HudButton>
+                        </template>
+                    </NotificationGeneral>
+                </div>
 
-                        <Transition name="fade">
-                            <HudButton
-                                class="add-stop-hud-btn"
-                                v-if="isAddingStopMode"
-                                :onClick="toggleAddStopClicked"
-                            >
-                                <Icon name="lucide:map-pin-plus" class="icon" />
-                            </HudButton>
-                        </Transition>
-                    </div>
+                <div class="hud-buttons">
+                    <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
+                        <Icon name="lucide:fullscreen" class="icon" />
+                    </HudButton>
 
-                    <SpeedLimit
-                        v-show="
-                            speedLimit > 0 &&
-                            settings.activeUiComponents.includes('speedLimit')
-                        "
-                        :truck-speed="truckSpeed"
-                        :speed-limit="speedLimit"
+                    <HudButton :onClick="onResetNorth">
+                        <Icon name="lucide:compass" class="icon" />
+                    </HudButton>
+
+                    <HudButton
+                        :is-active="isAutoFollowEnabled"
+                        :class="{ 'theme-color': isAutoFollowEnabled }"
+                        :onClick="toggleAutoFollow"
+                    >
+                        <Icon
+                            v-if="isAutoFollowEnabled"
+                            name="lucide:locate-fixed"
+                            class="icon"
+                        />
+                        <Icon v-else name="lucide:locate" class="icon" />
+                    </HudButton>
+
+                    <HudButton
+                        :is-active="isClickingEnabled"
+                        :class="isClickingEnabled ? 'theme-color' : ''"
+                        :onClick="toggleEnableClicking"
+                    >
+                        <Icon
+                            v-if="isClickingEnabled"
+                            name="lucide:pointer"
+                            class="icon"
+                        />
+                        <Icon v-else name="lucide:pointer-off" class="icon" />
+                    </HudButton>
+
+                    <HudButton
+                        class="add-stop-hud-btn"
+                        v-if="isAddingStopMode"
+                        :onClick="toggleAddStopClicked"
+                    >
+                        <Icon name="lucide:map-pin-plus" class="icon" />
+                    </HudButton>
+                </div>
+
+                <SpeedLimit
+                    v-show="
+                        speedLimit > 0 &&
+                        settings.activeUiComponents.includes('speedLimit')
+                    "
+                    :truck-speed="truckSpeed"
+                    :speed-limit="speedLimit"
+                />
+
+                <div
+                    class="warnings"
+                    :class="{
+                        'has-active-route': isRouteActive && isSheetHidden,
+                    }"
+                >
+                    <WarningSlide
+                        :show-if="hasInGameMarker && !isRouteActive"
+                        :reset-on="isRouteActive"
+                        :text="t('map.externalRouteDetected')"
                     />
 
-                    <div
-                        class="warnings"
-                        :class="{
-                            'has-active-route': isRouteActive && isSheetHidden,
-                        }"
-                    >
-                        <WarningSlide
-                            :show-if="hasInGameMarker && !isRouteActive"
-                            :reset-on="isRouteActive"
-                            :text="t('map.externalRouteDetected')"
-                        />
-
-                        <WarningSlide
-                            :show-if="!gameConnected"
-                            :reset-on="gameConnected"
-                            :text="t('common.gameOffline')"
-                        />
-                    </div>
-
-                    <Transition name="fade">
-                        <CompactTrip
-                            v-if="isRouteActive && isSheetHidden"
-                            :route-distance-converted="routeDistanceConverted"
-                            :distance-unit="distanceUnit"
-                            :route-eta="routeEta"
-                            @click="isSheetHidden = false"
-                        />
-                    </Transition>
-
-                    <SheetSlide
-                        v-if="isRouteActive"
-                        :on-stop-navigation="onCancelRoute"
-                        :is-navigating="isNavigating"
-                        :on-start-navigation="onStartNavigation"
-                        :on-resume-navigation="onResumeNavigation"
-                        :destination-name="destinationName"
-                        v-model:is-sheet-hidden="isSheetHidden"
-                        :route-distance-converted="routeDistanceConverted"
-                        :route-eta="routeEta"
-                        :speed-limit="speedLimit"
-                        :truck-speed="truckSpeed"
-                        @update:add-stop-clicked="toggleAddStopClicked"
+                    <WarningSlide
+                        :show-if="!gameConnected"
+                        :reset-on="gameConnected"
+                        :text="t('common.gameOffline')"
                     />
                 </div>
-            </Transition>
 
-            <Transition name="panel-pop">
-                <SettingsPanel
-                    @go-home="emit('goHome')"
-                    v-show="activeTab === 'settings'"
+                <CompactTrip
+                    v-if="isRouteActive && isSheetHidden"
+                    :route-distance-converted="routeDistanceConverted"
+                    :distance-unit="distanceUnit"
+                    :route-eta="routeEta"
+                    @click="isSheetHidden = false"
                 />
-            </Transition>
+
+                <SheetSlide
+                    v-if="isRouteActive"
+                    :on-stop-navigation="onCancelRoute"
+                    :is-navigating="isNavigating"
+                    :on-start-navigation="onStartNavigation"
+                    :on-resume-navigation="onResumeNavigation"
+                    :destination-name="destinationName"
+                    v-model:is-sheet-hidden="isSheetHidden"
+                    :route-distance-converted="routeDistanceConverted"
+                    :route-eta="routeEta"
+                    :speed-limit="speedLimit"
+                    :truck-speed="truckSpeed"
+                    @update:add-stop-clicked="toggleAddStopClicked"
+                />
+            </div>
+            \
+            <SettingsPanel
+                @go-home="emit('goHome')"
+                v-show="activeTab === 'settings'"
+            />
 
             <BottomPillTabs v-model="activeTab" />
         </div>

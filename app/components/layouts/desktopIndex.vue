@@ -275,17 +275,15 @@ const toggleRemoteGpsWindow = () => {
                 </button>
             </div>
 
-            <Transition name="panel-pop">
-                <div
-                    @click.self="toggleRemoteGpsWindow"
-                    v-show="isRemoteGpsWindowOpened"
-                    class="connect-modal-overlay"
-                >
-                    <div class="connect-window">
-                        <InputComputerIP @connected="emit('connected')" />
-                    </div>
+            <div
+                @click.self="toggleRemoteGpsWindow"
+                v-show="isRemoteGpsWindowOpened"
+                class="connect-modal-overlay"
+            >
+                <div class="connect-window">
+                    <InputComputerIP @connected="emit('connected')" />
                 </div>
-            </Transition>
+            </div>
         </div>
 
         <div class="troubleshoot">

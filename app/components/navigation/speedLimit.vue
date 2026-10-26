@@ -17,15 +17,13 @@ const speedLimitConverted = computed(() => kmToUserUnits(props.speedLimit));
         class="speed-limit-sign"
         :class="settings.selectedGame === 'ets2' ? 'circle' : 'square'"
     >
-        <Transition name="over-limit">
-            <div
-                v-if="truckSpeed > speedLimit + 5"
-                class="speed-limit-over-limit"
-                :class="settings.selectedGame === 'ets2' ? 'circle' : 'square'"
-            >
-                <div class="over-limit">{{ truckSpeedConverted }}</div>
-            </div>
-        </Transition>
+        <div
+            v-if="truckSpeed > speedLimit + 5"
+            class="speed-limit-over-limit"
+            :class="settings.selectedGame === 'ets2' ? 'circle' : 'square'"
+        >
+            <div class="over-limit">{{ truckSpeedConverted }}</div>
+        </div>
 
         <div class="speed-limit">
             {{ speedLimitConverted }}

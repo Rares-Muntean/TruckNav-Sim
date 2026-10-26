@@ -64,27 +64,21 @@ const goHome = () => {
 
 <template>
     <template v-if="isElectron">
-        <Transition name="page-fade">
-            <DesktopIndex
-                v-show="currentView === 'desktopHome'"
-                @connected="launchGameManager"
-            />
-        </Transition>
+        <DesktopIndex
+            v-show="currentView === 'desktopHome'"
+            @connected="launchGameManager"
+        />
     </template>
 
-    <Transition name="page-fade">
-        <GameManager
-            v-show="currentView === 'gameManager'"
-            @go-back="goToDesktopIndex"
-            @connected="launchMap"
-        />
-    </Transition>
+    <GameManager
+        v-show="currentView === 'gameManager'"
+        @go-back="goToDesktopIndex"
+        @connected="launchMap"
+    />
 
-    <Transition name="page-fade">
-        <LazyMap
-            v-if="currentView === 'map'"
-            @go-home="goHome"
-            :key="settings.selectedGame ?? 'none'"
-        />
-    </Transition>
+    <LazyMap
+        v-if="currentView === 'map'"
+        @go-home="goHome"
+        :key="settings.selectedGame ?? 'none'"
+    />
 </template>
