@@ -233,7 +233,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         @click.prevent="toggleDriveInfoPanel"
                     >
                         <div class="option-title">
-                            <Icon name="lucide:circle-gauge" class="icon" />
+                            <Icon name="lucide:info" class="icon" />
                             <p>{{ t("settings.drivingInfo") }}</p>
                         </div>
                         <div class="owned-dlcs">
@@ -251,6 +251,12 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             </div>
 
             <PopupPanel v-if="isDriveInfoOpened" @close="toggleDriveInfoPanel">
+                <template #icon
+                    ><Icon name="lucide:info" class="icon"
+                /></template>
+
+                <template #title>Select HUD</template>
+
                 <ManageDriveInfoPanel />
             </PopupPanel>
         </div>

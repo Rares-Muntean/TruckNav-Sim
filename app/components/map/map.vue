@@ -10,7 +10,7 @@ import {
 } from "~/assets/utils/shared/colors";
 import { generateTruckIcon } from "~/assets/utils/map/markers";
 
-defineProps<{ goHome: () => void }>();
+const emit = defineEmits(["goHome"]);
 
 // MAP STATE
 const mapEl = shallowRef<HTMLElement | null>(null);
@@ -661,7 +661,10 @@ const onCancelRoute = () => {
             </Transition>
 
             <Transition name="panel-pop">
-                <SettingsPanel v-show="activeTab === 'settings'" />
+                <SettingsPanel
+                    @go-home="emit('goHome')"
+                    v-show="activeTab === 'settings'"
+                />
             </Transition>
 
             <BottomPillTabs v-model="activeTab" />

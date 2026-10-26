@@ -1,42 +1,15 @@
-.manage-dlcs-section {
-    position: fixed;
-    top: 0;
-    left: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    ::-webkit-scrollbar {
-        display: none;
-    }
-}
-
-.background-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.32);
-}
-
 .manage-dlcs-window {
     color: $white-font-text;
 
     display: flex;
     flex-direction: column;
-    gap: 1.8rem;
+    gap: 1rem;
+
+    padding-bottom: var(--bottom-pill-tabs-height);
 }
 
 .dlc {
-    font-size: 2rem;
+    font-size: 1.8rem;
     display: flex;
     justify-content: space-between;
     background: $menu-item-gradient;
@@ -61,69 +34,16 @@
     }
 }
 
-.dlc-image {
-    position: relative;
-    aspect-ratio: 310.5 / 150.13;
-    border-radius: $default-border-radius;
-    width: 310.5px;
-
-    @include for-tablet {
-        width: 100%;
-    }
-}
-
-.dlc-cover {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    border-radius: $default-border-radius;
-}
-
-.skeleton-loader {
-    position: absolute;
-
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
-    background: $primaryBackgroundColor;
-
-    background: linear-gradient(
-        90deg,
-        $primaryBackgroundColor 0%,
-        $primaryBackgroundColor 20%,
-        $primaryColor 50%,
-        $primaryBackgroundColor 80%,
-        $primaryBackgroundColor 100%
-    );
-
-    background-size: 200% 100%;
-
-    border-radius: $default-border-radius;
-    animation: shimmer 3s infinite ease-out;
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-
-    100% {
-        background-position: -200% 0;
-    }
-}
-
 .dlc-details {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
-    padding-top: 0.8rem;
+    padding: 0.8rem 1rem;
+}
 
-    @include for-tablet {
-        padding-left: 0.8rem;
-    }
+.top-wrapper {
+    display: flex;
+    justify-content: space-between;
 }
 
 .dlc-release-date {
@@ -140,10 +60,10 @@
 .checkmarks {
     align-self: end;
 
-    margin: 0 0.8rem 0.8rem 0;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     color: $primaryLightButtonColor;
+
     &.is-selected {
         color: var(--theme-color);
     }

@@ -5,6 +5,8 @@ type settingsView = "main" | "general" | "appearance" | "navigation";
 
 const { t } = useTranslations();
 
+const emit = defineEmits(["goHome"]);
+
 const currentView = ref<settingsView>("main");
 
 function setView(view: settingsView) {
@@ -109,7 +111,7 @@ onMounted(async () => {
                         <p class="category-title">{{ t("session") }}</p>
 
                         <div class="items-wrapper">
-                            <div class="option" @click="setView('general')">
+                            <div class="option" @click="emit('goHome')">
                                 <div class="option-text">
                                     <Icon
                                         name="lucide:door-open"

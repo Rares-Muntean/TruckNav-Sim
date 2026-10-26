@@ -45,45 +45,36 @@ const toggleDlc = (id: number) => {
                 }"
             >
                 <div class="dlc-details-wrapper">
-                    <div class="dlc-image">
-                        <div
-                            v-if="!loadedImages[Number(id)]"
-                            class="skeleton-loader"
-                        ></div>
-
-                        <img
-                            :src="`/images/expansions/${settings.selectedGame}/${dlc.imagePath}`"
-                            :alt="dlc.name"
-                            class="dlc-cover"
-                            :class="{
-                                'is-loaded': loadedImages[Number(id)],
-                            }"
-                            @load="onImageLoaded(Number(id))"
-                        />
-                    </div>
-
                     <div class="dlc-details">
-                        <p class="dlc-name">{{ dlc.name }}</p>
+                        <div class="top-wrapper">
+                            <p class="dlc-name">{{ dlc.name }}</p>
+                            <div
+                                class="checkmarks"
+                                :class="{
+                                    'is-selected':
+                                        activeSettings.ownedDlcs.includes(
+                                            Number(id),
+                                        ),
+                                }"
+                            >
+                                <Icon
+                                    v-if="
+                                        activeSettings.ownedDlcs.includes(
+                                            Number(id),
+                                        )
+                                    "
+                                    name="lucide:circle-check"
+                                    size="22"
+                                />
+                                <Icon v-else name="lucide:circle" size="22" />
+                            </div>
+                        </div>
+
                         <p class="dlc-release-date">
                             {{ t("settings.releaseDate") }}:
                             {{ dlc.releaseDate }}
                         </p>
                     </div>
-                </div>
-                <div
-                    class="checkmarks"
-                    :class="{
-                        'is-selected': activeSettings.ownedDlcs.includes(
-                            Number(id),
-                        ),
-                    }"
-                >
-                    <Icon
-                        v-if="activeSettings.ownedDlcs.includes(Number(id))"
-                        name="lucide:circle-check"
-                        size="26"
-                    />
-                    <Icon v-else name="lucide:circle" size="26" />
                 </div>
             </div>
         </div>

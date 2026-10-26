@@ -45,9 +45,6 @@ function toggleUiComponent(componentId: UiComponent) {
             v-for="component in components"
             :key="component.id"
             @click="toggleUiComponent(component.id)"
-            :class="{
-                'is-active': settings.activeUiComponents.includes(component.id),
-            }"
         >
             <div class="info">
                 <div class="title">
@@ -67,9 +64,13 @@ function toggleUiComponent(componentId: UiComponent) {
             >
                 <Icon
                     v-if="settings.activeUiComponents.includes(component.id)"
-                    class="icon"
+                    class="icon-check"
                     :class="{
                         'is-active': settings.activeUiComponents.includes(
+                            component.id,
+                        ),
+
+                        'not-active': !settings.activeUiComponents.includes(
                             component.id,
                         ),
                     }"
@@ -78,7 +79,7 @@ function toggleUiComponent(componentId: UiComponent) {
 
                 <Icon
                     v-else
-                    class="icon"
+                    class="icon-check"
                     :class="{
                         'is-active': settings.activeUiComponents.includes(
                             component.id,

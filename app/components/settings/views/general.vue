@@ -169,6 +169,12 @@ onMounted(async () => {
         </div>
 
         <PopupPanel v-if="isDlcPanelOpened" @close="toggleDlcPanel">
+            <template #icon
+                ><Icon name="lucide:map-plus" class="icon"
+            /></template>
+
+            <template #title>Select Expansions</template>
+
             <ManageDlcsWindow />
         </PopupPanel>
     </div>

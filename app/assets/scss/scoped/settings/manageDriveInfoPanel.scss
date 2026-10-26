@@ -2,7 +2,7 @@
     color: $white-font-text;
     display: flex;
     flex-direction: column;
-    gap: 1.8rem;
+    gap: 1rem;
 }
 
 .component {
@@ -10,17 +10,26 @@
     justify-content: space-between;
     align-items: end;
 
-    padding: 8px 12px;
+    padding: 8px 10px;
 
     border-radius: $default-border-radius;
 
-    &.is-active {
-        outline: 2px solid var(--theme-color);
-    }
+    background: $menu-item-gradient;
 
     .icon {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
+
+        color: var(--theme-color);
+    }
+}
+
+.checkmark {
+    color: $primaryLightButtonColor;
+
+    .icon-check {
+        width: 22px;
+        height: 22px;
 
         &.is-active {
             color: var(--theme-color);

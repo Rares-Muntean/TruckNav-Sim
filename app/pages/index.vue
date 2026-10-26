@@ -83,7 +83,7 @@ const goHome = () => {
     <Transition name="page-fade">
         <LazyMap
             v-if="currentView === 'map'"
-            :goHome="goHome"
+            @go-home="goHome"
             :key="settings.selectedGame ?? 'none'"
         />
     </Transition>
