@@ -5,7 +5,7 @@ export default defineNuxtConfig({
     ssr: false,
     modules: ["@nuxt/icon", "@nuxt/ui", "motion-v/nuxt"],
 
-    css: ["~/assets/css/main.css", "~/assets/scss/global/_transitions.scss"],
+    css: ["~/assets/css/main.css"],
 
     icon: {
         mode: "css",

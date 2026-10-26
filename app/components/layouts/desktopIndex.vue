@@ -264,7 +264,10 @@ const toggleRemoteGpsWindow = () => {
             </div>
 
             <div class="connection-type">
-                <button @click.prevent="toggleRemoteGpsWindow" class="btn">
+                <button
+                    @click.prevent="toggleRemoteGpsWindow"
+                    class="btn secondary"
+                >
                     <span>{{ t("desktop.remoteGps") }}</span>
                     <Icon name="lucide:link-2" size="20" />
                 </button>
