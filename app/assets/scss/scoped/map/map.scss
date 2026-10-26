@@ -77,9 +77,8 @@
 
     display: flex;
     flex-direction: column;
-    align-items: center;
 
-    gap: 1rem;
+    gap: 0.8rem;
 }
 
 .add-stop-hud-btn {
@@ -90,13 +89,17 @@
 
 .warnings {
     position: absolute;
-    bottom: calc(var(--bottom-pill-tabs-height) + 7rem);
-    right: -2px;
+    bottom: calc(var(--bottom-pill-tabs-height, 65px) + 16px);
+    right: 0px;
 
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 0.8rem;
+
+    &.has-active-route {
+        bottom: calc(var(--bottom-pill-tabs-height, 65px) + 60px);
+    }
 }
 
 .icon {

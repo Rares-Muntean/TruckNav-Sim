@@ -64,6 +64,7 @@ onMounted(async () => {
                     <div
                         v-if="activeSettings.activeMod === 'none'"
                         class="option setting"
+                        @click.prevent="toggleDlcPanel"
                     >
                         <div class="option-title">
                             <Icon name="lucide:map-plus" class="icon" />
@@ -71,26 +72,22 @@ onMounted(async () => {
                         </div>
 
                         <div class="owned-dlcs">
-                            <button
-                                @click.prevent="toggleDlcPanel"
-                                class="nav-btn settings-btn"
-                            >
+                            <button class="nav-btn settings-btn">
                                 {{ activeSettings.ownedDlcs.length }} /
                                 {{ Object.keys(selectedExpansion).length }}
                             </button>
                         </div>
                     </div>
 
-                    <div class="option setting">
+                    <div class="option setting" @click="toggleUnits">
                         <div class="option-title">
-                            <Icon name="lucide:ruler" class="icon"" />
+                            <Icon name="lucide:ruler" class="icon" />
                             <p>{{ t("settings.units") }}</p>
                         </div>
 
                         <SegmentedControl
                             :left-option="t('settings.metric')"
                             :right-option="t('settings.imperial')"
-                            @connect="toggleUnits"
                             size="normal"
                             :active="isMetric"
                         />
@@ -137,7 +134,10 @@ onMounted(async () => {
                 <p class="category-title">{{ t("settings.system") }}</p>
 
                 <div class="items-wrapper">
-                    <div class="option setting">
+                    <div
+                        class="option setting"
+                        @click="updateDesktopSetting('rpcEnabled', !rpcEnabled)"
+                    >
                         <div class="option-title">
                             <Icon name="fa6-brands:discord" class="icon" />
                             <p>{{ t("desktop.discordRpc") }}</p>
@@ -146,9 +146,6 @@ onMounted(async () => {
                         <SegmentedControl
                             :left-option="t('settings.on')"
                             :right-option="t('settings.off')"
-                            @connect="
-                                updateDesktopSetting('rpcEnabled', !rpcEnabled)
-                            "
                             size="normal"
                             :active="rpcEnabled"
                         />

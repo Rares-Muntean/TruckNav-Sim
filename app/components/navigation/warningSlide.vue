@@ -22,25 +22,23 @@ const onToggleExpanded = () => {
 </script>
 
 <template>
-    <Transition name="compact-slide">
-        <div
-            v-if="showIf"
-            class="compact-trip-progress"
-            :class="{ expanded: isExpanded }"
-            v-on:click="onToggleExpanded"
-        >
-            <Icon v-if="isExpanded" name="lucide:chevron-right" size="22" />
-            <Icon v-else name="lucide:chevron-left" size="22" />
+    <div
+        v-if="showIf"
+        class="compact-trip-progress"
+        :class="{ expanded: isExpanded }"
+        v-on:click="onToggleExpanded"
+    >
+        <Icon v-if="isExpanded" name="lucide:chevron-right" size="20" />
+        <Icon v-else name="lucide:chevron-left" size="20" />
 
-            <div class="warning-message">
-                <Icon name="lucide:triangle-alert" size="22" />
+        <div class="warning-message">
+            <Icon name="lucide:triangle-alert" size="20" />
 
-                <div class="text-content">
-                    <span class="text-nowrap">{{ text }}</span>
-                </div>
+            <div class="text-content">
+                <span class="text-nowrap">{{ text }}</span>
             </div>
         </div>
-    </Transition>
+    </div>
 </template>
 
 <style

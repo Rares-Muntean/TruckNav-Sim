@@ -28,7 +28,7 @@ function toggleRouteTimeMode() {
                 <p class="category-title">{{ t("settings.guidanceTime") }}</p>
 
                 <div class="items-wrapper">
-                    <div class="option setting">
+                    <div class="option setting" @click="toggleGuidedNavigation">
                         <div class="option-title">
                             <Icon name="lucide:navigation-2" class="icon" />
                             <p>{{ t("settings.guidedNavigation") }}</p>
@@ -37,13 +37,12 @@ function toggleRouteTimeMode() {
                         <SegmentedControl
                             :left-option="t('settings.on')"
                             :right-option="t('settings.off')"
-                            @connect="toggleGuidedNavigation"
                             size="normal"
                             :active="hasGuidedNavigation"
                         />
                     </div>
 
-                    <div class="option setting">
+                    <div class="option setting" @click="toggleRouteTimeMode">
                         <div class="option-title">
                             <Icon name="lucide:clock-3" class="icon" />
                             <p>{{ t("settings.estimatedTime") }}</p>
@@ -52,7 +51,6 @@ function toggleRouteTimeMode() {
                         <SegmentedControl
                             :left-option="t('settings.gameTime')"
                             :right-option="t('settings.realTime')"
-                            @connect="toggleRouteTimeMode"
                             size="normal"
                             :active="usesGameTime"
                         />

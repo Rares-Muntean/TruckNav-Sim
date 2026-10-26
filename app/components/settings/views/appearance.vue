@@ -111,7 +111,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                 <p class="category-title">Typography</p>
 
                 <div class="items-wrapper">
-                    <div class="option setting">
+                    <div class="option setting" @click="toggleTextColor">
                         <div class="option-title">
                             <Icon name="lucide:type-outline" class="icon" />
                             <p>{{ t("settings.textTheme") }}</p>
@@ -120,7 +120,6 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         <SegmentedControl
                             :left-option="t('settings.light')"
                             :right-option="t('settings.dark')"
-                            @connect="toggleTextColor"
                             :active="isTextThemeLight"
                             size="normal"
                         />
@@ -229,16 +228,16 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         </PreviewSetting>
                     </div>
 
-                    <div class="option setting">
+                    <div
+                        class="option setting"
+                        @click.prevent="toggleDriveInfoPanel"
+                    >
                         <div class="option-title">
                             <Icon name="lucide:circle-gauge" class="icon" />
                             <p>{{ t("settings.drivingInfo") }}</p>
                         </div>
                         <div class="owned-dlcs">
-                            <button
-                                @click.prevent="toggleDriveInfoPanel"
-                                class="nav-btn settings-btn"
-                            >
+                            <button class="nav-btn settings-btn">
                                 {{ settings.activeUiComponents.length }} /
                                 {{
                                     DEFAULT_SETTINGS.activeUiComponents.length +

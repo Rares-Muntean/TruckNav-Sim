@@ -614,7 +614,12 @@ const onCancelRoute = () => {
                         :speed-limit="speedLimit"
                     />
 
-                    <div class="warnings">
+                    <div
+                        class="warnings"
+                        :class="{
+                            'has-active-route': isRouteActive && isSheetHidden,
+                        }"
+                    >
                         <WarningSlide
                             :show-if="hasInGameMarker && !isRouteActive"
                             :reset-on="isRouteActive"

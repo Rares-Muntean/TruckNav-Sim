@@ -1,21 +1,22 @@
 .compact-trip-progress {
-    padding: 4px 14px 4px 6px;
+    padding: 4px 10px 4px 6px;
 
     cursor: pointer;
     display: flex;
-    gap: 0.8rem;
+    gap: 0.4rem;
     align-items: center;
     justify-content: space-between;
 
     font-size: 1.5rem;
-    color: $primaryColor;
+    color: $warning-color;
+    font-weight: 500;
 
     border: 1.5px solid $primaryColor;
     border-right: none;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
 
-    background-color: $warning-color;
+    background-color: $primaryColor;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
     .toggle-icon {
@@ -26,7 +27,6 @@
         max-width: 0;
         opacity: 0;
         overflow: hidden;
-        transition: 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 
         .text-nowrap {
             white-space: nowrap;
@@ -44,6 +44,5 @@
 .warning-message {
     display: flex;
     gap: 0.8rem;
-    font-weight: 700;
     align-items: center;
 }
