@@ -507,48 +507,53 @@ const onCancelRoute = () => {
                         <LoadingScreen v-if="loading" :progress="progress" />
                     </Transition>
 
-                    <ManeuverCard
-                        v-show="
-                            isNavigating && activeSettings.hasTurnNavigation
-                        "
-                        :upcoming-turns="fullRouteDirections"
-                        :distance-to-next-turn="nextTurnDistance"
-                        :next-instruction="
-                            fullRouteDirections[1]?.text || t('map.followRoute')
-                        "
-                    />
+                    <div class="maneuver-notifications-wrapper">
+                        <ManeuverCard
+                            v-show="
+                                isNavigating && activeSettings.hasTurnNavigation
+                            "
+                            :upcoming-turns="fullRouteDirections"
+                            :distance-to-next-turn="nextTurnDistance"
+                            :next-instruction="
+                                fullRouteDirections[1]?.text ||
+                                t('map.followRoute')
+                            "
+                        />
 
-                    <NotificationGeneral
-                        :trigger="clickingNotificationTrigger"
-                        :text="
-                            isClickingEnabled
-                                ? t('map.tappingEnabled')
-                                : t('map.tappingDisabled')
-                        "
-                    >
-                        <template #icon>
-                            <Icon
-                                v-if="isClickingEnabled"
-                                class="notification-icon"
-                                name="lucide:pointer"
-                                size="24"
-                                :style="{ color: '#4caf50' }"
-                            />
+                        <NotificationRoute
+                            v-if="routeFound !== null || isCalculatingRoute"
+                            :is-route-found="routeFound"
+                            :is-calculating-route="isCalculatingRoute"
+                        />
 
-                            <Icon
-                                v-else
-                                class="notification-icon"
-                                name="lucide:pointer-off"
-                                size="24"
-                                :style="{ color: '#dd4a34' }"
-                            />
-                        </template>
-                    </NotificationGeneral>
+                        <NotificationGeneral
+                            v-else
+                            :trigger="clickingNotificationTrigger"
+                            :text="
+                                isClickingEnabled
+                                    ? t('map.tappingEnabled')
+                                    : t('map.tappingDisabled')
+                            "
+                        >
+                            <template #icon>
+                                <Icon
+                                    v-if="isClickingEnabled"
+                                    class="notification-icon"
+                                    name="lucide:pointer"
+                                    size="24"
+                                    :style="{ color: '#0ea674' }"
+                                />
 
-                    <NotificationRoute
-                        :is-route-found="routeFound"
-                        :is-calculating-route="isCalculatingRoute"
-                    />
+                                <Icon
+                                    v-else
+                                    class="notification-icon"
+                                    name="lucide:pointer-off"
+                                    size="24"
+                                    :style="{ color: '#dd4a34' }"
+                                />
+                            </template>
+                        </NotificationGeneral>
+                    </div>
 
                     <div class="hud-buttons">
                         <HudButton v-if="isWeb" :onClick="onToggleFullscreen">

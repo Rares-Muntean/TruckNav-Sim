@@ -1,17 +1,11 @@
 .card {
     display: flex;
+    width: 100%;
     align-items: center;
     gap: 0.8rem;
     padding: 1rem;
 
-    position: absolute;
-    top: 1.8rem;
-    left: 2rem;
-
     color: $white-font-text;
-    background-color: rgba($color: $primaryColor, $alpha: 0.6);
-
-    width: 65%;
 
     border: $el-border-design;
     box-shadow: $el-box-shadow-design,
@@ -19,6 +13,7 @@
     border-radius: $default-border-radius;
 
     backdrop-filter: $backdrop-filter;
+    background-color: rgba($color: $primaryColor, $alpha: 0.6);
 
     font-size: 1.6rem;
 

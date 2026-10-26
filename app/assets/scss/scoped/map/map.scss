@@ -68,6 +68,20 @@
     }
 }
 
+.maneuver-notifications-wrapper {
+    position: absolute;
+    top: 1.8rem;
+    left: 2rem;
+
+    width: 65%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 1rem;
+}
+
 .add-stop-hud-btn {
     .icon {
         color: $green-color;

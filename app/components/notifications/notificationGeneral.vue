@@ -4,6 +4,7 @@ const props = defineProps<{
     trigger: number;
 }>();
 
+const { isWeb } = usePlatform();
 const isVisible = ref(false);
 let timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -24,17 +25,13 @@ watch(
 </script>
 
 <template>
-    <div class="notification-container">
-        <Transition name="notification-slide">
-            <div v-if="isVisible" class="notification-wrapper">
-                <Transition name="notification-fade">
-                    <div class="content-wrapper">
-                        <span>{{ text }}</span>
-                        <slot name="icon"></slot>
-                    </div>
-                </Transition>
+    <div class="notification-container" :class="{ 'is-web': isWeb }">
+        <div v-if="isVisible" class="notification-wrapper">
+            <div class="content-wrapper">
+                <span>{{ text }}</span>
+                <slot name="icon"></slot>
             </div>
-        </Transition>
+        </div>
     </div>
 </template>
 

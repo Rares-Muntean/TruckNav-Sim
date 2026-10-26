@@ -1,27 +1,11 @@
-//
-//
-//
-// =====> STYLING <======
 .notification-container {
-    position: absolute;
-    top: 15px;
-    left: 0;
-    width: 100%;
-
     display: flex;
-    justify-content: center;
     pointer-events: none;
     z-index: 50;
 
-    &.is-web {
-        @media (orientation: portrait) {
-            top: calc(env(safe-area-inset-top) + 15px);
-        }
-    }
+    position: relative;
 
-    @media (orientation: portrait) {
-        top: calc(env(safe-area-inset-top));
-    }
+    width: 100%;
 }
 
 .notification-wrapper {
@@ -31,7 +15,8 @@
     box-shadow: $el-box-shadow-design;
     border-radius: $default-border-radius;
 
-    background-color: $primaryColor;
+    backdrop-filter: $backdrop-filter;
+    background-color: rgba($color: $primaryColor, $alpha: 0.6);
     padding: 6px 12px;
     color: $white-font-text;
     font-size: 1.6rem;
@@ -62,8 +47,3 @@
         color: var(--theme-color);
     }
 }
-
-//
-//
-//
-// ======> TRANSITIONS <======
