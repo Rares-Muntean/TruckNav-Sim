@@ -65,6 +65,8 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         </template>
                     </ColorOption>
 
+                    <div class="small-separator"></div>
+
                     <ColorOption
                         :option-title="t('settings.route')"
                         color-element="routeColor"
@@ -73,6 +75,8 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                             <Icon name="lucide:milestone" class="icon" />
                         </template>
                     </ColorOption>
+
+                    <div class="small-separator"></div>
 
                     <ColorOption
                         :option-title="t('settings.background')"
@@ -83,6 +87,8 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         </template>
                     </ColorOption>
 
+                    <div class="small-separator"></div>
+
                     <ColorOption
                         :option-title="t('settings.land')"
                         color-element="landColor"
@@ -91,6 +97,8 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                             <Icon name="lucide:mountain" class="icon" />
                         </template>
                     </ColorOption>
+
+                    <div class="small-separator"></div>
 
                     <ColorOption
                         :option-title="t('settings.roads')"
@@ -127,6 +135,8 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                             size="normal"
                         />
                     </div>
+
+                    <div class="small-separator"></div>
 
                     <div class="option setting stacked">
                         <div class="option-title">

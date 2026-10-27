@@ -79,6 +79,8 @@ onMounted(async () => {
                         </div>
                     </div>
 
+                    <div class="small-separator"></div>
+
                     <div class="option setting stacked" @click="toggleUnits">
                         <div class="option-title">
                             <Icon name="lucide:ruler" class="icon" />
@@ -92,6 +94,8 @@ onMounted(async () => {
                             :active="isMetric"
                         />
                     </div>
+
+                    <div class="small-separator"></div>
 
                     <div class="option setting stacked">
                         <div class="option-title">
@@ -150,6 +154,8 @@ onMounted(async () => {
                             :active="rpcEnabled"
                         />
                     </div>
+
+                    <div class="small-separator"></div>
 
                     <div class="option setting stacked">
                         <div class="option-title">

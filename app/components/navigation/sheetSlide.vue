@@ -142,6 +142,15 @@ const handleStartOrResume = () => {
                         <Icon name="lucide:map-pin" size="20" class="icon" />
                         <h2 class="dest-name">{{ destinationName }}</h2>
                     </div>
+
+                    <div>
+                        <button
+                            @click="emit('update:isSheetHidden', true)"
+                            class="nav-btn dark icon-close"
+                        >
+                            <Icon name="lucide:x" size="20" class="icon" />
+                        </button>
+                    </div>
                 </div>
 
                 <div class="separator"></div>

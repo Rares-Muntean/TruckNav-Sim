@@ -45,6 +45,8 @@ function toggleRouteTimeMode() {
                         />
                     </div>
 
+                    <div class="small-separator"></div>
+
                     <div
                         class="option setting stacked"
                         @click="toggleRouteTimeMode"

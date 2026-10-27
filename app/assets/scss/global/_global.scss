@@ -97,6 +97,16 @@ button {
     background-color: $primaryAccentColor;
 }
 
+.small-separator {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.02),
+        transparent
+    );
+}
+
 .dot {
     width: 4px;
     height: 4px;

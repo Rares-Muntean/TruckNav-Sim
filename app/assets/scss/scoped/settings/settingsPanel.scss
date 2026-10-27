@@ -87,13 +87,15 @@ $button-padding: 8px 10px;
 .items-wrapper-stacked {
     border-radius: $default-border-radius;
     overflow: hidden;
+
+    background-color: $primaryColor;
 }
 
 .selector {
     min-width: 150px;
     max-width: 200px;
 
-    background: $primaryAccentColor;
+    background: $primaryLightButtonColor;
     border-radius: $default-border-radius;
 
     padding: $button-padding;
@@ -127,23 +129,13 @@ $button-padding: 8px 10px;
     opacity: 0.7;
 }
 
-.small-separator {
-    height: 1px;
-    width: 90%;
-    align-self: center;
-    flex-shrink: 0;
-    background-color: $primaryColor;
-    opacity: 0.7;
-    border-radius: 3px;
-}
-
 .settings-btn {
     display: flex;
     align-items: center;
 
     justify-content: center;
     border-radius: $default-border-radius;
-    background-color: $primaryAccentColor;
+    background-color: $primaryLightButtonColor;
     color: $white-font-text;
     font-weight: 500;
     transition: 0s;
@@ -173,7 +165,7 @@ $button-padding: 8px 10px;
     user-select: none;
 
     background-color: $primaryColor;
-    padding: 1.4rem 1.2rem;
+    padding: 1rem 1rem;
     border-radius: $default-border-radius;
 
     font-size: 1.8rem;
