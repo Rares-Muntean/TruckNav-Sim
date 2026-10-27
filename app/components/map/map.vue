@@ -87,7 +87,8 @@ const {
     clearRouteState,
     destinationName,
     routeDistance,
-    routeEta,
+    routeEtaHours,
+    routeEtaMinutes,
     isCalculating: isCalculatingRoute,
     isWorkerReady,
     initWorkerData,
@@ -595,15 +596,6 @@ const onCancelRoute = () => {
                     </HudButton>
                 </div>
 
-                <SpeedLimit
-                    v-show="
-                        speedLimit > 0 &&
-                        settings.activeUiComponents.includes('speedLimit')
-                    "
-                    :truck-speed="truckSpeed"
-                    :speed-limit="speedLimit"
-                />
-
                 <div
                     class="warnings"
                     :class="{
@@ -623,13 +615,29 @@ const onCancelRoute = () => {
                     />
                 </div>
 
-                <CompactTrip
+                <div
+                    class="trip-info-compact"
                     v-if="isRouteActive && isSheetHidden"
-                    :route-distance-converted="routeDistanceConverted"
-                    :distance-unit="distanceUnit"
-                    :route-eta="routeEta"
-                    @click="isSheetHidden = false"
-                />
+                >
+                    <div class="speed-and-limit">
+                        <div class="current-speed-wrapper">
+                            <div class="current-speed">43</div>
+                            <span class="unit">mph</span>
+                        </div>
+
+                        <div class="limit-speed-wrapper ets2">
+                            <div class="limit-speed">48</div>
+                        </div>
+                    </div>
+
+                    <CompactTrip
+                        :route-distance-converted="routeDistanceConverted"
+                        :distance-unit="distanceUnit"
+                        :route-eta-hours="routeEtaHours"
+                        :route-eta-minutes="routeEtaMinutes"
+                        @click="isSheetHidden = false"
+                    />
+                </div>
 
                 <SheetSlide
                     v-if="isRouteActive"
@@ -640,7 +648,8 @@ const onCancelRoute = () => {
                     :destination-name="destinationName"
                     v-model:is-sheet-hidden="isSheetHidden"
                     :route-distance-converted="routeDistanceConverted"
-                    :route-eta="routeEta"
+                    :route-eta-hours="routeEtaHours"
+                    :route-eta-minutes="routeEtaMinutes"
                     :speed-limit="speedLimit"
                     :truck-speed="truckSpeed"
                     @update:add-stop-clicked="toggleAddStopClicked"

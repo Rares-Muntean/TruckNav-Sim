@@ -8,7 +8,8 @@ const props = defineProps<{
     truckSpeed: number;
     speedLimit: number;
     destinationName: string;
-    routeEta: string;
+    routeEtaHours: string;
+    routeEtaMinutes: string;
     routeDistanceConverted: number;
     isNavigating: boolean;
     onStopNavigation: () => void;
@@ -151,7 +152,18 @@ const handleStartOrResume = () => {
                     <div class="stat-block">
                         <Icon name="lucide:clock-check" size="26" />
                         <div class="route-info">
-                            <div class="value">{{ routeEta }}</div>
+                            <div class="route-distance-flex">
+                                <div class="route-distance-wrapper">
+                                    <span>{{ routeEtaHours }}</span>
+                                    <span class="unit">h</span>
+                                </div>
+
+                                <div class="route-distance-wrapper">
+                                    <span>{{ routeEtaMinutes }}</span>
+                                    <span class="unit">m</span>
+                                </div>
+                            </div>
+
                             <div class="label route-distance">
                                 {{ routeDistanceConverted }} {{ distanceUnit }}
                             </div>
@@ -204,12 +216,13 @@ const handleStartOrResume = () => {
                         </span>
                     </button>
 
-                    <Icon
+                    <button
+                        class="nav-btn dark icon-close"
                         v-show="countdown > 0"
                         @click="cancelAutoStart"
-                        name="lucide:x"
-                        size="28"
-                    />
+                    >
+                        <Icon name="lucide:x" size="26" class="icon" />
+                    </button>
                 </div>
             </div>
         </div>

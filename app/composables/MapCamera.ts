@@ -71,7 +71,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         const width = container.clientWidth;
         const isLandscape = width > height;
 
-        const topRatio = isLandscape ? 0.4 : 0.5;
+        const topRatio = isLandscape ? 0.3 : 0.4;
 
         return {
             top: Math.round(height * topRatio),

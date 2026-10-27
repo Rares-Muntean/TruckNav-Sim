@@ -3,15 +3,13 @@
     align-items: center;
     justify-content: space-between;
 
-    position: absolute;
-    bottom: calc(var(--bottom-pill-tabs-height) + 1rem);
-    right: 0;
-    left: 0;
-    margin: 0 1.6rem;
-    padding: 4px 12px 4px 12px;
+    text-wrap: nowrap;
+
+    padding: 4px 12px;
+    gap: 0.6rem;
 
     display: flex;
-    gap: 1.4rem;
+    flex: 1;
 
     font-size: var(--compact-trip-size);
     color: $white-font-text;
@@ -43,9 +41,20 @@
     align-items: center;
     justify-content: center;
     font-variant-numeric: tabular-nums;
-    gap: 0.4rem;
+    gap: 0.6rem;
 
     .dot {
-        margin-bottom: 2px;
+        background-color: $white-font-text;
+    }
+
+    .route-distance-wrapper {
+        display: flex;
+        align-items: baseline;
+        gap: 0.2rem;
+
+        .unit {
+            font-size: 1.4rem;
+            color: $white-font-text-muted;
+        }
     }
 }

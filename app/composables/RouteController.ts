@@ -39,7 +39,8 @@ export const useRouteController = (
 
     const destinationName = ref<string>("");
     const routeDistance = ref<number>(0);
-    const routeEta = ref<string>("");
+    const routeEtaHours = ref<string>("");
+    const routeEtaMinutes = ref<string>("");
 
     const isRouteActive = ref(false);
     const isYardStart = ref(false);
@@ -76,9 +77,8 @@ export const useRouteController = (
             const totalMinutes = Math.round(remainingHours * 60);
             const h = Math.floor(totalMinutes / 60);
             const m = totalMinutes % 60;
-            routeEta.value = `${usesRealTime ? "~ " : ""}${h}h ${m}min`;
-        } else {
-            routeEta.value = "Arriving...";
+            routeEtaHours.value = `${h}`;
+            routeEtaMinutes.value = `${m}`;
         }
     }
 
@@ -1104,7 +1104,8 @@ export const useRouteController = (
         worker,
         destinationName,
         routeDistance,
-        routeEta,
+        routeEtaHours,
+        routeEtaMinutes,
         isCalculating,
         routeFound,
         currentRoutePath,
