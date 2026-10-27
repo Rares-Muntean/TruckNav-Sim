@@ -84,6 +84,11 @@ $button-padding: 8px 10px;
     }
 }
 
+.items-wrapper-stacked {
+    border-radius: $default-border-radius;
+    overflow: hidden;
+}
+
 .selector {
     min-width: 150px;
     max-width: 200px;
@@ -167,16 +172,21 @@ $button-padding: 8px 10px;
     gap: 0.8rem;
     user-select: none;
 
-    background: $menu-item-gradient;
+    background-color: $primaryColor;
     padding: 1.4rem 1.2rem;
     border-radius: $default-border-radius;
 
     font-size: 1.8rem;
 
     .icon {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
         background-color: var(--theme-color);
+    }
+
+    &.stacked {
+        border-radius: 0px;
+        padding: 0.8rem 1rem;
     }
 }
 

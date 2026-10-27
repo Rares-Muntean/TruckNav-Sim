@@ -27,7 +27,7 @@ function resetColor() {
 </script>
 
 <template>
-    <div class="option setting">
+    <div class="option setting stacked">
         <div class="option-title">
             <slot name="icon"></slot>
             <p>{{ optionTitle }}</p>

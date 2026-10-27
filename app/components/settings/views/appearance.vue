@@ -55,7 +55,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             <div class="category-wrapper">
                 <p class="category-title">COLORS & MAP</p>
 
-                <div class="items-wrapper">
+                <div class="items-wrapper-stacked">
                     <ColorOption
                         :option-title="t('settings.theme')"
                         color-element="themeColor"
@@ -110,8 +110,11 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             <div class="category-wrapper">
                 <p class="category-title">Typography</p>
 
-                <div class="items-wrapper">
-                    <div class="option setting" @click="toggleTextColor">
+                <div class="items-wrapper-stacked">
+                    <div
+                        class="option setting stacked"
+                        @click="toggleTextColor"
+                    >
                         <div class="option-title">
                             <Icon name="lucide:type-outline" class="icon" />
                             <p>{{ t("settings.textTheme") }}</p>
@@ -125,7 +128,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         />
                     </div>
 
-                    <div class="option setting">
+                    <div class="option setting stacked">
                         <div class="option-title">
                             <Icon name="lucide:type" class="icon" />
                             <p>{{ t("settings.appFont") }}</p>
@@ -223,7 +226,8 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                                 class="compact-trip-progress preview"
                                 :route-distance-converted="999"
                                 distance-unit="mi"
-                                route-eta="9h 59min"
+                                route-eta-hours="9"
+                                route-eta-minutes="59"
                             />
                         </PreviewSetting>
                     </div>

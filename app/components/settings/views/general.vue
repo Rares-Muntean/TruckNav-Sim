@@ -60,10 +60,10 @@ onMounted(async () => {
             <div class="category-wrapper">
                 <p class="category-title">{{ t("settings.regionalGame") }}</p>
 
-                <div class="items-wrapper">
+                <div class="items-wrapper-stacked">
                     <div
                         v-if="activeSettings.activeMod === 'none'"
-                        class="option setting"
+                        class="option setting stacked"
                         @click.prevent="toggleDlcPanel"
                     >
                         <div class="option-title">
@@ -79,7 +79,7 @@ onMounted(async () => {
                         </div>
                     </div>
 
-                    <div class="option setting" @click="toggleUnits">
+                    <div class="option setting stacked" @click="toggleUnits">
                         <div class="option-title">
                             <Icon name="lucide:ruler" class="icon" />
                             <p>{{ t("settings.units") }}</p>
@@ -93,7 +93,7 @@ onMounted(async () => {
                         />
                     </div>
 
-                    <div class="option setting">
+                    <div class="option setting stacked">
                         <div class="option-title">
                             <Icon name="lucide:languages" class="icon" />
                             <p>{{ t("settings.language") }}</p>
@@ -133,9 +133,9 @@ onMounted(async () => {
             <div class="category-wrapper">
                 <p class="category-title">{{ t("settings.system") }}</p>
 
-                <div class="items-wrapper">
+                <div class="items-wrapper-stacked">
                     <div
-                        class="option setting"
+                        class="option setting stacked"
                         @click="updateDesktopSetting('rpcEnabled', !rpcEnabled)"
                     >
                         <div class="option-title">
@@ -151,7 +151,7 @@ onMounted(async () => {
                         />
                     </div>
 
-                    <div class="option setting">
+                    <div class="option setting stacked">
                         <div class="option-title">
                             <Icon name="lucide:rotate-ccw" class="icon" />
                             <p>{{ t("settings.resetToDefaults") }}</p>
