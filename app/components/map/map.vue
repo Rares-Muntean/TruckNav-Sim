@@ -646,11 +646,13 @@ const onCancelRoute = () => {
                     @update:add-stop-clicked="toggleAddStopClicked"
                 />
             </div>
-            \
+
             <SettingsPanel
                 @go-home="emit('goHome')"
                 v-show="activeTab === 'settings'"
             />
+
+            <Trip v-show="activeTab === 'trip'" />
 
             <BottomPillTabs v-model="activeTab" />
         </div>

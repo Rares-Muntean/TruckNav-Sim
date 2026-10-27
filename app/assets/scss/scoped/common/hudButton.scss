@@ -8,12 +8,11 @@
 
     backdrop-filter: $backdrop-filter;
     background-color: rgba($color: $primaryColor, $alpha: 0.8);
-    border: $el-border-design;
+    outline: $el-border-design;
     border-radius: $default-border-radius;
     overflow: hidden;
     transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: $el-box-shadow-design,
-        0 2px 6px rgba($color: #000000, $alpha: 0.08);
+    box-shadow: 0 2px 6px rgba($color: #000000, $alpha: 0.08);
 
     &:hover,
     &:active {

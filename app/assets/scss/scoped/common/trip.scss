@@ -1,0 +1,411 @@
+.section-trip {
+    position: relative;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: $ui-priority-index;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.background-dim {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba($color: $primaryBackgroundColor, $alpha: 0.65);
+}
+
+.trip-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    z-index: $above-ui-priority-index;
+
+    width: 100%;
+    height: 100%;
+    padding: 0 1.4rem;
+    padding-top: 1.8rem;
+    padding-bottom: calc(var(--bottom-pill-tabs-height) + 1.8rem);
+}
+
+.top-half {
+    display: flex;
+    flex-direction: column;
+}
+
+.truck-data {
+    display: flex;
+    align-items: baseline;
+
+    gap: 0.4rem;
+
+    .total-odo {
+        font-size: 1.4rem;
+        color: $white-font-text-muted;
+    }
+}
+
+.fuel-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: rgba($color: $primaryBackgroundColor, $alpha: 0.3);
+    border-radius: $default-border-radius;
+    border: 1px solid rgba($color: $primaryBackgroundColor, $alpha: 0.6);
+    padding: 0.4rem 0.8rem;
+}
+
+.fuel-title {
+    display: flex;
+    align-items: center;
+
+    gap: 0.4rem;
+
+    .icon {
+        width: 16px;
+        height: 16px;
+        color: var(--theme-color);
+    }
+}
+
+.fuel-title-wrapper {
+    display: flex;
+    align-items: center;
+
+    gap: 0.4rem;
+}
+
+.fuel-percentage-wrapper {
+    display: flex;
+    align-items: baseline;
+
+    gap: 0.2rem;
+}
+
+.fuel-percentage {
+    font-size: 1.4rem;
+    color: $white-font-text-muted;
+
+    .unit {
+        font-size: 1.2rem;
+    }
+}
+
+.dot {
+    width: 4px;
+    height: 4px;
+    transform: translateY(1px);
+    border-radius: 50%;
+    background-color: $white-font-text-muted;
+    opacity: 0.6;
+}
+
+.remains-avg-wrapper {
+    display: flex;
+    align-items: center;
+
+    gap: 0.5rem;
+}
+
+.fuel-unit-group {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: baseline;
+
+    gap: 0.2rem;
+
+    .avg {
+        font-size: 1.4rem;
+    }
+
+    .unit {
+        font-variant-numeric: normal;
+        font-size: 1.2rem;
+        color: $white-font-text-muted;
+    }
+}
+
+.truck-name-wrapper {
+    display: flex;
+    align-items: baseline;
+
+    gap: 0.5rem;
+
+    .model {
+        font-size: 1.6rem;
+    }
+}
+
+.bottom-half {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1.6rem;
+}
+
+.speed-sleep {
+    display: flex;
+    gap: 1rem;
+
+    width: 100%;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+
+    width: 100%;
+    background-color: $primaryColor;
+    border-radius: $default-border-radius;
+    padding: 1.2rem;
+
+    box-shadow: 0px 0px 24px rgba($color: #000000, $alpha: 0.09);
+
+    .card-icon {
+        width: 18px;
+        height: 18px;
+        color: var(--theme-color);
+    }
+
+    .full-width-bar {
+        width: 100%;
+    }
+}
+
+.card-title-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.65px;
+
+    color: $white-font-text-muted;
+}
+
+.data-value-wrapper {
+    display: flex;
+    align-items: end;
+
+    gap: 0.2rem;
+}
+
+.card-value-number {
+    font-weight: 700;
+    font-size: 2.4rem;
+
+    line-height: 1.2;
+}
+
+.card-value-unit {
+    font-size: 1.4rem;
+    color: $white-font-text-muted;
+}
+
+.value-status {
+    font-size: 1.4rem;
+    margin-top: 0.4rem;
+    color: $white-font-text-muted;
+
+    display: flex;
+    align-items: center;
+
+    gap: 0.4rem;
+}
+
+.status-point {
+    font-size: 0.7rem;
+
+    // TODO: delete
+    color: $green-color;
+
+    &.safe {
+        color: $green-color;
+    }
+}
+
+.trip-info {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1.2rem;
+}
+
+.delivery-info {
+    gap: 0.6rem;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+}
+
+.route-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem;
+}
+
+.location-group {
+    display: flex;
+    flex-direction: column;
+
+    .city {
+        font-size: 1.6rem;
+        line-height: 1.2;
+    }
+
+    .company {
+        font-size: 1.4rem;
+        color: $white-font-text-muted;
+        margin-top: 0.2rem;
+    }
+
+    &.origin {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    &.destination {
+        align-items: flex-end;
+        text-align: right;
+    }
+}
+
+.route-track {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    gap: 0.2rem;
+
+    .distance-badge {
+        display: flex;
+        align-items: baseline;
+        gap: 0.2rem;
+
+        .dist {
+            font-size: 1.6rem;
+        }
+
+        .unit {
+            font-size: 1.2rem;
+            color: $white-font-text-muted;
+        }
+    }
+
+    .line-with-arrow {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        color: $primaryLightButtonColor;
+
+        .line {
+            flex: 1;
+            height: 2px;
+            background-color: $primaryLightButtonColor;
+        }
+    }
+}
+
+.cargo-display {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.2rem;
+
+    .cargo-group {
+        display: flex;
+        flex-direction: column;
+
+        .cargo-title {
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            letter-spacing: 0.2px;
+            color: $white-font-text-muted;
+        }
+
+        .weight-wrapper {
+            display: flex;
+            align-items: baseline;
+            gap: 0.1rem;
+        }
+
+        .unit {
+            font-size: 1.6rem;
+            color: $white-font-text-muted;
+
+            &.white {
+                color: $white-font-text;
+            }
+        }
+
+        .cargo-value {
+            font-size: 1.6rem;
+        }
+
+        &.left {
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        &.right {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .remains-wrapper {
+            display: flex;
+            gap: 0.6rem;
+
+            .time {
+                display: flex;
+                align-items: baseline;
+
+                gap: 0.1rem;
+            }
+        }
+    }
+}
+
+.job-payout-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background-color: rgba($color: $green-color, $alpha: 0.07);
+    border-radius: $default-border-radius;
+    border: 1px solid rgba($color: $green-color, $alpha: 0.1);
+    padding: 0.4rem 0.8rem;
+
+    .payout-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        .payout-icon {
+            width: 18px;
+            height: 18px;
+
+            color: $green-color;
+        }
+    }
+
+    .payout-amount {
+        font-size: 1.6rem;
+    }
+}
