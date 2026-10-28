@@ -1,0 +1,18 @@
+.switch {
+    display: flex;
+
+    width: 5rem;
+    display: flex;
+    padding: 2px;
+
+    background-color: $primaryLightButtonColor;
+    border-radius: 50px;
+}
+
+.circle {
+    background-color: $primaryButtonAccent;
+    height: 2rem;
+    width: 2rem;
+
+    border-radius: 50%;
+}

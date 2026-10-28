@@ -14,6 +14,8 @@ const props = defineProps<{
     minValue: number;
 
     amount: number;
+
+    unit: string;
 }>();
 
 const currentSize = computed(() => settings.value[props.settingName]);
@@ -65,7 +67,7 @@ function stopHold() {
         </div>
         <div class="increase-option">
             <button
-                class="nav-btn primary-color icon-close"
+                class="nav-btn increase-btn"
                 @click.prevent="updateSize('-')"
                 @mousedown="startHold('-')"
                 @mouseup="stopHold"
@@ -77,11 +79,16 @@ function stopHold() {
             </button>
 
             <div>
-                <span class="increase-current-size">{{ currentSize }}</span>
+                <div class="increase-current-size">
+                    <span>{{ currentSize }}</span>
+                    <span class="unit">
+                        {{ unit }}
+                    </span>
+                </div>
             </div>
 
             <button
-                class="nav-btn primary-color icon-close"
+                class="nav-btn increase-btn"
                 @click.prevent="updateSize('+')"
                 @mousedown="startHold('+')"
                 @mouseup="stopHold"

@@ -12,6 +12,7 @@ const {
 } = useDesktopSettings();
 
 const isDlcPanelOpened = ref(false);
+const isLanguagePanelOpened = ref(false);
 
 const isMetric = computed(() => activeSettings.value.units === "metric");
 const rpcEnabled = computed(() => desktopSettings.value.rpcEnabled);
@@ -22,13 +23,41 @@ const selectedExpansion = computed(() => {
 });
 
 const languageItems = computed(() => [
-    { label: t("languages.english"), value: "en" as LocaleCode },
-    { label: t("languages.german"), value: "de" as LocaleCode },
-    { label: t("languages.dutch"), value: "nl" as LocaleCode },
-    { label: t("languages.czech"), value: "cs" as LocaleCode },
-    { label: t("languages.slovak"), value: "sk" as LocaleCode },
-    { label: t("languages.romanian"), value: "ro" as LocaleCode },
-    { label: t("languages.korean"), value: "ko" as LocaleCode },
+    {
+        label: t("languages.english"),
+        value: "en" as LocaleCode,
+        icon: "flag:us-4x3",
+    },
+    {
+        label: t("languages.german"),
+        value: "de" as LocaleCode,
+        icon: "flag:de-4x3",
+    },
+    {
+        label: t("languages.dutch"),
+        value: "nl" as LocaleCode,
+        icon: "flag:nl-4x3",
+    },
+    {
+        label: t("languages.czech"),
+        value: "cs" as LocaleCode,
+        icon: "flag:cz-4x3",
+    },
+    {
+        label: t("languages.slovak"),
+        value: "sk" as LocaleCode,
+        icon: "flag:sk-4x3",
+    },
+    {
+        label: t("languages.romanian"),
+        value: "ro" as LocaleCode,
+        icon: "flag:ro-4x3",
+    },
+    {
+        label: t("languages.korean"),
+        value: "ko" as LocaleCode,
+        icon: "flag:kr-4x3",
+    },
 ]);
 
 const currentLanguageLabel = computed(() => {
@@ -45,6 +74,10 @@ function toggleUnits() {
 
 function toggleDlcPanel() {
     isDlcPanelOpened.value = !isDlcPanelOpened.value;
+}
+
+function toggleLanguagePanel() {
+    isLanguagePanelOpened.value = !isLanguagePanelOpened.value;
 }
 
 onMounted(async () => {
@@ -76,11 +109,18 @@ onMounted(async () => {
                             <p>{{ t("settings.ownedDlcs") }}</p>
                         </div>
 
-                        <div class="owned-dlcs">
-                            <button class="nav-btn settings-btn">
-                                {{ activeSettings.ownedDlcs.length }} /
-                                {{ Object.keys(selectedExpansion).length }}
-                            </button>
+                        <div class="option-action">
+                            <div class="owned-dlcs">
+                                <span class="setting-button-text">
+                                    {{ activeSettings.ownedDlcs.length }} /
+                                    {{ Object.keys(selectedExpansion).length }}
+                                </span>
+                            </div>
+
+                            <Icon
+                                name="lucide:chevron-right"
+                                class="chevron translate-y"
+                            />
                         </div>
                     </div>
 
@@ -105,8 +145,14 @@ onMounted(async () => {
 
                     <div class="small-separator"></div>
 
-                    <div class="option setting stacked">
-                        <div class="option-title">
+                    <div
+                        @click.self="toggleLanguagePanel"
+                        class="option setting stacked"
+                    >
+                        <div
+                            @click.stop="toggleLanguagePanel"
+                            class="option-title"
+                        >
                             <div class="icon-wrapper">
                                 <Icon name="lucide:languages" class="icon" />
                             </div>
@@ -114,33 +160,62 @@ onMounted(async () => {
                             <p>{{ t("settings.language") }}</p>
                         </div>
 
-                        <USelect
-                            :model-value="locale"
-                            @update:model-value="(val: any) => setLocale(val)"
-                            :items="languageItems"
-                            variant="none"
-                            class="selector"
-                            :ui="{
-                                trailingIcon:
-                                    'shrink-0 size-[20px] text-white !px-6',
-                                content:
-                                    'bg-[#333333] shadow-xl rounded-md ring-0 border-0 outline-none',
-                                item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#333333] rounded cursor-pointer transition-colors',
-                                itemTrailingIcon: 'text-white',
-                            }"
+                        <div
+                            @click.stop="toggleLanguagePanel"
+                            class="option-action"
                         >
-                            <template #default>
-                                <span>
+                            <div class="owned-dlcs">
+                                <span class="setting-button-text">
                                     {{ currentLanguageLabel }}
                                 </span>
-                            </template>
+                            </div>
 
-                            <template #item="{ item }">
-                                <span>
-                                    {{ item.label }}
-                                </span>
-                            </template>
-                        </USelect>
+                            <Icon
+                                name="lucide:chevron-right"
+                                class="chevron translate-y"
+                            />
+                        </div>
+
+                        <PopupPanel
+                            v-if="isLanguagePanelOpened"
+                            @close="toggleLanguagePanel"
+                        >
+                            <template #title>Languages</template>
+
+                            <div class="languages">
+                                <div
+                                    v-for="language in languageItems"
+                                    class="language"
+                                    :class="{
+                                        active:
+                                            language.label ===
+                                            currentLanguageLabel,
+                                    }"
+                                    @click="setLocale(language.value)"
+                                >
+                                    <Icon
+                                        v-show="language.value === locale"
+                                        name="lucide:circle-check-big"
+                                        class="checkmark"
+                                    />
+
+                                    <div class="flag">
+                                        <Icon
+                                            :name="language.icon"
+                                            class="flag-icon"
+                                            :class="{
+                                                active:
+                                                    language.label ===
+                                                    currentLanguageLabel,
+                                            }"
+                                            size="30"
+                                        />
+                                    </div>
+
+                                    <p>{{ language.label }}</p>
+                                </div>
+                            </div>
+                        </PopupPanel>
                     </div>
                 </div>
             </div>
@@ -161,12 +236,7 @@ onMounted(async () => {
                             <p>{{ t("desktop.discordRpc") }}</p>
                         </div>
 
-                        <SegmentedControl
-                            :left-option="t('settings.on')"
-                            :right-option="t('settings.off')"
-                            size="normal"
-                            :active="rpcEnabled"
-                        />
+                        <Switch v-model="rpcEnabled" />
                     </div>
 
                     <div class="small-separator"></div>
@@ -182,7 +252,7 @@ onMounted(async () => {
 
                         <button
                             @click.prevent="resetSettings"
-                            class="nav-btn settings-btn"
+                            class="nav-btn dark settings-btn"
                         >
                             {{ t("common.reset") }}
                         </button>

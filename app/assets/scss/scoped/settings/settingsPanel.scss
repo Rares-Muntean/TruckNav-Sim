@@ -78,11 +78,7 @@ $button-padding: 8px 10px;
     display: flex;
     flex-direction: column;
 
-    gap: 1rem;
-
-    &.hud {
-        gap: 1.4rem;
-    }
+    gap: 1.2rem;
 }
 
 .items-wrapper-stacked {
@@ -132,26 +128,13 @@ $button-padding: 8px 10px;
     opacity: 0.7;
 }
 
-.settings-btn {
+.setting-button-text {
     display: flex;
     align-items: center;
-
     justify-content: center;
-    border-radius: $default-border-radius;
-    background-color: $primaryLightButtonColor;
-    color: $white-font-text;
-    font-weight: 500;
-    transition: 0s;
-    box-shadow: none;
-    padding: 6px 10px;
-    font-size: 1.6rem;
 
-    transition: 0.2s ease all;
-
-    &:active {
-        opacity: 0.5;
-        transform: translateY(1px);
-    }
+    color: $white-font-text-muted;
+    font-size: 1.4rem;
 }
 
 .actual-truck-preview {
@@ -163,7 +146,7 @@ $button-padding: 8px 10px;
  */
 .option {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.8rem;
     user-select: none;
 
@@ -191,8 +174,11 @@ $button-padding: 8px 10px;
     .chevron {
         width: 16px;
         height: 16px;
-        background-color: $white-font-text;
-        opacity: 0.8;
+        background-color: $white-font-text-muted;
+
+        &.translate-y {
+            transform: translateY(1px);
+        }
     }
 
     &.stacked {
@@ -202,6 +188,9 @@ $button-padding: 8px 10px;
 }
 
 .setting {
+    display: flex;
+    align-items: center;
+
     font-size: 1.6rem;
     flex-direction: row;
     justify-content: space-between;
@@ -240,6 +229,17 @@ $button-padding: 8px 10px;
     align-items: center;
 }
 
+.option-action {
+    display: flex;
+    align-items: center;
+
+    gap: 0.4rem;
+}
+
+.settings-btn {
+    padding: 0.4rem 1rem;
+}
+
 .picker-footer {
     display: flex;
     align-items: center;
@@ -258,15 +258,55 @@ $button-padding: 8px 10px;
 
 .increase-option {
     display: flex;
-    gap: 0.8rem;
+    gap: 0.6rem;
     align-items: center;
+
+    padding: 1px 4px;
+
+    background-color: $primaryLightButtonColor;
+    border-radius: $default-border-radius;
+}
+
+.increase-btn {
+    padding: 5px 2px;
+    background-color: $primaryLightButtonColor;
+
+    color: $white-font-text;
+    box-shadow: none;
+}
+
+.increase-current-size {
+    font-variant-numeric: tabular-nums;
+
+    display: flex;
+    align-items: baseline;
+    gap: 0.2rem;
+
+    .unit {
+        font-size: 1.2rem;
+        color: $white-font-text-muted;
+    }
 }
 
 .change-color-btn {
     width: 30px;
     height: 30px;
+
+    margin: 0.15rem 0;
+
     border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+
+    background-color: var(--swatch-color);
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.edit-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .color-picker {
@@ -284,15 +324,68 @@ $button-padding: 8px 10px;
     gap: 0.8rem;
 }
 
-.preview-increase {
-    display: flex;
-    flex-direction: column;
+.languages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
 
-    gap: 0.6rem;
+    gap: 1rem;
+    column-gap: 1.4rem;
 }
 
-.increase-current-size {
-    font-variant-numeric: tabular-nums;
+.language {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.6rem;
+
+    padding: 1rem;
+
+    background-color: $primaryColor;
+
+    border-radius: $default-border-radius;
+    color: rgba($white-font-text, 0.7);
+
+    border: 2px solid $primaryAccentColor;
+
+    &.active {
+        border-color: color-mix(in srgb, var(--theme-color) 70%, transparent);
+
+        background-color: color-mix(
+            in srgb,
+            var(--theme-color) 14%,
+            transparent
+        );
+
+        color: $white-font-text;
+    }
+
+    .checkmark {
+        position: absolute;
+        right: 6px;
+        top: 7px;
+
+        color: $green-color;
+        width: 18px;
+        height: 18px;
+    }
+
+    .flag-icon {
+        width: 38px;
+        border-radius: $default-border-radius;
+        box-shadow: 0px 2px 8px rgba($color: #000000, $alpha: 0.15);
+    }
+}
+
+.flag {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: $default-border-radius;
 }
 
 /**

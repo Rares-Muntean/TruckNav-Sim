@@ -78,7 +78,7 @@ onMounted(async () => {
                                 </div>
 
                                 <Icon
-                                    name="lucide:arrow-right"
+                                    name="lucide:chevron-right"
                                     class="icon chevron"
                                 />
                             </div>
@@ -108,7 +108,7 @@ onMounted(async () => {
                                 </div>
 
                                 <Icon
-                                    name="lucide:arrow-right"
+                                    name="lucide:chevron-right"
                                     class="icon chevron"
                                 />
                             </div>
@@ -138,7 +138,7 @@ onMounted(async () => {
                                 </div>
 
                                 <Icon
-                                    name="lucide:arrow-right"
+                                    name="lucide:chevron-right"
                                     class="icon chevron"
                                 />
                             </div>

@@ -119,7 +119,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         </template>
                     </ColorOption>
 
-                    <PreviewSetting :height="240">
+                    <PreviewSetting :height="150">
                         <MapColorPreview />
                     </PreviewSetting>
                 </div>
@@ -160,7 +160,20 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                             <p>{{ t("settings.appFont") }}</p>
                         </div>
 
-                        <USelect
+                        <div class="option-action">
+                            <div class="owned-dlcs">
+                                <span class="setting-button-text">
+                                    {{ activeSettings.fontFamily }}
+                                </span>
+                            </div>
+
+                            <Icon
+                                name="lucide:chevron-right"
+                                class="chevron translate-y"
+                            />
+                        </div>
+
+                        <!-- <USelect
                             :model-value="activeSettings.fontFamily"
                             @update:model-value="(val: string) => updateFont(val)"
                             :items="items"
@@ -180,7 +193,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                                     {{ item }}
                                 </span>
                             </template>
-                        </USelect>
+                        </USelect> -->
                     </div>
                 </div>
             </div>
@@ -188,89 +201,98 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             <div class="category-wrapper">
                 <p class="category-title small">Hud & Sizing</p>
 
-                <div class="items-wrapper hud">
-                    <div class="preview-increase">
-                        <IncreaseOption
-                            :option-title="t('settings.hudButtonSize')"
-                            setting-name="hudBtnSize"
-                            :max-value="40"
-                            :min-value="20"
-                            :amount="1"
-                        >
-                            <template #icon>
-                                <div class="icon-wrapper">
-                                    <Icon
-                                        name="lucide:square-plus"
-                                        class="icon"
-                                    />
-                                </div>
-                            </template>
-                        </IncreaseOption>
+                <div class="items-wrapper">
+                    <div class="items-wrapper-stacked">
+                        <div class="preview-increase">
+                            <IncreaseOption
+                                :option-title="t('settings.hudButtonSize')"
+                                setting-name="hudBtnSize"
+                                :max-value="40"
+                                :min-value="20"
+                                :amount="1"
+                                unit="px"
+                            >
+                                <template #icon>
+                                    <div class="icon-wrapper">
+                                        <Icon
+                                            name="lucide:square-plus"
+                                            class="icon"
+                                        />
+                                    </div>
+                                </template>
+                            </IncreaseOption>
 
-                        <PreviewSetting :height="40">
-                            <HudButton v-on:click="null">
-                                <Icon name="lucide:star" class="icon" />
-                            </HudButton>
-                        </PreviewSetting>
+                            <PreviewSetting :height="40">
+                                <HudButton v-on:click="null">
+                                    <Icon name="lucide:star" class="icon" />
+                                </HudButton>
+                            </PreviewSetting>
+                        </div>
                     </div>
 
-                    <div class="preview-increase">
-                        <IncreaseOption
-                            :option-title="t('settings.truckMarkerSize')"
-                            setting-name="truckMarkerSize"
-                            :max-value="70"
-                            :min-value="25"
-                            :amount="1"
-                        >
-                            <template #icon>
-                                <div class="icon-wrapper">
-                                    <Icon
-                                        name="lucide:map-pin-plus"
-                                        class="icon"
-                                    />
-                                </div>
-                            </template>
-                        </IncreaseOption>
+                    <div class="items-wrapper-stacked">
+                        <div class="preview-increase">
+                            <IncreaseOption
+                                :option-title="t('settings.truckMarkerSize')"
+                                setting-name="truckMarkerSize"
+                                :max-value="70"
+                                :min-value="25"
+                                :amount="1"
+                                unit="px"
+                            >
+                                <template #icon>
+                                    <div class="icon-wrapper">
+                                        <Icon
+                                            name="lucide:map-pin-plus"
+                                            class="icon"
+                                        />
+                                    </div>
+                                </template>
+                            </IncreaseOption>
 
-                        <PreviewSetting :height="40">
-                            <div
-                                class="actual-truck-preview"
-                                :style="{
-                                    width: settings.truckMarkerSize + 'px',
-                                    height: settings.truckMarkerSize + 'px',
-                                    backgroundImage: `url('${truckImgSrc}')`,
-                                }"
-                            ></div>
-                        </PreviewSetting>
+                            <PreviewSetting :height="40">
+                                <div
+                                    class="actual-truck-preview"
+                                    :style="{
+                                        width: settings.truckMarkerSize + 'px',
+                                        height: settings.truckMarkerSize + 'px',
+                                        backgroundImage: `url('${truckImgSrc}')`,
+                                    }"
+                                ></div>
+                            </PreviewSetting>
+                        </div>
                     </div>
 
-                    <div class="preview-increase">
-                        <IncreaseOption
-                            :option-title="t('settings.compactTripSize')"
-                            setting-name="compactTripFontSize"
-                            :max-value="2.5"
-                            :min-value="1.2"
-                            :amount="0.1"
-                        >
-                            <template #icon>
-                                <div class="icon-wrapper">
-                                    <Icon
-                                        name="lucide:circle-plus"
-                                        class="icon"
-                                    />
-                                </div>
-                            </template>
-                        </IncreaseOption>
+                    <div class="items-wrapper-stacked">
+                        <div class="preview-increase">
+                            <IncreaseOption
+                                :option-title="t('settings.compactTripSize')"
+                                setting-name="compactTripFontSize"
+                                :max-value="2.5"
+                                :min-value="1.2"
+                                :amount="0.1"
+                                unit="x"
+                            >
+                                <template #icon>
+                                    <div class="icon-wrapper">
+                                        <Icon
+                                            name="lucide:circle-plus"
+                                            class="icon"
+                                        />
+                                    </div>
+                                </template>
+                            </IncreaseOption>
 
-                        <PreviewSetting :height="100">
-                            <CompactTrip
-                                class="compact-trip-progress preview"
-                                :route-distance-converted="999"
-                                distance-unit="mi"
-                                route-eta-hours="9"
-                                route-eta-minutes="59"
-                            />
-                        </PreviewSetting>
+                            <PreviewSetting :height="70">
+                                <CompactTrip
+                                    class="compact-trip-progress preview"
+                                    :route-distance-converted="999"
+                                    distance-unit="mi"
+                                    route-eta-hours="9"
+                                    route-eta-minutes="59"
+                                />
+                            </PreviewSetting>
+                        </div>
                     </div>
 
                     <div
@@ -284,12 +306,19 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
                             <p>{{ t("settings.drivingInfo") }}</p>
                         </div>
-                        <div class="owned-dlcs">
-                            <button class="nav-btn settings-btn">
-                                {{ settings.activeUiComponents.length }} /
-                                {{ DEFAULT_SETTINGS.activeUiComponents.length }}
-                                {{ t("common.active") }}
-                            </button>
+
+                        <div class="option-action">
+                            <div class="owned-dlcs">
+                                <span class="setting-button-text">
+                                    {{ settings.activeUiComponents.length }} /
+                                    {{
+                                        DEFAULT_SETTINGS.activeUiComponents
+                                            .length
+                                    }}
+                                </span>
+                            </div>
+
+                            <Icon name="lucide:chevron-right" class="chevron" />
                         </div>
                     </div>
                 </div>

@@ -47,6 +47,7 @@
     },
     "devDependencies": {
         "@capacitor/assets": "^3.0.5",
+        "@iconify-json/flag": "^1.2.13",
         "@iconify-json/lucide": "^1.2.102",
         "@iconify-json/map": "^1.2.2",
         "@iconify-json/svg-spinners": "^1.2.4",

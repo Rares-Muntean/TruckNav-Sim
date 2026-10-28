@@ -42,12 +42,7 @@ function toggleRouteTimeMode() {
                             <p>{{ t("settings.guidedNavigation") }}</p>
                         </div>
 
-                        <SegmentedControl
-                            :left-option="t('settings.on')"
-                            :right-option="t('settings.off')"
-                            size="normal"
-                            :active="hasGuidedNavigation"
-                        />
+                        <Switch v-model="hasGuidedNavigation" />
                     </div>
 
                     <div class="small-separator"></div>

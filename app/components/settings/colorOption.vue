@@ -39,14 +39,11 @@ function resetColor() {
                 }"
             >
                 <UButton
+                    :style="{ '--swatch-color': currentColor }"
                     class="change-color-btn nav-btn settings-btn"
-                    :style="{ backgroundColor: currentColor }"
                 >
                     <template #leading>
-                        <span
-                            :style="{ backgroundColor: currentColor }"
-                            class="color-preview"
-                        />
+                        <span class="color-preview" />
                     </template>
                 </UButton>
 
