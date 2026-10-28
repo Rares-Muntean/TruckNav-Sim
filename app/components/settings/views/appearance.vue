@@ -253,10 +253,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         <div class="owned-dlcs">
                             <button class="nav-btn settings-btn">
                                 {{ settings.activeUiComponents.length }} /
-                                {{
-                                    DEFAULT_SETTINGS.activeUiComponents.length +
-                                    1
-                                }}
+                                {{ DEFAULT_SETTINGS.activeUiComponents.length }}
                                 {{ t("common.active") }}
                             </button>
                         </div>

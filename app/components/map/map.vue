@@ -619,16 +619,7 @@ const onCancelRoute = () => {
                     class="trip-info-compact"
                     v-if="isRouteActive && isSheetHidden"
                 >
-                    <div class="speed-and-limit">
-                        <div class="current-speed-wrapper">
-                            <div class="current-speed">43</div>
-                            <span class="unit">mph</span>
-                        </div>
-
-                        <div class="limit-speed-wrapper ets2">
-                            <div class="limit-speed">48</div>
-                        </div>
-                    </div>
+                    <SpeedLimit />
 
                     <CompactTrip
                         :route-distance-converted="routeDistanceConverted"

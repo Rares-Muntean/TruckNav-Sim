@@ -69,7 +69,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     hudBtnSize: 28,
     truckMarkerSize: 40,
     compactTripFontSize: 1.8,
-    activeUiComponents: ["speedLimit"],
+    activeUiComponents: ["speedLimit", "speed"],
     locale: "en",
     routeTimeMode: "game",
 };

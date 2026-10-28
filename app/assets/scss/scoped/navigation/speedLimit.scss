@@ -1,85 +1,71 @@
-$speed-limit-height: 72px;
-
-.over-limit {
-    align-items: center;
-    justify-self: end;
-    color: $red-color;
-    font-size: 2rem;
-    font-weight: 800;
-}
-
-.speed-limit {
-    color: #272d39;
-    font-weight: 800;
-    letter-spacing: -0.8px;
-    font-size: 3.2rem;
-
-    max-width: 100%;
-    text-align: center;
-    line-height: 1;
-}
-
-.speed-limit-sign {
-    position: absolute;
-    bottom: 25px;
-    left: 22px;
-    transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-
-    background-color: $white-font-text;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    bottom: 25px;
-
-    &.circle {
-        border: 5px solid $red-color;
-        border-radius: 100px;
-
-        width: $speed-limit-height;
-        height: calc($speed-limit-height - 3px);
-    }
-
-    &.square {
-        border: 3px solid #222;
-
-        border-radius: $default-border-radius;
-
-        width: calc($speed-limit-height - 12px);
-        height: $speed-limit-height;
-    }
-}
-
-.speed-limit-over-limit {
-    position: absolute;
-
-    background-color: #1d2833;
-
+.speed-and-limit {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
 
-    &.circle {
-        top: calc(-1 * ($speed-limit-height - 46px));
-        right: calc(-1 * ($speed-limit-height - 55px));
+    font-variant-numeric: tabular-nums;
+    background-color: $primaryColor;
 
-        width: (calc($speed-limit-height - 28px));
-        height: (calc($speed-limit-height - 28px));
+    font-size: var(--compact-trip-size);
 
-        border: 3.5px solid #304257;
-        border-radius: 100px;
+    padding: 6px 20px;
+
+    border: $el-border-design;
+    backdrop-filter: $backdrop-filter;
+    background-color: rgba($color: $primaryColor, $alpha: 0.9);
+
+    border-radius: $default-border-radius;
+
+    .dot {
+        background-color: $white-font-text;
+    }
+}
+
+.limit-speed-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: $primaryBackgroundColor;
+    font-weight: 700;
+
+    margin-bottom: 2px;
+
+    &.ats {
+        background-color: #f3f3f3;
+        aspect-ratio: 4/5;
+        padding: 0px 2px;
+        border-radius: 3px;
+        outline: 2px solid rgba($color: #000000, $alpha: 0.7);
     }
 
-    &.square {
-        top: calc(-1 * ($speed-limit-height - 47px));
-        right: calc(-1 * ($speed-limit-height - 56px));
-
-        width: (calc($speed-limit-height - 39px));
-        height: (calc($speed-limit-height - 30px));
-
-        border: 2px solid #304257;
-
-        border-radius: $default-border-radius;
+    &.ets2 {
+        background-color: #f3f3f3;
+        aspect-ratio: 1/1;
+        padding: 2px;
+        border-radius: 50%;
+        outline: 2px solid rgba($color: #b81d13, $alpha: 1);
     }
+}
+
+.current-speed-wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    line-height: 1.05;
+
+    font-size: 2.4rem;
+    font-weight: 700;
+}
+
+.limit-speed {
+    font-size: 2rem;
+}
+
+.unit {
+    font-size: 1.2rem;
+    color: $white-font-text-muted;
 }
