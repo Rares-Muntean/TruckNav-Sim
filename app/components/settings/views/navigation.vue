@@ -25,7 +25,9 @@ function toggleRouteTimeMode() {
     <div>
         <div class="menu-list">
             <div class="category-wrapper">
-                <p class="category-title">{{ t("settings.guidanceTime") }}</p>
+                <p class="category-title small">
+                    {{ t("settings.guidanceTime") }}
+                </p>
 
                 <div class="items-wrapper-stacked">
                     <div
@@ -33,7 +35,10 @@ function toggleRouteTimeMode() {
                         @click="toggleGuidedNavigation"
                     >
                         <div class="option-title">
-                            <Icon name="lucide:navigation-2" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:navigation-2" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.guidedNavigation") }}</p>
                         </div>
 
@@ -52,7 +57,10 @@ function toggleRouteTimeMode() {
                         @click="toggleRouteTimeMode"
                     >
                         <div class="option-title">
-                            <Icon name="lucide:clock-3" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:clock-3" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.estimatedTime") }}</p>
                         </div>
 

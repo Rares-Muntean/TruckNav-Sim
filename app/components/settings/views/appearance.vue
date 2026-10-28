@@ -53,7 +53,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
     <div>
         <div class="menu-list">
             <div class="category-wrapper">
-                <p class="category-title">COLORS & MAP</p>
+                <p class="category-title small">COLORS & MAP</p>
 
                 <div class="items-wrapper-stacked">
                     <ColorOption
@@ -61,7 +61,9 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         color-element="themeColor"
                     >
                         <template #icon>
-                            <Icon name="lucide:palette" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:palette" class="icon" />
+                            </div>
                         </template>
                     </ColorOption>
 
@@ -72,7 +74,9 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         color-element="routeColor"
                     >
                         <template #icon>
-                            <Icon name="lucide:milestone" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:milestone" class="icon" />
+                            </div>
                         </template>
                     </ColorOption>
 
@@ -83,7 +87,9 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         color-element="backgroundColor"
                     >
                         <template #icon>
-                            <Icon name="lucide:waves" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:waves" class="icon" />
+                            </div>
                         </template>
                     </ColorOption>
 
@@ -94,7 +100,9 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         color-element="landColor"
                     >
                         <template #icon>
-                            <Icon name="lucide:mountain" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:mountain" class="icon" />
+                            </div>
                         </template>
                     </ColorOption>
 
@@ -105,7 +113,9 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         color-element="roadColor"
                     >
                         <template #icon>
-                            <Icon name="lucide:route" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:route" class="icon" />
+                            </div>
                         </template>
                     </ColorOption>
 
@@ -116,7 +126,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             </div>
 
             <div class="category-wrapper">
-                <p class="category-title">Typography</p>
+                <p class="category-title small">Typography</p>
 
                 <div class="items-wrapper-stacked">
                     <div
@@ -124,7 +134,10 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         @click="toggleTextColor"
                     >
                         <div class="option-title">
-                            <Icon name="lucide:type-outline" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:type-outline" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.textTheme") }}</p>
                         </div>
 
@@ -140,7 +153,10 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
                     <div class="option setting stacked">
                         <div class="option-title">
-                            <Icon name="lucide:type" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:type" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.appFont") }}</p>
                         </div>
 
@@ -170,7 +186,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             </div>
 
             <div class="category-wrapper">
-                <p class="category-title">Hud & Sizing</p>
+                <p class="category-title small">Hud & Sizing</p>
 
                 <div class="items-wrapper hud">
                     <div class="preview-increase">
@@ -182,7 +198,12 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                             :amount="1"
                         >
                             <template #icon>
-                                <Icon name="lucide:square-plus" class="icon" />
+                                <div class="icon-wrapper">
+                                    <Icon
+                                        name="lucide:square-plus"
+                                        class="icon"
+                                    />
+                                </div>
                             </template>
                         </IncreaseOption>
 
@@ -202,7 +223,12 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                             :amount="1"
                         >
                             <template #icon>
-                                <Icon name="lucide:map-pin-plus" class="icon" />
+                                <div class="icon-wrapper">
+                                    <Icon
+                                        name="lucide:map-pin-plus"
+                                        class="icon"
+                                    />
+                                </div>
                             </template>
                         </IncreaseOption>
 
@@ -227,7 +253,12 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                             :amount="0.1"
                         >
                             <template #icon>
-                                <Icon name="lucide:circle-plus" class="icon" />
+                                <div class="icon-wrapper">
+                                    <Icon
+                                        name="lucide:circle-plus"
+                                        class="icon"
+                                    />
+                                </div>
                             </template>
                         </IncreaseOption>
 
@@ -247,7 +278,10 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         @click.prevent="toggleDriveInfoPanel"
                     >
                         <div class="option-title">
-                            <Icon name="lucide:info" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:info" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.drivingInfo") }}</p>
                         </div>
                         <div class="owned-dlcs">

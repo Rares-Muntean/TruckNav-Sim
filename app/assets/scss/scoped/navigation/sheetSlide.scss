@@ -19,7 +19,7 @@ $compact-bar-height: 35px;
         border-radius: $default-border-radius;
     }
 
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.4rem;
 }
 
 .route-distance-flex {
@@ -40,7 +40,7 @@ $compact-bar-height: 35px;
 
 .action-buttons {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 0.8rem;
 
     .start-btn {
@@ -87,11 +87,17 @@ $compact-bar-height: 35px;
     cursor: pointer;
 }
 
+.small-separator {
+    margin: 0 -1rem;
+    margin-top: -0.4rem;
+}
+
 .sheet-body {
     display: flex;
     flex-direction: column;
+    gap: 1.2rem;
 
-    padding: 10px 20px 18px 20px;
+    padding: 10px 20px 26px 20px;
 
     touch-action: none;
     user-select: none;
@@ -162,19 +168,11 @@ $compact-bar-height: 35px;
     font-variant-numeric: tabular-nums;
 }
 
-.separator {
-    width: auto;
-    height: 1px;
-    background: $primaryAccentColor;
-    margin: 1rem -3rem;
-    display: flex;
-}
-
 .full-stats {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.2rem;
 
     .stat-block {
         display: flex;

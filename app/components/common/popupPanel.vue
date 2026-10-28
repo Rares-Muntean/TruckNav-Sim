@@ -9,19 +9,16 @@ const emit = defineEmits(["close"]);
         <div class="section popup-window">
             <div class="title-wrapper">
                 <div class="section-title">
-                    <slot name="icon"></slot>
+                    <button
+                        class="nav-btn icon-close primary-color"
+                        @click="emit('close')"
+                    >
+                        <Icon name="lucide:arrow-left" size="17" />
+                    </button>
+
                     <slot name="title"></slot>
                 </div>
-
-                <button
-                    class="nav-btn icon-close primary-color"
-                    @click="emit('close')"
-                >
-                    <Icon name="lucide:x" size="18" />
-                </button>
             </div>
-
-            <div class="separator"></div>
 
             <div class="popup-content">
                 <slot />

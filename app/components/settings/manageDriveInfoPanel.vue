@@ -45,6 +45,9 @@ function toggleUiComponent(componentId: UiComponent) {
             v-for="component in components"
             :key="component.id"
             @click="toggleUiComponent(component.id)"
+            :class="{
+                'is-active': settings.activeUiComponents.includes(component.id),
+            }"
         >
             <div class="info">
                 <div class="title">

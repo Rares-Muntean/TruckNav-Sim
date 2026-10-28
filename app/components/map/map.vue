@@ -649,6 +649,7 @@ const onCancelRoute = () => {
 
             <SettingsPanel
                 @go-home="emit('goHome')"
+                @go-map-view="activeTab = 'drive'"
                 v-show="activeTab === 'settings'"
             />
 

@@ -318,8 +318,6 @@ const isModActive = (modId: string) => {
             <LiveDot :is-active="isConnected" />
         </div>
 
-        <div class="separator"></div>
-
         <div class="content">
             <div class="top-content">
                 <div class="select-sim-wrapper">

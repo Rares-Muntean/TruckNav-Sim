@@ -139,7 +139,6 @@ const handleStartOrResume = () => {
 
                 <div class="top-row">
                     <div class="dest-name-wrapper">
-                        <Icon name="lucide:map-pin" size="20" class="icon" />
                         <h2 class="dest-name">{{ destinationName }}</h2>
                     </div>
 
@@ -152,9 +151,9 @@ const handleStartOrResume = () => {
                         </button>
                     </div>
                 </div>
-
-                <div class="separator"></div>
             </div>
+
+            <div class="small-separator"></div>
 
             <div class="sheet-content">
                 <div class="full-stats">
@@ -192,10 +191,10 @@ const handleStartOrResume = () => {
                 <div class="action-buttons" @pointerdown.stop>
                     <button
                         v-show="isNavigating"
-                        class="nav-btn dark icon-close"
+                        class="nav-btn red square"
                         @click.prevent="onStopNavigation"
                     >
-                        <Icon name="lucide:x" size="26" class="icon" />
+                        <Icon name="lucide:x" size="22" class="icon" />
                     </button>
 
                     <button

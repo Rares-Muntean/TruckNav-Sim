@@ -77,7 +77,7 @@ button {
 
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1rem;
 
     font-size: 1.8rem;
 
@@ -98,13 +98,12 @@ button {
 }
 
 .small-separator {
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.02),
-        transparent
-    );
+    height: 2px;
+    margin: 0 1.6rem;
+    background-color: $primaryAccentColor;
+
+    border-radius: $default-border-radius;
+    opacity: 0.7;
 }
 
 .dot {
@@ -122,7 +121,11 @@ button {
     color: $white-font-text-muted;
     font-weight: 600;
 
-    letter-spacing: 0.3px;
+    letter-spacing: 0.4px;
+
+    &.small {
+        font-size: 1.4rem;
+    }
 }
 
 .nav-btn {
@@ -171,6 +174,23 @@ button {
         background-color: $primaryLightButtonColor;
         color: $white-font-text;
         font-weight: 500;
+    }
+
+    &.red {
+        color: rgba($color: $red-color, $alpha: 0.85);
+        background-color: rgba($color: $red-color, $alpha: 0.15);
+    }
+
+    &.square {
+        align-self: stretch;
+        height: auto;
+        width: auto;
+        aspect-ratio: 1;
+        padding: 6px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     &.icon {

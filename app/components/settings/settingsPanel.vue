@@ -5,7 +5,7 @@ type settingsView = "main" | "general" | "appearance" | "navigation";
 
 const { t } = useTranslations();
 
-const emit = defineEmits(["goHome"]);
+const emit = defineEmits(["goHome", "goMapView"]);
 
 const currentView = ref<settingsView>("main");
 
@@ -14,6 +14,10 @@ function setView(view: settingsView) {
 }
 
 function handleBack() {
+    if (currentView.value === "main") {
+        emit("goMapView");
+    }
+
     currentView.value = "main";
 }
 
@@ -33,34 +37,36 @@ onMounted(async () => {
     <div class="section settings-panel">
         <div class="section-title wrapper">
             <div class="title-text">
-                <Icon name="lucide:settings" class="icon" />
+                <button
+                    class="nav-btn primary-color icon-close"
+                    @click="handleBack"
+                >
+                    <Icon name="lucide:arrow-left" size="17" />
+                </button>
                 <p>{{ t("settings.title") }}</p>
             </div>
-
-            <button
-                v-if="currentView !== 'main'"
-                class="nav-btn primary-color icon-close"
-                @click="handleBack"
-            >
-                <Icon name="lucide:arrow-left" size="18" />
-            </button>
         </div>
-
-        <div class="separator"></div>
 
         <div class="settings-panel-content">
             <div v-if="currentView === 'main'" class="main-content" key="main">
                 <div class="menu-list">
                     <div class="category-wrapper">
-                        <p class="category-title">{{ t("preferences") }}</p>
+                        <p class="category-title small">
+                            {{ t("preferences") }}
+                        </p>
 
-                        <div class="items-wrapper">
-                            <div class="option" @click="setView('general')">
+                        <div class="items-wrapper-stacked">
+                            <div
+                                class="option stacked main-setting"
+                                @click="setView('general')"
+                            >
                                 <div class="option-text">
-                                    <Icon
-                                        name="lucide:settings-2"
-                                        class="icon"
-                                    />
+                                    <div class="icon-wrapper">
+                                        <Icon
+                                            name="lucide:settings-2"
+                                            class="icon"
+                                        />
+                                    </div>
 
                                     <div class="option-text-wrapper">
                                         <span>{{ t("settings.general") }}</span>
@@ -70,11 +76,26 @@ onMounted(async () => {
                                         </p>
                                     </div>
                                 </div>
+
+                                <Icon
+                                    name="lucide:arrow-right"
+                                    class="icon chevron"
+                                />
                             </div>
 
-                            <div class="option" @click="setView('appearance')">
+                            <div class="small-separator"></div>
+
+                            <div
+                                class="option stacked main-setting"
+                                @click="setView('appearance')"
+                            >
                                 <div class="option-text">
-                                    <Icon name="lucide:palette" class="icon" />
+                                    <div class="icon-wrapper">
+                                        <Icon
+                                            name="lucide:palette"
+                                            class="icon"
+                                        />
+                                    </div>
 
                                     <div class="option-text-wrapper">
                                         <span>{{
@@ -85,14 +106,26 @@ onMounted(async () => {
                                         </p>
                                     </div>
                                 </div>
+
+                                <Icon
+                                    name="lucide:arrow-right"
+                                    class="icon chevron"
+                                />
                             </div>
 
-                            <div class="option" @click="setView('navigation')">
+                            <div class="small-separator"></div>
+
+                            <div
+                                class="option stacked main-setting"
+                                @click="setView('navigation')"
+                            >
                                 <div class="option-text">
-                                    <Icon
-                                        name="lucide:navigation"
-                                        class="icon"
-                                    />
+                                    <div class="icon-wrapper">
+                                        <Icon
+                                            name="lucide:navigation"
+                                            class="icon"
+                                        />
+                                    </div>
 
                                     <div class="option-text-wrapper">
                                         <span>{{
@@ -103,20 +136,27 @@ onMounted(async () => {
                                         </p>
                                     </div>
                                 </div>
+
+                                <Icon
+                                    name="lucide:arrow-right"
+                                    class="icon chevron"
+                                />
                             </div>
                         </div>
                     </div>
 
                     <div class="category-wrapper">
-                        <p class="category-title">{{ t("session") }}</p>
+                        <p class="category-title small">{{ t("session") }}</p>
 
                         <div class="items-wrapper">
                             <div class="option" @click="emit('goHome')">
                                 <div class="option-text">
-                                    <Icon
-                                        name="lucide:door-open"
-                                        class="icon"
-                                    />
+                                    <div class="icon-wrapper">
+                                        <Icon
+                                            name="lucide:door-open"
+                                            class="icon"
+                                        />
+                                    </div>
 
                                     <div class="option-text-wrapper">
                                         <span>{{

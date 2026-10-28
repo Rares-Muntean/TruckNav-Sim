@@ -58,7 +58,9 @@ onMounted(async () => {
     <div>
         <div class="menu-list">
             <div class="category-wrapper">
-                <p class="category-title">{{ t("settings.regionalGame") }}</p>
+                <p class="category-title small">
+                    {{ t("settings.regionalGame") }}
+                </p>
 
                 <div class="items-wrapper-stacked">
                     <div
@@ -67,7 +69,10 @@ onMounted(async () => {
                         @click.prevent="toggleDlcPanel"
                     >
                         <div class="option-title">
-                            <Icon name="lucide:map-plus" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:map-plus" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.ownedDlcs") }}</p>
                         </div>
 
@@ -83,7 +88,10 @@ onMounted(async () => {
 
                     <div class="option setting stacked" @click="toggleUnits">
                         <div class="option-title">
-                            <Icon name="lucide:ruler" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:ruler" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.units") }}</p>
                         </div>
 
@@ -99,7 +107,10 @@ onMounted(async () => {
 
                     <div class="option setting stacked">
                         <div class="option-title">
-                            <Icon name="lucide:languages" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:languages" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.language") }}</p>
                         </div>
 
@@ -135,7 +146,7 @@ onMounted(async () => {
             </div>
 
             <div class="category-wrapper">
-                <p class="category-title">{{ t("settings.system") }}</p>
+                <p class="category-title small">{{ t("settings.system") }}</p>
 
                 <div class="items-wrapper-stacked">
                     <div
@@ -143,7 +154,10 @@ onMounted(async () => {
                         @click="updateDesktopSetting('rpcEnabled', !rpcEnabled)"
                     >
                         <div class="option-title">
-                            <Icon name="fa6-brands:discord" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="fa6-brands:discord" class="icon" />
+                            </div>
+
                             <p>{{ t("desktop.discordRpc") }}</p>
                         </div>
 
@@ -159,7 +173,10 @@ onMounted(async () => {
 
                     <div class="option setting stacked">
                         <div class="option-title">
-                            <Icon name="lucide:rotate-ccw" class="icon" />
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:rotate-ccw" class="icon" />
+                            </div>
+
                             <p>{{ t("settings.resetToDefaults") }}</p>
                         </div>
 
