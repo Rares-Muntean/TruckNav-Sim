@@ -5,12 +5,6 @@ const { t } = useTranslations();
 import { ets2Expansions } from "~/data/ets2/ets2Expansions";
 import { atsExpansions } from "~/data/ats/atsExpansions";
 
-const loadedImages = ref<Record<number, boolean>>({});
-
-const onImageLoaded = (id: number) => {
-    loadedImages.value[id] = true;
-};
-
 const currentExpansion = computed(() => {
     return settings.value.selectedGame === "ets2"
         ? ets2Expansions
@@ -34,47 +28,35 @@ const toggleDlc = (id: number) => {
 
 <template>
     <div class="manage-dlcs-window">
-        <div v-for="(dlc, id) in currentExpansion" :key="id">
-            <div
-                class="dlc"
-                @click="toggleDlc(Number(id))"
-                :class="{
-                    'is-selected': activeSettings.ownedDlcs.includes(
-                        Number(id),
-                    ),
-                }"
-            >
-                <div class="dlc-details-wrapper">
-                    <div class="dlc-details">
-                        <div class="top-wrapper">
-                            <p class="dlc-name">{{ dlc.name }}</p>
-                            <div
-                                class="checkmarks"
-                                :class="{
-                                    'is-selected':
-                                        activeSettings.ownedDlcs.includes(
-                                            Number(id),
-                                        ),
-                                }"
-                            >
-                                <Icon
-                                    v-if="
-                                        activeSettings.ownedDlcs.includes(
-                                            Number(id),
-                                        )
-                                    "
-                                    name="lucide:circle-check"
-                                    size="22"
-                                />
-                                <Icon v-else name="lucide:circle" size="22" />
-                            </div>
+        <div
+            v-for="(dlc, id) in currentExpansion"
+            :key="id"
+            class="dlc"
+            @click="toggleDlc(Number(id))"
+            :class="{
+                'is-selected': activeSettings.ownedDlcs.includes(Number(id)),
+            }"
+        >
+            <div class="dlc-details-wrapper">
+                <div class="dlc-details">
+                    <div class="top-wrapper">
+                        <p class="dlc-name">{{ dlc.name }}</p>
+
+                        <div
+                            v-if="settings.selectedGame === 'ets2'"
+                            class="flag-wrapper"
+                        >
+                            <Icon :name="dlc.icon" class="flag-icon" />
                         </div>
 
-                        <p class="dlc-release-date">
-                            {{ t("settings.releaseDate") }}:
-                            {{ dlc.releaseDate }}
-                        </p>
+                        <div class="flag-wrapper" v-else>
+                            <div class="state-tag">{{ dlc.icon }}</div>
+                        </div>
                     </div>
+
+                    <p class="dlc-release-date">
+                        {{ dlc.releaseDate }}
+                    </p>
                 </div>
             </div>
         </div>

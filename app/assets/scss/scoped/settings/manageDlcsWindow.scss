@@ -1,18 +1,17 @@
 .manage-dlcs-window {
     color: $white-font-text;
 
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    display: grid;
+    gap: 0.8rem;
 
-    padding-bottom: var(--bottom-pill-tabs-height);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 }
 
 .dlc {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     display: flex;
-    justify-content: space-between;
-    background: $menu-item-gradient;
+    flex-direction: column;
+    background: $primaryColor;
 
     cursor: pointer;
     user-select: none;
@@ -22,11 +21,34 @@
     @include for-tablet {
         flex-direction: column;
     }
+
+    border: 1px solid $primaryLightButtonColor;
+
+    &.is-selected {
+        border-color: color-mix(in srgb, var(--theme-color) 16%, transparent);
+
+        background-color: color-mix(
+            in srgb,
+            var(--theme-color) 10%,
+            transparent
+        );
+
+        .check {
+            color: $green-color;
+        }
+    }
+}
+
+.check {
+    margin-top: 1px;
+    width: 19px;
+    height: 19px;
 }
 
 .dlc-details-wrapper {
     display: flex;
     gap: 1rem;
+    flex: 1;
 
     @include for-tablet {
         flex-direction: column;
@@ -36,14 +58,42 @@
 
 .dlc-details {
     display: flex;
+    justify-content: space-between;
     flex-direction: column;
-    gap: 0.6rem;
+    flex: 1;
+
+    gap: 0.2rem;
     padding: 0.8rem 1rem;
 }
 
 .top-wrapper {
     display: flex;
     justify-content: space-between;
+
+    gap: 1.2rem;
+}
+
+.flag-wrapper {
+    display: flex;
+    gap: 0.6rem;
+
+    .state-tag {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 34px;
+
+        background-color: $primaryBackgroundColor;
+        padding: 1px 6px;
+
+        font-size: 1.2rem;
+        border-radius: $default-border-radius;
+    }
+}
+
+.flag-icon {
+    border-radius: 3px;
 }
 
 .dlc-release-date {
@@ -54,17 +104,5 @@
 
     @include for-tablet {
         font-size: 1.2rem;
-    }
-}
-
-.checkmarks {
-    align-self: end;
-
-    width: 22px;
-    height: 22px;
-    color: $primaryLightButtonColor;
-
-    &.is-selected {
-        color: var(--theme-color);
     }
 }

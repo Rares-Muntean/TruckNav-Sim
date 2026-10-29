@@ -263,7 +263,10 @@ onMounted(async () => {
                 ><Icon name="lucide:map-plus" class="icon"
             /></template>
 
-            <template #title>Select Expansions</template>
+            <template #category-title>Map Expansions</template>
+            <template #category-description
+                >Select the map DLCs you own</template
+            >
 
             <ManageDlcsWindow />
         </PopupPanel>
