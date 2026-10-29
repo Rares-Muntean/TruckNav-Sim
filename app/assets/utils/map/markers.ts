@@ -4,35 +4,21 @@ export const generateTruckIcon = (
     baseColor: string,
 ): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
-        const dark = darkenColor(baseColor, 0.1);
-        const light = lightenColor(baseColor, 0.23);
+        const dark = darkenColor(baseColor, 0.05);
 
         // Scale by 3 for perfectly crisp rendering on Retina/high-DPI displays
         const scale = 3;
         const size = 40;
 
-        // Note: viewBox expanded to "-15 -15 130 130" to accommodate the shadow
         const svgString = `
-            <svg width="${size * scale}" height="${size * scale}" viewBox="-15 -15 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="truck-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="50%" stop-color="${dark}" />
-                        <stop offset="50%" stop-color="${light}" />
-                    </linearGradient>
-                    
-                    <!-- Clean Drop Shadow -->
-                    <filter id="truck-shadow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.35" />
-                    </filter>
-                </defs>
+            <svg width="${size * scale}" height="${
+            size * scale
+        }" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="32" cy="32" r="32" fill="#333333"/>
+
                 <path 
-                    d="M50 10 L90 85 L50 70 L10 85 Z" 
-                    fill="url(#truck-grad)" 
-                    stroke="url(#truck-grad)" 
-                    stroke-width="12" 
-                    stroke-linejoin="round" 
-                    paint-order="stroke fill"
-                    filter="url(#truck-shadow)"
+                    d="M19.12 39.175L29.2716 16.9684C30.3399 14.6315 33.6601 14.6315 34.7284 16.9684L44.88 39.175C46.0062 41.6385 43.549 44.215 41.0349 43.2067L33.1167 40.0312C32.4 39.7437 31.6 39.7437 30.8833 40.0312L22.9651 43.2067C20.451 44.215 17.9938 41.6385 19.12 39.175Z" 
+                    fill="${dark}"
                 />
             </svg>
         `;
@@ -58,7 +44,9 @@ export const generateDestinationIcon = (
         const height = 36;
 
         const svgString = `
-        <svg width="${width * scale}" height="${height * scale}" viewBox="-4 -4 40 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="${width * scale}" height="${
+            height * scale
+        }" viewBox="-4 -4 40 50" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <filter id="pin-shadow" x="-30%" y="-30%" width="160%" height="160%">
                     <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.25"/>

@@ -314,7 +314,7 @@
 .route-end {
     position: absolute;
     right: -8px;
-    bottom: -7px;
+    bottom: -5px;
 
     color: var(--theme-color);
 }
@@ -331,8 +331,6 @@
 
     .truck-icon {
         transform: rotate(90deg);
-        filter: drop-shadow(0 0px 4px var(--theme-color));
-        color: var(--theme-color);
     }
 
     z-index: 2;

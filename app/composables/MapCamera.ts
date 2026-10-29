@@ -129,7 +129,14 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                     const bearing = map.value.getBearing();
 
                     const screenRot = currentTruckHeading - bearing;
-                    markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${pitch}deg) rotateZ(${screenRot}deg)`;
+                    const effectivePitch = pitch * 0.88;
+
+                    markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${effectivePitch}deg) rotateZ(${screenRot}deg)`;
+                    markerEl.style.filter =
+                        "drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.1))";
+
+                    markerEl.className = "truck-nav-marker";
+                    markerEl.style.borderRadius = "50%";
                 }
             }
         } else {
