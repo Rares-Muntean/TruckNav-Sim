@@ -1,13 +1,12 @@
 <script lang="ts" setup>
 import { App } from "@capacitor/app";
-
-type settingsView = "main" | "general" | "appearance" | "navigation";
+import type { settingsView } from "~/types";
 
 const { t } = useTranslations();
 
 const emit = defineEmits(["goHome", "goMapView"]);
 
-const currentView = ref<settingsView>("main");
+const currentView = defineModel<settingsView>({ default: "main" });
 
 function setView(view: settingsView) {
     currentView.value = view;

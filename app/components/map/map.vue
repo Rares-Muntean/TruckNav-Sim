@@ -9,6 +9,7 @@ import {
     lightenColor,
 } from "~/assets/utils/shared/colors";
 import { generateTruckIcon } from "~/assets/utils/map/markers";
+import type { settingsView } from "~/types";
 
 const emit = defineEmits(["goHome"]);
 
@@ -21,6 +22,7 @@ const isAddingStopMode = ref(false);
 // UI STATE
 const isSheetHidden = ref(false);
 const activeTab = ref<"drive" | "trip" | "settings">("drive");
+const activeSettingsWindowView = ref<settingsView>("main");
 
 // JOB STATE
 const currentJobKey = ref<string>("");
@@ -441,10 +443,6 @@ function onResumeNavigation() {
     isSheetHidden.value = true;
 }
 
-function onSheetClosed() {
-    isSheetHidden.value = false;
-}
-
 function toggleEnableClicking() {
     isClickingEnabled.value = !isClickingEnabled.value;
 
@@ -490,6 +488,12 @@ const onToggleFullscreen = async () => {
 const onCancelRoute = () => {
     clearRouteState();
     stopNavigationMode();
+};
+
+const handleTabClicked = (tab: "drive" | "trip" | "settings") => {
+    if (tab === "settings" && activeTab.value === "settings") {
+        activeSettingsWindowView.value = "main";
+    }
 };
 </script>
 
@@ -650,12 +654,16 @@ const onCancelRoute = () => {
             <SettingsPanel
                 @go-home="emit('goHome')"
                 @go-map-view="activeTab = 'drive'"
+                v-model="activeSettingsWindowView"
                 v-show="activeTab === 'settings'"
             />
 
             <Trip v-show="activeTab === 'trip'" />
 
-            <BottomPillTabs v-model="activeTab" />
+            <BottomPillTabs
+                v-model="activeTab"
+                @tab-clicked="handleTabClicked"
+            />
         </div>
     </div>
 </template>

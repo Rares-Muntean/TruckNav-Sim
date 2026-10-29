@@ -1,5 +1,12 @@
 <script lang="ts" setup>
 const model = defineModel<"drive" | "trip" | "settings">();
+
+const emit = defineEmits(["tabClicked"]);
+
+function handleTabClick(tab: "drive" | "trip" | "settings") {
+    emit("tabClicked", tab);
+    model.value = tab;
+}
 </script>
 
 <template>
@@ -7,7 +14,7 @@ const model = defineModel<"drive" | "trip" | "settings">();
         <div
             class="tab-item"
             :class="{ 'is-active': model === 'drive' }"
-            @click="model = 'drive'"
+            @click="handleTabClick('drive')"
         >
             <Icon name="lucide:map" class="icon" />
             <span class="tab-title">Drive</span>
@@ -16,7 +23,7 @@ const model = defineModel<"drive" | "trip" | "settings">();
         <div
             class="tab-item"
             :class="{ 'is-active': model === 'trip' }"
-            @click="model = 'trip'"
+            @click="handleTabClick('trip')"
         >
             <Icon name="lucide:gauge" class="icon" />
             <span class="tab-title">Trip</span>
@@ -25,7 +32,7 @@ const model = defineModel<"drive" | "trip" | "settings">();
         <div
             class="tab-item"
             :class="{ 'is-active': model === 'settings' }"
-            @click="model = 'settings'"
+            @click="handleTabClick('settings')"
         >
             <Icon name="lucide:settings-2" class="icon" />
             <span class="tab-title">Settings</span>
