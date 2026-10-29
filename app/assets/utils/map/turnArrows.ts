@@ -4,12 +4,18 @@ import { getBearing, getSquaredDist } from "./maths";
 const ARROW_HEAD_OFFSET_M = 30;
 const MAX_ARROWS_TO_SHOW = 2;
 
+const { activeSettings } = useSettings();
+
 export function drawTurnArrows(
     map: maplibregl.Map | null,
     steps: DirectionStep[],
     displayPath: [number, number][],
 ) {
     if (!map) return;
+    if (!activeSettings.value.drawTurnNavigation) {
+        clearTurnArrows(map);
+        return;
+    }
 
     const linesFeatures = [];
     const headsFeatures = [];

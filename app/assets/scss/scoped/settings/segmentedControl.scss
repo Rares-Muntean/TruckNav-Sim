@@ -18,6 +18,9 @@
         align-items: center;
         cursor: pointer;
 
+        border: none;
+        outline: none;
+
         border-bottom: 2px solid $primaryLightButtonColor;
         transition: all 0.2s ease;
 

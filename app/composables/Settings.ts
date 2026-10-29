@@ -18,6 +18,7 @@ export interface GameProfile {
     ownedDlcs: number[];
     lastDestination: [number, number] | null;
     hasTurnNavigation: boolean;
+    drawTurnNavigation: boolean;
     fontFamily: string;
     activeMod: string | "none";
 }
@@ -48,6 +49,7 @@ const DEFAULT_PROFILE: GameProfile = {
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
     lastDestination: null,
     hasTurnNavigation: true,
+    drawTurnNavigation: false,
     fontFamily: "Jakarta",
     activeMod: "none",
 };
@@ -66,7 +68,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
             units: "imperial",
         },
     },
-    hudBtnSize: 28,
+    hudBtnSize: 29,
     truckMarkerSize: 40,
     compactTripFontSize: 1.8,
     activeUiComponents: ["speedLimit", "speed"],

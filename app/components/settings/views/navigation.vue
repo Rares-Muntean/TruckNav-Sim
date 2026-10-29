@@ -14,15 +14,21 @@ const { t } = useTranslations();
 const hasGuidedNavigation = computed(
     () => activeSettings.value.hasTurnNavigation === true,
 );
+const hasDrawTurnNavigation = computed(
+    () => activeSettings.value.drawTurnNavigation === true,
+);
+
 const usesGameTime = computed(() => settings.value.routeTimeMode === "game");
 const truckImgSrc = ref("");
 
 const isDriveInfoOpened = ref(false);
+
 function toggleGuidedNavigation() {
-    updateProfile(
-        "hasTurnNavigation",
-        hasGuidedNavigation.value ? false : true,
-    );
+    updateProfile("hasTurnNavigation", !hasGuidedNavigation.value);
+}
+
+function toggleDrawTurnNavigation() {
+    updateProfile("drawTurnNavigation", !hasDrawTurnNavigation.value);
 }
 
 function toggleRouteTimeMode() {
@@ -188,30 +194,54 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                         </div>
                     </div>
 
-                    <div
-                        class="option setting"
-                        @click.prevent="toggleDriveInfoPanel"
-                    >
-                        <div class="option-title">
-                            <div class="icon-wrapper">
-                                <Icon name="lucide:info" class="icon" />
+                    <div class="items-wrapper-stacked">
+                        <div
+                            class="option setting stacked"
+                            @click="toggleDrawTurnNavigation"
+                        >
+                            <div class="option-title">
+                                <div class="icon-wrapper">
+                                    <Icon
+                                        name="lucide:corner-up-right"
+                                        class="icon"
+                                    />
+                                </div>
+
+                                <p>{{ t("settings.turnArrows") }}</p>
                             </div>
 
-                            <p>{{ t("settings.drivingInfo") }}</p>
+                            <Switch v-model="hasDrawTurnNavigation" />
                         </div>
 
-                        <div class="option-action">
-                            <div class="owned-dlcs">
-                                <span class="setting-button-text">
-                                    {{ settings.activeUiComponents.length }} /
-                                    {{
-                                        DEFAULT_SETTINGS.activeUiComponents
-                                            .length
-                                    }}
-                                </span>
+                        <div
+                            class="option setting"
+                            @click.prevent="toggleDriveInfoPanel"
+                        >
+                            <div class="option-title">
+                                <div class="icon-wrapper">
+                                    <Icon name="lucide:info" class="icon" />
+                                </div>
+
+                                <p>{{ t("settings.drivingInfo") }}</p>
                             </div>
 
-                            <Icon name="lucide:chevron-right" class="chevron" />
+                            <div class="option-action">
+                                <div class="owned-dlcs">
+                                    <span class="setting-button-text">
+                                        {{ settings.activeUiComponents.length }}
+                                        /
+                                        {{
+                                            DEFAULT_SETTINGS.activeUiComponents
+                                                .length
+                                        }}
+                                    </span>
+                                </div>
+
+                                <Icon
+                                    name="lucide:chevron-right"
+                                    class="chevron"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

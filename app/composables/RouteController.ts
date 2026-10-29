@@ -82,6 +82,25 @@ export const useRouteController = (
         }
     }
 
+    function refreshTurnArrows() {
+        if (!map.value) return;
+
+        if (
+            isRouteActive.value &&
+            currentRoutePath.value &&
+            activeSettings.value.hasTurnNavigation &&
+            activeSettings.value.drawTurnNavigation
+        ) {
+            drawTurnArrows(
+                map.value,
+                fullRouteDirections.value,
+                currentRoutePath.value,
+            );
+        } else {
+            clearTurnArrows(map.value);
+        }
+    }
+
     watch(
         () => settings.value.routeTimeMode,
         () => {
@@ -123,21 +142,12 @@ export const useRouteController = (
     );
 
     watch(
-        () => activeSettings.value.hasTurnNavigation,
-        (hasGuidedNavigation) => {
-            if (!map.value) return;
-
-            if (hasGuidedNavigation) {
-                if (isRouteActive.value && currentRoutePath.value) {
-                    drawTurnArrows(
-                        map.value,
-                        fullRouteDirections.value,
-                        currentRoutePath.value,
-                    );
-                }
-            } else {
-                clearTurnArrows(map.value);
-            }
+        [
+            () => activeSettings.value.hasTurnNavigation,
+            () => activeSettings.value.drawTurnNavigation,
+        ],
+        () => {
+            refreshTurnArrows();
         },
     );
 
@@ -328,7 +338,10 @@ export const useRouteController = (
                     nextTurnDistance.value = 0;
                 }
 
-                if (activeSettings.value.hasTurnNavigation) {
+                if (
+                    activeSettings.value.hasTurnNavigation &&
+                    activeSettings.value.drawTurnNavigation
+                ) {
                     drawTurnArrows(
                         map.value,
                         fullRouteDirections.value,
@@ -1034,7 +1047,8 @@ export const useRouteController = (
 
                     if (
                         currentRoutePath.value &&
-                        activeSettings.value.hasTurnNavigation
+                        activeSettings.value.hasTurnNavigation &&
+                        activeSettings.value.drawTurnNavigation
                     ) {
                         drawTurnArrows(
                             map.value,

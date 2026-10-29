@@ -121,6 +121,7 @@
         "title": "Settings",
         "timeHud": "Time & HUD",
         "truckMarkerSize": "Truck Marker",
+        "turnArrows": "Turn Arrows",
         "units": "Units"
     },
     "languages": {
