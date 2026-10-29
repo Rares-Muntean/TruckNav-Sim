@@ -312,7 +312,7 @@ const isModActive = (modId: string) => {
                     <Icon name="lucide:arrow-left" size="24" />
                 </div>
                 <Icon class="icon" name="lucide:cast" />
-                <span>{{ t("mobile.pairWithComputer") }}</span>
+                <span class="title">{{ t("mobile.pairWithComputer") }}</span>
             </div>
 
             <LiveDot :is-active="isConnected" />
@@ -335,27 +335,29 @@ const isModActive = (modId: string) => {
                         {{ t("common.maps") }}
                     </p>
 
-                    <div class="selected-map pill">
-                        {{ activeModName }}
-                    </div>
+                    <div class="active-mod-wrapper">
+                        <div class="selected-map pill">
+                            {{ activeModName }}
+                        </div>
 
-                    <div class="choose-map-wrapper">
-                        <button
-                            @click="toggleModPanel"
-                            class="btn nav-btn full-width primary-color"
-                        >
-                            <Icon name="lucide:map-plus" size="20" />
-                            <span>
-                                {{ t("common.chooseMap") }}
-                            </span>
-                        </button>
+                        <div class="choose-map-wrapper">
+                            <button
+                                @click="toggleModPanel"
+                                class="btn nav-btn full-width primary-color"
+                            >
+                                <Icon name="lucide:map-plus" size="20" />
+                                <span>
+                                    {{ t("common.chooseMap") }}
+                                </span>
+                            </button>
 
-                        <button
-                            @click="uninstallMap()"
-                            class="btn nav-btn primary-color icon"
-                        >
-                            <Icon name="lucide:trash-2" size="20" />
-                        </button>
+                            <button
+                                @click="uninstallMap()"
+                                class="btn nav-btn primary-color icon"
+                            >
+                                <Icon name="lucide:trash-2" size="20" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -465,10 +467,15 @@ const isModActive = (modId: string) => {
                 </div>
             </template>
 
-            <PopupPanel v-if="isModPanelOpen" @close="toggleModPanel">
-                <template #icon
-                    ><Icon name="lucide:map-plus" class="icon"
-                /></template>
+            <PopupPanel
+                class="no-padding"
+                v-if="isModPanelOpen"
+                @close="toggleModPanel"
+            >
+                <template #category-title>Map Mods</template>
+                <template #category-description
+                    >Select your active map mod</template
+                >
 
                 <template #title>Select Map Mod</template>
 
@@ -486,10 +493,21 @@ const isModActive = (modId: string) => {
                         >
                             <div class="mod-info">
                                 <span>{{ mod.name }}</span>
-
-                                <span v-if="isModActive(mod.id)" class="">
-                                    <LiveDot :is-active="isModActive(mod.id)" />
-                                </span>
+                                <div
+                                    class="tag"
+                                    :class="{ square: downloadedMods[mod.id] }"
+                                >
+                                    <Icon
+                                        class="check-icon"
+                                        :class="{ active: isModActive(mod.id) }"
+                                        v-if="downloadedMods[mod.id]"
+                                        name="lucide:check"
+                                    />
+                                    <div class="" v-else>
+                                        40
+                                        <span class="unit">MB</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mod-actions">
@@ -509,15 +527,15 @@ const isModActive = (modId: string) => {
                                     class="nav-btn dark icon map-mod-icon"
                                     @click.stop="startDownload(mod.id, mod.url)"
                                 >
-                                    <Icon name="lucide:download" size="20" />
+                                    <Icon name="lucide:download" size="18" />
                                 </button>
 
                                 <div v-else class="mod-installed">
                                     <button
-                                        class="nav-btn primary-color icon map-mod-icon"
+                                        class="nav-btn dark icon trash-icon map-mod-icon"
                                         @click.stop="uninstallMap(mod.id)"
                                     >
-                                        <Icon name="lucide:trash-2" size="20" />
+                                        <Icon name="lucide:trash-2" size="18" />
                                     </button>
                                 </div>
                             </div>
@@ -531,6 +549,7 @@ const isModActive = (modId: string) => {
                                         : downloadProgress
                                 "
                                 style="margin-top: 8px"
+                                :bar-height="4"
                             />
                         </div>
                     </div>

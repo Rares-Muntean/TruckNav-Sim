@@ -217,15 +217,12 @@
     gap: 0.4rem;
 }
 
-.status-point {
-    font-size: 0.7rem;
+.dot {
+    width: 4px;
+    height: 4px;
 
-    // TODO: delete
-    color: $green-color;
-
-    &.safe {
-        color: $green-color;
-    }
+    // TODO: DELETE
+    background-color: var(--theme-color);
 }
 
 .trip-info {

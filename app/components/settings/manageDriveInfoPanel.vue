@@ -56,47 +56,7 @@ function toggleUiComponent(componentId: UiComponent) {
                 </div>
                 <div class="description">{{ component.description }}</div>
             </div>
-
-            <div
-                class="checkmark"
-                :class="{
-                    'is-active': settings.activeUiComponents.includes(
-                        component.id,
-                    ),
-                }"
-            >
-                <Icon
-                    v-if="settings.activeUiComponents.includes(component.id)"
-                    class="icon-check"
-                    :class="{
-                        'is-active': settings.activeUiComponents.includes(
-                            component.id,
-                        ),
-
-                        'not-active': !settings.activeUiComponents.includes(
-                            component.id,
-                        ),
-                    }"
-                    name="lucide:circle-check"
-                />
-
-                <Icon
-                    v-else
-                    class="icon-check"
-                    :class="{
-                        'is-active': settings.activeUiComponents.includes(
-                            component.id,
-                        ),
-                    }"
-                    name="lucide:circle"
-                />
-            </div>
         </div>
-    </div>
-
-    <div v-if="false">
-        <Icon name="lucide:gauge" />
-        <Icon name="lucide:octagon-alert" />
     </div>
 </template>
 

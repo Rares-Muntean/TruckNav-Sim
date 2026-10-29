@@ -73,7 +73,7 @@
         "addStop": "Add Stop"
     },
     "mobile": {
-        "pairWithComputer": "Pair with PC"
+        "pairWithComputer": "Connect to PC"
     },
     "notifications": {
         "locatingRoute": "Locating Route",
@@ -89,7 +89,7 @@
         "roads": "Roads",
         "chooseLanguage": "Choose Language",
         "compactTripSize": "Compact Trip",
-        "description": "Configure your TruckNav experience",
+        "description": "TruckNav Preferences",
         "drivingInfo": "Driving Info",
         "general": "General",
         "guidanceTime": "Guidance & Time",

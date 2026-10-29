@@ -259,10 +259,6 @@ onMounted(async () => {
         </div>
 
         <PopupPanel v-if="isDlcPanelOpened" @close="toggleDlcPanel">
-            <template #icon
-                ><Icon name="lucide:map-plus" class="icon"
-            /></template>
-
             <template #category-title>Map Expansions</template>
             <template #category-description
                 >Select the map DLCs you own</template

@@ -17,6 +17,12 @@
     z-index: 10;
 }
 
+.no-padding {
+    .popup-content {
+        padding: 0;
+    }
+}
+
 .popup-window {
     height: 100%;
     width: 100%;

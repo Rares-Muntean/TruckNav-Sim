@@ -224,28 +224,6 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
                                 </div>
                             </div>
                         </PopupPanel>
-
-                        <!-- <USelect
-                            :model-value="activeSettings.fontFamily"
-                            @update:model-value="(val: string) => updateFont(val)"
-                            :items="items"
-                            variant="none"
-                            class="selector"
-                            :ui="{
-                                trailingIcon:
-                                    'shrink-0 size-[20px] text-white !px-6',
-                                content:
-                                    'bg-[#333333] ring-0 border-0 shadow-xl rounded-md',
-                                item: 'flex items-center justify-between text-[1.6rem] font-BOLD !py-2 !px-3 text-[#f2f2f2] data-[highlighted]:bg-[#3d546e] rounded cursor-pointer transition-colors',
-                                itemTrailingIcon: 'text-white',
-                            }"
-                        >
-                            <template #item="{ item }">
-                                <span :style="{ fontFamily: item }">
-                                    {{ item }}
-                                </span>
-                            </template>
-                        </USelect> -->
                     </div>
                 </div>
             </div>
@@ -377,11 +355,10 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
             </div>
 
             <PopupPanel v-if="isDriveInfoOpened" @close="toggleDriveInfoPanel">
-                <template #icon
-                    ><Icon name="lucide:info" class="icon"
-                /></template>
-
-                <template #title>Select HUD</template>
+                <template #category-title>DRIVING HUD</template>
+                <template #category-description
+                    >Toggle on-screen driving HUD</template
+                >
 
                 <ManageDriveInfoPanel />
             </PopupPanel>

@@ -94,14 +94,14 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                         />
 
                         <div class="value-status">
-                            <span class="status-point">&#9679;</span>
+                            <div class="dot"></div>
                             <span>Safe Speed</span>
                         </div>
                     </div>
 
                     <div class="card">
                         <div class="card-title-wrapper">
-                            <p class="card-title">Rest Break</p>
+                            <p class="card-title">Rest</p>
                             <Icon name="lucide:bed" class="card-icon" />
                         </div>
 
@@ -118,8 +118,8 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                         />
 
                         <div class="value-status">
-                            <span class="status-point">&#9679;</span>
-                            <span>Driver Rested</span>
+                            <div class="dot"></div>
+                            <span>Rested</span>
                         </div>
                     </div>
                 </div>
