@@ -13,6 +13,24 @@ function setView(view: settingsView) {
     currentView.value = view;
 }
 
+const settingsTitle = computed(() => {
+    if (currentView.value === "main") return t("settings.title");
+    else if (currentView.value === "navigation")
+        return t("settings.navigation");
+    else if (currentView.value === "appearance")
+        return t("settings.appearance");
+    else if (currentView.value === "general") return t("settings.general");
+});
+
+const settingsDescription = computed(() => {
+    if (currentView.value === "main") return t("settings.description");
+    else if (currentView.value === "navigation") return t("settings.timeHud");
+    else if (currentView.value === "appearance")
+        return t("settings.themesMapStyling");
+    else if (currentView.value === "general")
+        return t("settings.preferencesSystem");
+});
+
 function handleBack() {
     if (currentView.value === "main") {
         emit("goMapView");
@@ -43,7 +61,18 @@ onMounted(async () => {
                 >
                     <Icon name="lucide:arrow-left" size="17" />
                 </button>
-                <p>{{ t("settings.title") }}</p>
+
+                <div class="category">
+                    <div class="category-title w-description">
+                        <slot name="category-title">{{ settingsTitle }}</slot>
+                    </div>
+
+                    <div class="category-description">
+                        <slot name="category-description">{{
+                            settingsDescription
+                        }}</slot>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -72,7 +101,9 @@ onMounted(async () => {
                                         <span>{{ t("settings.general") }}</span>
 
                                         <p class="option-description">
-                                            {{ t("settings.languageUnits") }}
+                                            {{
+                                                t("settings.preferencesSystem")
+                                            }}
                                         </p>
                                     </div>
                                 </div>

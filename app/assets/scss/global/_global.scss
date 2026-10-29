@@ -69,15 +69,16 @@ button {
 
 .section {
     height: calc(100dvh - env(safe-area-inset-top));
-    padding: 8px 2.4rem;
+    padding: 12px 2.4rem;
 }
 
 .section-title {
-    height: 4rem;
+    height: 5rem;
+    padding-bottom: 1rem;
 
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
 
     font-size: 1.8rem;
 
@@ -126,6 +127,22 @@ button {
     &.small {
         font-size: 1.4rem;
     }
+
+    &.w-description {
+        color: $white-font-text;
+        color: rgba($color: $white-font-text, $alpha: 0.9);
+    }
+}
+
+.category-header {
+    display: flex;
+    flex-direction: column;
+}
+
+.category-description {
+    font-size: 1.3rem;
+    color: rgba($color: $white-font-text-muted, $alpha: 0.8);
+    margin-top: -0.4rem;
 }
 
 .nav-btn {

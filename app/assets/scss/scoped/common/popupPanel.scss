@@ -26,7 +26,7 @@
 
     color: $white-font-text;
     background-color: $primaryBackgroundColor;
-    padding-top: calc(env(safe-area-inset-top) + 8px);
+    padding-top: calc(env(safe-area-inset-top) + 12px);
 
     display: flex;
     flex-direction: column;
@@ -36,14 +36,11 @@
     justify-content: space-between;
 }
 
-.title-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
 .popup-content {
-    padding: 0.8rem 0;
     overflow-y: auto;
+
+    min-height: 0;
     flex: 1;
+
+    padding-bottom: var(--bottom-pill-tabs-height);
 }

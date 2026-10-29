@@ -180,7 +180,10 @@ onMounted(async () => {
                             v-if="isLanguagePanelOpened"
                             @close="toggleLanguagePanel"
                         >
-                            <template #title>Languages</template>
+                            <template #category-title>Language</template>
+                            <template #category-description
+                                >Choose your preferred language</template
+                            >
 
                             <div class="languages">
                                 <div
@@ -193,12 +196,6 @@ onMounted(async () => {
                                     }"
                                     @click="setLocale(language.value)"
                                 >
-                                    <Icon
-                                        v-show="language.value === locale"
-                                        name="lucide:circle-check-big"
-                                        class="checkmark"
-                                    />
-
                                     <div class="flag">
                                         <Icon
                                             :name="language.icon"

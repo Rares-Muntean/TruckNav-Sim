@@ -14,7 +14,15 @@ const emit = defineEmits(["close"]);
                         <Icon name="lucide:arrow-left" size="17" />
                     </button>
 
-                    <slot name="title"></slot>
+                    <div class="category-header">
+                        <div class="category-title w-description">
+                            <slot name="category-title">Title</slot>
+                        </div>
+
+                        <div class="category-description">
+                            <slot name="category-description">Description</slot>
+                        </div>
+                    </div>
                 </div>
             </div>
 

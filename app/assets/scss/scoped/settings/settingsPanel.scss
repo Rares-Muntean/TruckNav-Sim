@@ -13,7 +13,7 @@ $button-padding: 8px 10px;
     display: flex;
     flex-direction: column;
 
-    padding-top: calc(env(safe-area-inset-top) + 8px);
+    padding-top: calc(env(safe-area-inset-top) + 12px);
 
     z-index: $ui-priority-index;
 }
@@ -27,13 +27,10 @@ $button-padding: 8px 10px;
     min-height: 0;
     height: 100%;
 
-    padding: 2rem 0;
-    padding-top: 1rem;
-
     display: flex;
     flex-direction: column;
 
-    margin-bottom: calc(var(--bottom-pill-tabs-height) - 12px);
+    margin-bottom: calc(var(--bottom-pill-tabs-height));
 }
 
 .main-content {
@@ -324,12 +321,15 @@ $button-padding: 8px 10px;
     gap: 0.8rem;
 }
 
+/**
+ * LANGUAGE PANEL
+ */
+
 .languages {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
 
-    gap: 1rem;
-    column-gap: 1.4rem;
+    gap: 0.8rem;
 }
 
 .language {
@@ -343,20 +343,21 @@ $button-padding: 8px 10px;
     gap: 0.6rem;
 
     padding: 1rem;
+    font-size: 1.7rem;
 
     background-color: $primaryColor;
 
     border-radius: $default-border-radius;
     color: rgba($white-font-text, 0.7);
 
-    border: 2px solid $primaryAccentColor;
+    border: 1px solid $primaryAccentColor;
 
     &.active {
-        border-color: color-mix(in srgb, var(--theme-color) 70%, transparent);
+        border-color: color-mix(in srgb, var(--theme-color) 60%, transparent);
 
         background-color: color-mix(
             in srgb,
-            var(--theme-color) 14%,
+            var(--theme-color) 7%,
             transparent
         );
 
@@ -386,6 +387,75 @@ $button-padding: 8px 10px;
     justify-content: center;
 
     border-radius: $default-border-radius;
+}
+
+/**
+ * FONTS PANEL
+ */
+
+.fonts-content {
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.8rem;
+}
+
+.fonts {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 155px), 1fr));
+    gap: 0.8rem;
+}
+
+.font {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    padding: 0.8rem;
+
+    background-color: $primaryColor;
+
+    border-radius: $default-border-radius;
+
+    border: 1px solid $primaryAccentColor;
+
+    font-size: 1.5rem;
+
+    &.active {
+        border-color: color-mix(in srgb, var(--theme-color) 60%, transparent);
+
+        background-color: color-mix(
+            in srgb,
+            var(--theme-color) 5%,
+            transparent
+        );
+
+        color: $white-font-text;
+    }
+}
+
+.font-showcase {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.font-lorem {
+    display: flex;
+    align-items: end;
+    gap: 0.4rem;
+
+    font-size: 1.4rem;
+    color: $white-font-text-muted;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.dot {
+    width: 3px;
+    height: 3px;
+    align-self: center;
 }
 
 /**
