@@ -28,6 +28,7 @@ const truckImgSrc = ref("");
 const isConnected = ref(false);
 
 let truckAnimControl: ReturnType<typeof animate> | null = null;
+let trackResizeObserver: ResizeObserver | null = null;
 
 const downloadedMods = ref<Record<string, boolean>>({});
 
@@ -129,55 +130,55 @@ onMounted(async () => {
 
 onUnmounted(() => {
     truckAnimControl?.stop();
+    trackResizeObserver?.disconnect();
 });
 
-watch(truckRef, (el) => {
-    if (el) {
-        truckAnimControl?.stop();
+function runTruckAnimation() {
+    if (!truckRef.value || !truckRef.value.parentElement) return;
 
-        const trackWidth = (el.parentElement?.clientWidth || 180) - 24;
+    truckAnimControl?.stop();
 
-        truckAnimControl = animate(
+    const trackWidth = (truckRef.value.parentElement.clientWidth || 180) - 24;
+
+    truckAnimControl = animate(
+        [
             [
-                [
-                    truckRef.value,
-                    { x: [0, trackWidth] },
-                    {
-                        duration: 4,
-                        repeat: Infinity,
-                        repeatType: "loop",
-                        ease: "easeInOut",
-                    },
-                ],
-                [
-                    truckRef.value,
-                    { rotate: 180 },
-                    {
-                        duration: 1,
-                        ease: "backInOut",
-                    },
-                ],
-                [
-                    truckRef.value,
-                    { x: [trackWidth, 0] },
-                    {
-                        duration: 4,
-                        ease: "easeInOut",
-                    },
-                ],
-                [
-                    truckRef.value,
-                    { rotate: 0 },
-                    {
-                        duration: 1,
-                        ease: "backInOut",
-                    },
-                ],
+                truckRef.value,
+                { opacity: [0, 1], scale: [0.6, 1] },
+                { duration: 0.35, ease: "easeOut" },
             ],
-            {
-                repeat: Infinity,
-            },
-        );
+            [
+                truckRef.value,
+                { x: [0, trackWidth], opacity: 1, scale: 1 },
+                { duration: 3.5, ease: "easeInOut" },
+            ],
+            [
+                truckRef.value,
+                { opacity: [1, 0], scale: [1, 0.6] },
+                { duration: 0.35, ease: "easeOut" },
+            ],
+            [
+                truckRef.value,
+                { x: 0, opacity: 0, scale: 0.6 },
+                { duration: 0.01 },
+            ],
+        ],
+        {
+            repeat: Infinity,
+        },
+    );
+}
+
+watch(truckRef, (el) => {
+    trackResizeObserver?.disconnect();
+
+    if (el && el.parentElement) {
+        runTruckAnimation();
+
+        trackResizeObserver = new ResizeObserver(() => {
+            runTruckAnimation();
+        });
+        trackResizeObserver.observe(el.parentElement);
     } else {
         truckAnimControl?.stop();
     }
@@ -387,11 +388,25 @@ const isModActive = (modId: string) => {
                         <div class="route-widget">
                             <div class="route-anim">
                                 <div class="route-line">
+                                    <div class="route-start">
+                                        <Icon
+                                            name="lucide:warehouse"
+                                            size="20"
+                                        />
+                                    </div>
+
                                     <div ref="truckRef" class="route-truck">
                                         <img
                                             class="truck-icon"
                                             :src="truckImgSrc"
                                             alt=""
+                                        />
+                                    </div>
+
+                                    <div class="route-end">
+                                        <Icon
+                                            name="lucide:map-pin-check"
+                                            size="20"
                                         />
                                     </div>
                                 </div>
