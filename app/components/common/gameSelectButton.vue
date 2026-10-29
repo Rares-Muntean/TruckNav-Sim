@@ -9,8 +9,8 @@ defineProps<{
     <div @click.prevent="selectCard(gameName)" class="game-btn">
         <div class="game-card-wrapper">
             <div class="game-name-wrapper">
-                <p class="game-name">{{ gameName }}</p>
                 <slot name="icon"></slot>
+                <p class="game-name">{{ gameName }}</p>
             </div>
         </div>
     </div>

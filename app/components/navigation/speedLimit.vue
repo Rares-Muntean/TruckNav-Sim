@@ -6,10 +6,21 @@ const { truckSpeed, speedLimit } = useEtsTelemetry();
 
 const truckSpeedConverted = computed(() => kmToUserUnits(truckSpeed.value));
 const speedLimitConverted = computed(() => kmToUserUnits(speedLimit.value));
+
+const hasAnyHudEnabled = computed(() => {
+    if (
+        settings.value.activeUiComponents.includes("speed") ||
+        settings.value.activeUiComponents.includes("speedLimit")
+    ) {
+        return true;
+    }
+
+    return false;
+});
 </script>
 
 <template>
-    <div class="speed-and-limit">
+    <div v-if="hasAnyHudEnabled" class="speed-and-limit">
         <div
             v-if="settings.activeUiComponents.includes('speed')"
             class="current-speed-wrapper"

@@ -177,7 +177,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 0.6rem;
+    gap: 0.4rem;
 }
 
 .active-mod-wrapper {
@@ -190,7 +190,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 0.6rem;
+    gap: 0.4rem;
 
     .choose-map-wrapper {
         display: flex;
@@ -201,6 +201,10 @@
             aspect-ratio: 1;
             height: 100%;
         }
+    }
+
+    .choose-map-btn {
+        justify-content: space-between;
     }
 
     .selected-map {

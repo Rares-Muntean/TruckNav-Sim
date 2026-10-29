@@ -336,19 +336,17 @@ const isModActive = (modId: string) => {
                     </p>
 
                     <div class="active-mod-wrapper">
-                        <div class="selected-map pill">
-                            {{ activeModName }}
-                        </div>
-
                         <div class="choose-map-wrapper">
                             <button
                                 @click="toggleModPanel"
-                                class="btn nav-btn full-width primary-color"
+                                class="btn nav-btn full-width primary-color choose-map-btn"
                             >
-                                <Icon name="lucide:map-plus" size="20" />
+                                <Icon name="lucide:map" size="20" />
                                 <span>
-                                    {{ t("common.chooseMap") }}
+                                    {{ activeModName }}
                                 </span>
+
+                                <div></div>
                             </button>
 
                             <button
