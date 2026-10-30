@@ -48,7 +48,7 @@
     gap: 0.4rem;
 
     .total-odo {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
         color: $white-font-text-muted;
     }
 }
@@ -92,7 +92,7 @@
 }
 
 .fuel-percentage {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     color: $white-font-text-muted;
 
     .unit {
@@ -108,19 +108,15 @@
 }
 
 .fuel-unit-group {
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     display: flex;
     align-items: baseline;
 
     gap: 0.2rem;
 
-    .avg {
-        font-size: 1.4rem;
-    }
-
     .unit {
         font-variant-numeric: normal;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         color: $white-font-text-muted;
     }
 }
@@ -129,11 +125,7 @@
     display: flex;
     align-items: baseline;
 
-    gap: 0.5rem;
-
-    .model {
-        font-size: 1.6rem;
-    }
+    gap: 0.4rem;
 }
 
 .bottom-half {
@@ -189,16 +181,16 @@
 
 .data-value-wrapper {
     display: flex;
-    align-items: end;
+    align-items: baseline;
 
     gap: 0.2rem;
 }
 
 .card-value-number {
     font-weight: 700;
-    font-size: 2.4rem;
+    font-size: 2.8rem;
 
-    line-height: 1.2;
+    line-height: 1.3;
 }
 
 .card-value-unit {
@@ -207,7 +199,7 @@
 }
 
 .value-status {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     margin-top: 0.4rem;
     color: $white-font-text-muted;
 
@@ -259,9 +251,9 @@
 .location-group {
     display: flex;
     flex-direction: column;
+    line-height: 1.2;
 
     .city {
-        font-size: 1.6rem;
         line-height: 1.2;
     }
 
@@ -341,17 +333,12 @@
         }
 
         .unit {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             color: $white-font-text-muted;
 
             &.white {
                 color: $white-font-text;
-                font-size: 1.4rem;
             }
-        }
-
-        .cargo-value {
-            font-size: 1.6rem;
         }
 
         &.left {
@@ -400,10 +387,6 @@
             color: $green-color;
         }
     }
-
-    .payout-amount {
-        font-size: 1.6rem;
-    }
 }
 
 .damage-wear {
@@ -418,30 +401,27 @@
 }
 
 .damage-icon {
-    width: 26px;
-    height: 26px;
+    width: 2.8rem;
+    height: 2.8rem;
 }
 
 .percentage-wrapper {
     display: flex;
     align-items: baseline;
+    gap: 0.2rem;
 
     min-width: 3.2rem;
 }
 
-.damage-name {
-    font-size: 1.4rem;
-    color: $white-font-text-muted;
-}
-
 .percentage {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     color: $white-font-text-muted;
 }
 
 .progress-percentage-wrapper {
     display: flex;
     align-items: center;
+    font-size: 1.8rem;
 
     gap: 0.8rem;
 

@@ -131,7 +131,7 @@ $button-padding: 8px 10px;
     justify-content: center;
 
     color: $white-font-text-muted;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
 }
 
 .actual-truck-preview {
@@ -163,14 +163,14 @@ $button-padding: 8px 10px;
     }
 
     .icon {
-        width: 18px;
-        height: 18px;
+        width: 2rem;
+        height: 2rem;
         background-color: var(--theme-color);
     }
 
     .chevron {
-        width: 16px;
-        height: 16px;
+        width: 1.6rem;
+        height: 1.6rem;
         background-color: $white-font-text-muted;
 
         &.translate-y {
@@ -180,7 +180,7 @@ $button-padding: 8px 10px;
 
     &.stacked {
         border-radius: 0px;
-        padding: 0.9rem 1rem;
+        padding: 1rem 1rem;
     }
 }
 
@@ -211,12 +211,12 @@ $button-padding: 8px 10px;
     display: flex;
     flex-direction: column;
 
-    gap: 0.5rem;
+    gap: 0.3rem;
     line-height: 1.05;
 }
 
 .option-description {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: $white-font-text-muted;
 }
 
@@ -420,7 +420,7 @@ $button-padding: 8px 10px;
 
     border: 1px solid $primaryAccentColor;
 
-    font-size: 1.5rem;
+    font-size: 1.7rem;
 
     &.active {
         border-color: color-mix(in srgb, var(--theme-color) 60%, transparent);
@@ -446,7 +446,7 @@ $button-padding: 8px 10px;
     align-items: end;
     gap: 0.4rem;
 
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     color: $white-font-text-muted;
 
     font-variant-numeric: tabular-nums;
@@ -465,8 +465,4 @@ $button-padding: 8px 10px;
     display: flex;
     align-items: center;
     gap: 1rem;
-
-    @include for-phone {
-        font-size: 1.2rem;
-    }
 }

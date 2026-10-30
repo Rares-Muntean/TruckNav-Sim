@@ -345,7 +345,7 @@ const isModActive = (modId: string) => {
                                 @click="toggleModPanel"
                                 class="btn nav-btn full-width primary-color choose-map-btn"
                             >
-                                <Icon name="lucide:map" size="20" />
+                                <Icon name="lucide:map" size="22" />
                                 <span>
                                     {{ activeModName }}
                                 </span>

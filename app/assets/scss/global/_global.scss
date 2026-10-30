@@ -7,9 +7,32 @@
     box-sizing: border-box;
 }
 
+:root {
+    --bottom-pill-tabs-height: 7.5rem;
+}
+
+/** MEDIA GLOBAL FONT-SIZE **/
 html {
-    font-size: 62.5%;
+    font-size: calc(62.5% * var(--ui-scale, 1));
     background-color: $primaryColor;
+}
+
+@media (max-width: 350px) {
+    html {
+        font-size: calc(56.25% * var(--ui-scale, 1));
+    }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    html {
+        font-size: calc(56.25% * var(--ui-scale, 1));
+    }
+}
+
+@media (min-width: 768px) and (min-height: 600px) {
+    html {
+        font-size: calc(75% * var(--ui-scale, 1));
+    }
 }
 
 body {
@@ -20,7 +43,7 @@ body {
     padding-top: env(safe-area-inset-top);
     color: $white-font-text;
 
-    font-size: 1.6rem;
+    font-size: 1.7rem;
 }
 
 html,
@@ -71,12 +94,12 @@ input {
 }
 
 .section-title {
-    height: 5rem;
+    height: 5.5rem;
     padding-bottom: 1rem;
 
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 1.2rem;
 
     font-size: 1.8rem;
 
@@ -127,7 +150,7 @@ input {
 /** GENERAL CATEGORIES **/
 .category-title {
     text-transform: uppercase;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     color: $white-font-text-muted;
     font-weight: 600;
 
@@ -138,6 +161,8 @@ input {
     }
 
     &.w-description {
+        line-height: 1.3;
+        font-size: 1.7rem;
         color: $white-font-text;
         color: rgba($color: $white-font-text, $alpha: 0.9);
     }
@@ -149,7 +174,7 @@ input {
 }
 
 .category-description {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     color: rgba($color: $white-font-text-muted, $alpha: 0.8);
     margin-top: -0.4rem;
 
@@ -250,17 +275,13 @@ button {
     &.icon-close {
         aspect-ratio: 1;
         padding: 0.4rem;
-        height: 2.8rem;
+        height: 3.2rem;
     }
 
     &:disabled {
         opacity: 0.5;
         pointer-events: none;
     }
-}
-
-:root {
-    --bottom-pill-tabs-height: 65px;
 }
 
 /** MISSING MAP / JOB **/

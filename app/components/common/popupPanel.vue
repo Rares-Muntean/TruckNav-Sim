@@ -11,7 +11,7 @@ const emit = defineEmits(["close"]);
                         class="nav-btn icon-close primary-color"
                         @click="emit('close')"
                     >
-                        <Icon name="lucide:arrow-left" size="17" />
+                        <Icon name="lucide:arrow-left" size="19" />
                     </button>
 
                     <div class="category-header">
