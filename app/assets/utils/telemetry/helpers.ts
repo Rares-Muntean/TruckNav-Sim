@@ -1,6 +1,7 @@
 import { convertAtsToGeo, convertEts2ToGeo } from "../map/converters";
 import { getBearing } from "../map/maths";
 import type { GameType, TelemetryPacket } from "~/types";
+import anyAscii from "any-ascii";
 
 export function getTruckState(
     data: TelemetryPacket,
@@ -38,12 +39,29 @@ export function getTruckState(
         currentHeadingOffset,
     );
 
+    const truckBrand = data.truck.constants.brand;
+    const truckName = data.truck.constants.name;
+    const odometer = Math.round(data.truck.current.dashboard.odometer);
+
+    const fuel = Math.round(data.truck.current.dashboard.fuelAmount);
+    const fuelCapacity = data.truck.constants.fuelCapacity;
+    const fuelRange = Math.round(data.truck.current.dashboard.fuelRange);
+    const avgConsumption = data.truck.current.dashboard.averageConsumption;
+
     return {
         truckCoords,
         truckSpeed,
         truckHeading: heading,
         headingOffset: newOffset,
         avgSpeed,
+
+        truckBrand,
+        truckName,
+        odometer,
+        fuel,
+        fuelCapacity,
+        fuelRange,
+        avgConsumption,
     };
 }
 
@@ -68,8 +86,25 @@ export function getGameState(data: TelemetryPacket) {
     };
 }
 
+export function getTruckDamageState(data: TelemetryPacket) {
+    const engine = Math.round(data.truck.current.damage.engine * 100);
+    const transmission = Math.round(
+        data.truck.current.damage.transmission * 100,
+    );
+    const cabin = Math.round(data.truck.current.damage.cabin * 100);
+    const chassis = Math.round(data.truck.current.damage.chassis * 100);
+    const wheels = Math.round(data.truck.current.damage.wheels * 100);
+
+    return {
+        engine,
+        transmission,
+        cabin,
+        chassis,
+        wheels,
+    };
+}
+
 export function getNavigationState(data: TelemetryPacket) {
-    const fuel = parseInt(data.truck.current.dashboard.fuelAmount.toFixed(1));
     const speedLimit = Math.max(0, Math.round(data.navigation.speedLimitKph));
 
     const totalMinutes = data.common.nextRestStopMinutes;
@@ -80,7 +115,7 @@ export function getNavigationState(data: TelemetryPacket) {
         .toString()
         .padStart(2, "0")}`;
 
-    return { fuel, speedLimit, restStoptime, restStopMinutes: totalMinutes };
+    return { speedLimit, restStoptime, restStopMinutes: totalMinutes };
 }
 
 export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
@@ -91,12 +126,18 @@ export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
     const hasActiveJob = data.specialEvents.onJob;
 
     const destinationCity = data.job.cityDestinationId;
+    const destinationCityName = cleanText(data.job.cityDestination);
+
     const destinationCompany = data.job.companyDestinationId;
+    const destinationCompanyName = cleanText(data.job.companyDestination);
 
     const jobType = data.job.jobType;
 
     const sourceCity = data.job.citySourceId;
+    const sourceCityName = cleanText(data.job.citySource);
+
     const sourceCompany = data.job.companySourceId;
+    const sourceCompanyName = cleanText(data.job.companySource);
 
     if (data.trailers[0]) {
         const isTrailerAvailable =
@@ -124,7 +165,29 @@ export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
         cityTarget = destinationCity;
     }
 
-    return { hasActiveJob, cityTarget, companyTarget, trailerCoords };
+    const income = data.job.income;
+    const remainingTime = data.job.remainingDeliveryTime;
+
+    const cargo = {
+        mass: data.job.cargo.mass,
+        name: data.job.cargo.name,
+        cargoDamage: Math.round(data.job.cargo.cargoDamage * 100),
+    };
+
+    return {
+        hasActiveJob,
+        cityTarget,
+        companyTarget,
+        trailerCoords,
+        income,
+        remainingTime,
+        cargo,
+
+        destinationCityName,
+        destinationCompanyName,
+        sourceCityName,
+        sourceCompanyName,
+    };
 }
 
 /**
@@ -159,6 +222,44 @@ export async function isBridgeRunning(
             resolve(false);
         };
     });
+}
+
+export function getPercentage(part: number, total: number) {
+    if (!total || total <= 0) return 0;
+    return Math.round((part / total) * 100);
+}
+
+export function getRestPercentage(minutesLeft: number, game: GameType): number {
+    if (!minutesLeft || minutesLeft <= 0) return 0;
+
+    const maxShiftMinutes = game === "ats" ? 14 * 60 : 11 * 60;
+
+    return getPercentage(minutesLeft, maxShiftMinutes);
+}
+
+export function formatRemainingTime(totalMinutes: number) {
+    if (!totalMinutes || totalMinutes < 0) return { hours: 0, mins: 0 };
+
+    const hours = Math.floor(totalMinutes / 60);
+
+    const mins = totalMinutes % 60;
+
+    console.log(totalMinutes);
+
+    return { hours, mins };
+}
+
+export function formatNumber(value: number) {
+    if (value === null) return "0";
+
+    return value.toLocaleString("en-US");
+}
+
+export function formatCompactNumber(value: number): string {
+    return new Intl.NumberFormat("en-US", {
+        notation: "compact",
+        maximumFractionDigits: 1,
+    }).format(value);
 }
 
 function getCorrectHeading(
@@ -206,6 +307,11 @@ function convertTelemtryTime(time: string) {
             .padStart(2, "0")}`,
         raw: date,
     };
+}
+
+export function cleanText(value: string | null | undefined): string {
+    if (!value) return "";
+    return anyAscii(value);
 }
 
 function updateMovingAverage(

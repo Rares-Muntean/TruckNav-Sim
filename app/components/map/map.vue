@@ -118,88 +118,74 @@ const isTruckSpawned = computed(() => {
     );
 });
 
-// We check if it has active job, if it has one, plot a route
-watch(
-    [
-        hasActiveJob,
-        destinationCity,
-        destinationCompany,
-        gameConnected,
-        loading,
-        isWorkerReady,
-        isTruckSpawned,
-    ],
-    async ([
-        hasJob,
-        city,
-        company,
-        isConnected,
-        isLoading,
-        isWorkerReady,
-        truckReady,
-    ]) => {
-        if (!truckCoords.value) return;
-        if (isLoading || !isWorkerReady || !isConnected || !truckReady) {
-            currentJobKey.value = "";
-            return;
-        }
+const isMapReady = computed(
+    () =>
+        gameConnected.value &&
+        !loading.value &&
+        isWorkerReady.value &&
+        isTruckSpawned.value,
+);
 
-        const newJobKey = hasJob ? `${city}|${company}` : "";
+const currentJobTarget = computed(() => {
+    if (!hasActiveJob.value || !destinationCity.value) return null;
 
-        if (hasJob && newJobKey === currentJobKey.value) return;
+    return `${destinationCity.value}|${destinationCompany.value}`;
+});
 
-        if (routeTimer) clearTimeout(routeTimer);
+watch([currentJobTarget, isMapReady], async ([jobTarget, isReady]) => {
+    if (!isReady) return;
 
-        if (hasJob && newJobKey !== currentJobKey.value) {
-            const destCoords = findDestinationCoords(city, company);
-
-            if (destCoords) {
-                currentJobKey.value = newJobKey;
-                clearRouteState();
-                isClickingEnabled.value = false;
-
-                await handleRouteClick(
-                    destCoords,
-                    truckCoords.value,
-                    truckHeading.value,
-                    scale.value,
-                    averageSpeed.value,
-                );
-            }
-        } else if (!hasJob && currentJobKey.value !== "") {
+    if (!jobTarget) {
+        if (currentJobKey.value !== "") {
             clearRouteState();
             stopNavigationMode();
             currentJobKey.value = "";
         }
-    },
-);
+        return;
+    }
 
-watch(
-    [hasActiveJob, gameConnected, loading, isWorkerReady, isTruckSpawned],
-    ([hasJob, isGameConnected, isLoading, isWorkerReady, truckReady]) => {
-        if (!truckCoords.value) return;
-        if (
-            isLoading ||
-            !isWorkerReady ||
-            !isGameConnected ||
-            hasJob ||
-            !truckReady
-        )
-            return;
+    if (jobTarget === currentJobKey.value) return;
 
-        const destination = activeSettings.value.lastDestination;
+    const destCoords = findDestinationCoords(
+        destinationCity.value,
+        destinationCompany.value,
+    );
 
-        if (destination && !isRouteActive.value && !isCalculatingRoute.value) {
-            handleRouteClick(
-                destination,
-                truckCoords.value,
-                truckHeading.value,
-                scale.value,
-                averageSpeed.value,
-            );
-        }
-    },
-);
+    if (destCoords && truckCoords.value) {
+        currentJobKey.value = jobTarget;
+        clearRouteState();
+        isClickingEnabled.value = false;
+
+        await handleRouteClick(
+            destCoords,
+            truckCoords.value,
+            truckHeading.value,
+            scale.value,
+            averageSpeed.value,
+        );
+    }
+});
+
+watch([hasActiveJob, isMapReady], ([hasJob, isReady]) => {
+    if (!isReady || hasJob) return;
+
+    const destination = activeSettings.value.lastDestination;
+
+    if (
+        destination &&
+        !isRouteActive.value &&
+        !isCalculatingRoute.value &&
+        truckCoords.value
+    ) {
+        handleRouteClick(
+            destination,
+            truckCoords.value,
+            truckHeading.value,
+            scale.value,
+            averageSpeed.value,
+        );
+    }
+});
 
 watch(
     [
@@ -674,7 +660,10 @@ const handleTabClicked = (tab: "drive" | "trip" | "settings") => {
                 v-show="activeTab === 'settings'"
             />
 
-            <Trip v-show="activeTab === 'trip'" />
+            <Trip
+                v-show="activeTab === 'trip'"
+                :route-distance-converted="routeDistanceConverted"
+            />
 
             <BottomPillTabs
                 v-model="activeTab"

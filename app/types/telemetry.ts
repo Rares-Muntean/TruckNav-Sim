@@ -20,7 +20,7 @@ export interface TelemetryPacket {
  */
 export interface CommonData {
     mapScale: number;
-    gameTime: string; // ISO Date String
+    gameTime: string;
     nextRestStopMinutes: number;
 }
 
@@ -109,11 +109,13 @@ export interface TrailerDamageData {
  * JOB DATA CATEGORY
  */
 export interface JobData {
-    remainingDeliveryTime: string; // ISO Date String
+    remainingDeliveryTime: number;
     cargoLoaded: boolean;
     specialJob: boolean;
     jobType: string;
+
     cargo: CargoData;
+
     cityDestinationId: string;
     cityDestination: string;
     companyDestinationId: string;
@@ -122,7 +124,7 @@ export interface JobData {
     citySource: string;
     companySourceId: string;
     companySource: string;
-    income: number; // Per your C# class definition
+    income: number;
 }
 
 export interface CargoData {
@@ -181,7 +183,7 @@ export interface Delivered {
     autoLoaded: boolean;
     autoParker: boolean;
     cargoDamage: number;
-    deliveryTime: string; // ISO Date String
+    deliveryTime: string;
     distanceKm: number;
     earnedXp: number;
     revenue: number;

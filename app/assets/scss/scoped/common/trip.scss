@@ -337,7 +337,7 @@
         .weight-wrapper {
             display: flex;
             align-items: baseline;
-            gap: 0.1rem;
+            gap: 0.2rem;
         }
 
         .unit {
@@ -346,6 +346,7 @@
 
             &.white {
                 color: $white-font-text;
+                font-size: 1.4rem;
             }
         }
 
@@ -424,7 +425,13 @@
 .percentage-wrapper {
     display: flex;
     align-items: baseline;
-    gap: 0rem;
+
+    min-width: 3.2rem;
+}
+
+.damage-name {
+    font-size: 1.4rem;
+    color: $white-font-text-muted;
 }
 
 .percentage {
@@ -434,7 +441,7 @@
 
 .progress-percentage-wrapper {
     display: flex;
-    align-items: baseline;
+    align-items: center;
 
     gap: 0.8rem;
 

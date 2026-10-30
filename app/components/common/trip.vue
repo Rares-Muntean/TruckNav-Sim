@@ -1,9 +1,50 @@
 <script lang="ts" setup>
-import { animate, type PanInfo } from "motion";
+import { animate, distance, type PanInfo } from "motion";
 import { motion } from "motion-v";
+import {
+    formatCompactNumber,
+    formatNumber,
+    formatRemainingTime,
+    getPercentage,
+    getRestPercentage,
+} from "~/assets/utils/telemetry/helpers";
 import { EASE } from "~/types/easings";
 
-const { truckSpeed, fuel } = useEtsTelemetry();
+const {
+    truckSpeed,
+    fuel,
+    odometer,
+    truckBrand,
+    truckName,
+    fuelCapacity,
+    fuelRange,
+    avgConsumption,
+    restStopMinutes,
+    speedLimit,
+
+    hasActiveJob,
+
+    engine,
+    transmission,
+    cabin,
+    chassis,
+    wheels,
+
+    income,
+    remainingTime,
+    cargo,
+
+    destinationCityName,
+    destinationCompanyName,
+    sourceCityName,
+    sourceCompanyName,
+} = useEtsTelemetry();
+
+const props = defineProps<{
+    routeDistanceConverted: number;
+}>();
+
+const { settings } = useSettings();
 
 const tabs = ["currentJob", "vehicleWear"] as const;
 const activeTab = ref<"currentJob" | "vehicleWear">("currentJob");
@@ -35,13 +76,43 @@ function toggleCardview() {
     }
 }
 
-const { kmToUserUnits, literToUserUnits, speedUnit, fuelUnit } =
-    useUnitConversion();
-
-const remainingRestPercentage = ref(100);
+const {
+    kmToUserUnits,
+    speedUnit,
+    distanceUnit,
+    formatConsumption,
+    consumptionUnit,
+    kgToUserUnits,
+    weightUnit,
+} = useUnitConversion();
 
 const truckSpeedConverted = computed(() => kmToUserUnits(truckSpeed.value));
-const fuelConverted = computed(() => literToUserUnits(fuel.value));
+const odometerConverted = computed(() => kmToUserUnits(odometer.value));
+const fuelRangeConverted = computed(() => kmToUserUnits(fuelRange.value));
+const cargoWeightConverted = computed(() => kgToUserUnits(cargo.value.mass));
+
+const avgConsumptionConverted = computed(() =>
+    formatConsumption(avgConsumption.value),
+);
+
+const fuelPercentage = computed(() =>
+    getPercentage(fuel.value, fuelCapacity.value),
+);
+
+const restPercentage = computed(() => {
+    return getRestPercentage(
+        restStopMinutes.value,
+        settings.value.selectedGame,
+    );
+});
+
+const speedPercentage = computed(() => {
+    return getPercentage(truckSpeedConverted.value, speedLimit.value);
+});
+
+const remainingTimeObj = computed(() =>
+    formatRemainingTime(remainingTime.value),
+);
 </script>
 
 <template>
@@ -58,11 +129,14 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
 
                     <div class="truck-data">
                         <div class="truck-name-wrapper">
-                            <span class="manufacturer">Scania</span>
-                            <span class="model">S 730</span>
+                            <span class="manufacturer">{{ truckBrand }}</span>
+                            <span class="model">{{ truckName }}</span>
                         </div>
 
-                        <span class="total-odo">(43,210 km)</span>
+                        <span class="total-odo"
+                            >({{ formatNumber(odometerConverted) }}
+                            {{ distanceUnit }})</span
+                        >
                     </div>
 
                     <div class="fuel-pill">
@@ -75,7 +149,7 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                 <span>Fuel</span>
 
                                 <div class="fuel-percentage">
-                                    <span>(62</span>
+                                    <span>({{ fuelPercentage }}</span>
                                     <span class="unit">%)</span>
                                 </div>
                             </div>
@@ -83,21 +157,23 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
 
                         <div class="remains-avg-wrapper">
                             <div class="fuel-unit-group">
-                                <span>1.120</span>
-                                <span class="unit">km</span>
+                                <span>{{
+                                    formatNumber(fuelRangeConverted)
+                                }}</span>
+                                <span class="unit">{{ distanceUnit }}</span>
                             </div>
 
                             <span class="dot"></span>
 
                             <div class="fuel-unit-group">
-                                <span>73</span>
-                                <span class="unit">L/100</span>
+                                <span>{{ avgConsumptionConverted }}</span>
+                                <span class="unit">{{ consumptionUnit }}</span>
                             </div>
                         </div>
                     </div>
 
                     <ProgressBar
-                        :progress="62"
+                        :progress="fuelPercentage"
                         :bar-height="4"
                         class="full-width-bar"
                     />
@@ -113,13 +189,15 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                         </div>
 
                         <div class="data-value-wrapper">
-                            <p class="card-value-number">88</p>
+                            <p class="card-value-number">
+                                {{ truckSpeedConverted }}
+                            </p>
 
-                            <p class="card-value-unit">mph</p>
+                            <p class="card-value-unit">{{ speedUnit }}</p>
                         </div>
 
                         <ProgressBar
-                            :progress="92"
+                            :progress="speedPercentage"
                             :bar-height="4"
                             class="full-width-bar"
                         />
@@ -137,13 +215,15 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                         </div>
 
                         <div class="data-value-wrapper">
-                            <p class="card-value-number">43</p>
+                            <p class="card-value-number">
+                                {{ restPercentage }}
+                            </p>
 
                             <p class="card-value-unit">%</p>
                         </div>
 
                         <ProgressBar
-                            :progress="43"
+                            :progress="restPercentage"
                             :bar-height="4"
                             class="full-width-bar"
                         />
@@ -165,7 +245,7 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                     class="trip-info"
                 >
                     <div
-                        v-if="activeTab === 'currentJob'"
+                        v-if="activeTab === 'currentJob' && hasActiveJob"
                         class="card delivery-info"
                     >
                         <div class="card-title-wrapper">
@@ -178,14 +258,22 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                         <div class="card-content">
                             <div class="route-display">
                                 <div class="location-group origin">
-                                    <span class="city">Berlin</span>
-                                    <span class="company">LKWLog</span>
+                                    <span class="city">{{
+                                        sourceCityName
+                                    }}</span>
+                                    <span class="company">{{
+                                        sourceCompanyName
+                                    }}</span>
                                 </div>
 
                                 <div class="route-track">
                                     <div class="distance-badge">
-                                        <span class="dist">745</span>
-                                        <span class="unit">km</span>
+                                        <span class="dist">{{
+                                            formatNumber(routeDistanceConverted)
+                                        }}</span>
+                                        <span class="unit">{{
+                                            distanceUnit
+                                        }}</span>
                                     </div>
                                     <div class="line-with-arrow">
                                         <div class="line"></div>
@@ -193,24 +281,33 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                 </div>
 
                                 <div class="location-group destination">
-                                    <span class="city">Paris</span>
-                                    <span class="company">Kaarfor</span>
+                                    <span class="city">{{
+                                        destinationCityName
+                                    }}</span>
+                                    <span class="company">{{
+                                        destinationCompanyName
+                                    }}</span>
                                 </div>
                             </div>
 
                             <div class="cargo-display">
                                 <div class="cargo-group left">
                                     <span class="cargo-title">Cargo</span>
-                                    <span class="cargo-value"
-                                        >Medical Vaccines</span
-                                    >
+                                    <span class="cargo-value">{{
+                                        cargo.name
+                                    }}</span>
                                 </div>
 
                                 <div class="cargo-group right">
                                     <span class="cargo-title">Weight</span>
                                     <div class="weight-wrapper">
-                                        <span class="cargo-value">18.4</span>
-                                        <span class="unit">t</span>
+                                        <span class="cargo-value">{{
+                                            formatNumber(cargoWeightConverted)
+                                        }}</span>
+
+                                        <span class="unit">{{
+                                            weightUnit
+                                        }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -220,12 +317,16 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                     <span class="cargo-title">Remains</span>
                                     <div class="remains-wrapper">
                                         <div class="time">
-                                            <span class="cargo-value">14</span>
+                                            <span class="cargo-value">{{
+                                                remainingTimeObj.hours
+                                            }}</span>
                                             <span class="unit white">h</span>
                                         </div>
 
                                         <div class="time">
-                                            <span class="cargo-value">20</span>
+                                            <span class="cargo-value">{{
+                                                remainingTimeObj.mins
+                                            }}</span>
                                             <span class="unit white">m</span>
                                         </div>
                                     </div>
@@ -234,7 +335,9 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                 <div class="cargo-group right">
                                     <span class="cargo-title">Wear</span>
                                     <div class="weight-wrapper">
-                                        <span class="cargo-value">0.0</span>
+                                        <span class="cargo-value">{{
+                                            cargo.cargoDamage
+                                        }}</span>
                                         <span class="unit">%</span>
                                     </div>
                                 </div>
@@ -249,7 +352,40 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                     <span>Payout</span>
                                 </div>
 
-                                <span class="payout-amount">€34,250</span>
+                                <span class="payout-amount"
+                                    >€{{ formatCompactNumber(income) }}</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="card delivery-info"
+                        v-else-if="activeTab === 'currentJob'"
+                    >
+                        <div class="card-title-wrapper">
+                            <p class="card-title">Freeroam</p>
+                            <Icon name="lucide:route" class="card-icon" />
+                        </div>
+
+                        <div class="middle-wrapper">
+                            <div class="middle-icon-wrapper">
+                                <Icon
+                                    name="lucide:compass"
+                                    size="70"
+                                    class="middle-icon"
+                                />
+                            </div>
+
+                            <div class="bottom-text">
+                                <div class="header-wrapper">
+                                    <span class="header">Open Road Ahead</span>
+                                </div>
+
+                                <span class="sub-header">
+                                    No active delivery. Pick up a contract from
+                                    the freight market or enjoy the drive.
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -259,7 +395,7 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                         class="card delivery-info"
                     >
                         <div class="card-title-wrapper">
-                            <p class="card-title">Vehicle Wear</p>
+                            <p class="card-title">Vehicle Damage</p>
                             <Icon name="lucide:hammer" class="card-icon" />
                         </div>
 
@@ -273,16 +409,16 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                 />
 
                                 <div class="progress-percentage-wrapper">
-                                    <div class="percentage-wrapper">
-                                        <span>89</span>
-                                        <span class="percentage">%</span>
-                                    </div>
-
                                     <ProgressBar
-                                        :progress="43"
+                                        :progress="engine"
                                         :bar-height="4"
                                         class="full-width-bar"
                                     />
+
+                                    <div class="percentage-wrapper">
+                                        <span>{{ engine }}</span>
+                                        <span class="percentage">%</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -293,16 +429,15 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                 />
 
                                 <div class="progress-percentage-wrapper">
-                                    <div class="percentage-wrapper">
-                                        <span>76</span>
-                                        <span class="percentage">%</span>
-                                    </div>
-
                                     <ProgressBar
-                                        :progress="43"
+                                        :progress="transmission"
                                         :bar-height="4"
                                         class="full-width-bar"
                                     />
+                                    <div class="percentage-wrapper">
+                                        <span>{{ transmission }}</span>
+                                        <span class="percentage">%</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -310,16 +445,16 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                 <Icon name="tabler:truck" class="damage-icon" />
 
                                 <div class="progress-percentage-wrapper">
-                                    <div class="percentage-wrapper">
-                                        <span>52</span>
-                                        <span class="percentage">%</span>
-                                    </div>
-
                                     <ProgressBar
-                                        :progress="43"
+                                        :progress="cabin"
                                         :bar-height="4"
                                         class="full-width-bar"
                                     />
+
+                                    <div class="percentage-wrapper">
+                                        <span>{{ cabin }}</span>
+                                        <span class="percentage">%</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -330,16 +465,16 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                 />
 
                                 <div class="progress-percentage-wrapper">
-                                    <div class="percentage-wrapper">
-                                        <span>92</span>
-                                        <span class="percentage">%</span>
-                                    </div>
-
                                     <ProgressBar
-                                        :progress="43"
+                                        :progress="chassis"
                                         :bar-height="4"
                                         class="full-width-bar"
                                     />
+
+                                    <div class="percentage-wrapper">
+                                        <span>{{ chassis }}</span>
+                                        <span class="percentage">%</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -347,16 +482,16 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                                 <Icon name="tabler:wheel" class="damage-icon" />
 
                                 <div class="progress-percentage-wrapper">
-                                    <div class="percentage-wrapper">
-                                        <span>100</span>
-                                        <span class="percentage">%</span>
-                                    </div>
-
                                     <ProgressBar
-                                        :progress="43"
+                                        :progress="wheels"
                                         :bar-height="4"
                                         class="full-width-bar"
                                     />
+
+                                    <div class="percentage-wrapper">
+                                        <span>{{ wheels }}</span>
+                                        <span class="percentage">%</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

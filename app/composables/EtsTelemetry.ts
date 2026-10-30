@@ -3,6 +3,7 @@ import {
     getGameState,
     getJobState,
     getNavigationState,
+    getTruckDamageState,
     getTruckState,
 } from "~/assets/utils/telemetry/helpers";
 import type {
@@ -12,6 +13,7 @@ import type {
     JobState,
     TelemetryUpdate,
     TelemetryPacket,
+    TruckDamageData,
 } from "~/types";
 
 const truckState = reactive<TruckState>({
@@ -19,6 +21,23 @@ const truckState = reactive<TruckState>({
     truckHeading: 0,
     truckSpeed: 0,
     averageSpeed: 80,
+
+    truckBrand: "Not",
+    truckName: "Driving",
+    odometer: 0,
+
+    fuel: 0,
+    fuelCapacity: 0,
+    fuelRange: 0,
+    avgConsumption: 0,
+});
+
+const truckDamageState = reactive<TruckDamageData>({
+    engine: 0,
+    transmission: 0,
+    cabin: 0,
+    chassis: 0,
+    wheels: 0,
 });
 
 const gameState = reactive<GameState>({
@@ -29,7 +48,6 @@ const gameState = reactive<GameState>({
 });
 
 const navigationState = reactive<NavigationState>({
-    fuel: 0,
     speedLimit: 0,
     restStoptime: "",
     restStopMinutes: 0,
@@ -39,11 +57,18 @@ const jobState = reactive<JobState>({
     hasActiveJob: false,
     income: 0,
     deadlineTime: new Date(),
-    remainingTime: new Date(),
+    remainingTime: 0,
     sourceCity: "0",
     sourceCompany: "0",
     destinationCity: "0",
     destinationCompany: "0",
+
+    destinationCompanyName: "",
+    destinationCityName: "",
+    sourceCityName: "",
+    sourceCompanyName: "",
+
+    cargo: { mass: 0, name: "", cargoDamage: 0 },
 });
 
 let lastPosition: [number, number] | null = null;
@@ -154,6 +179,15 @@ export function useEtsTelemetry() {
             truckHeading,
             headingOffset: newOffset,
             avgSpeed,
+
+            truckBrand,
+            truckName,
+            odometer,
+
+            fuel,
+            fuelCapacity,
+            fuelRange,
+            avgConsumption,
         } = getTruckState(
             data,
             lastPosition,
@@ -168,31 +202,64 @@ export function useEtsTelemetry() {
             truckHeading: truckHeading,
             truckSpeed: truckSpeed,
             averageSpeed: avgSpeed,
+
+            truckBrand: truckBrand,
+            truckName: truckName,
+            odometer: odometer,
+            fuel: fuel,
+            fuelCapacity: fuelCapacity,
+            fuelRange: fuelRange,
+            avgConsumption: avgConsumption,
+        });
+
+        const { engine, transmission, cabin, chassis, wheels } =
+            getTruckDamageState(data);
+
+        Object.assign(truckDamageState, {
+            engine: engine,
+            transmission: transmission,
+            cabin: cabin,
+            chassis: chassis,
+            wheels: wheels,
         });
 
         lastPosition = truckCoords;
         headingOffset = newOffset;
 
-        const { fuel, speedLimit, restStoptime, restStopMinutes } =
+        const { speedLimit, restStoptime, restStopMinutes } =
             getNavigationState(data);
 
         Object.assign(navigationState, {
             restStoptime: restStoptime,
             restStopMinutes: restStopMinutes,
             speedLimit: speedLimit,
-            fuel: fuel,
         });
 
         const {
             hasActiveJob,
             cityTarget: destinationCity,
             companyTarget: destinationCompany,
+            income,
+            remainingTime,
+            cargo,
+            destinationCompanyName,
+            destinationCityName,
+            sourceCityName,
+            sourceCompanyName,
         } = getJobState(data, settings.value.selectedGame);
 
         Object.assign(jobState, {
             hasActiveJob: hasActiveJob,
             destinationCity: destinationCity,
             destinationCompany: destinationCompany,
+            income: income,
+            remainingTime: remainingTime,
+            cargo: cargo,
+
+            destinationCompanyName: destinationCompanyName,
+            destinationCityName: destinationCityName,
+            sourceCityName: sourceCityName,
+            sourceCompanyName: sourceCompanyName,
         });
 
         sendDiscordRpcState({
@@ -213,6 +280,7 @@ export function useEtsTelemetry() {
                 game: { ...gameState },
                 general: { ...navigationState },
                 job: { ...jobState },
+                truckDamage: { ...truckDamageState },
             });
         }
     }
@@ -257,6 +325,7 @@ export function useEtsTelemetry() {
                 game: { ...gameState },
                 general: { ...navigationState },
                 job: { ...jobState },
+                truckDamage: { ...truckDamageState },
             });
         }
     }
@@ -264,6 +333,7 @@ export function useEtsTelemetry() {
     return {
         ...toRefs(navigationState),
         ...toRefs(truckState),
+        ...toRefs(truckDamageState),
         ...toRefs(gameState),
         ...toRefs(jobState),
         startTelemetry,

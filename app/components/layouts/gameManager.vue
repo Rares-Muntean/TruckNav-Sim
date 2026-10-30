@@ -435,8 +435,12 @@ const isModActive = (modId: string) => {
 
             <template v-else-if="!isBaseDownloaded && selectedGame">
                 <div class="middle-wrapper">
-                    <div class="icon-wrapper">
-                        <Icon name="lucide:map-plus" size="80" class="icon" />
+                    <div class="middle-icon-wrapper">
+                        <Icon
+                            name="lucide:map-plus"
+                            size="80"
+                            class="middle-icon"
+                        />
                     </div>
 
                     <div class="bottom-text">

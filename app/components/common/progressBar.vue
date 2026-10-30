@@ -9,18 +9,26 @@ const props = withDefaults(
 
 const fillRef = ref<HTMLElement | null>(null);
 
+function updateBar(val: number) {
+    if (!fillRef.value) return;
+
+    const targetScale = Math.min(Math.max(val || 0, 0), 100) / 100;
+
+    animate(
+        fillRef.value,
+        { scaleX: targetScale },
+        { duration: 0.3, ease: EASE.sineOut },
+    );
+}
+
+onMounted(() => {
+    updateBar(props.progress);
+});
+
 watch(
     () => props.progress,
     (progress) => {
-        if (!fillRef) return;
-
-        const targetScale = Math.min(Math.max(progress, 0), 100) / 100;
-
-        animate(
-            fillRef.value,
-            { scaleX: targetScale },
-            { duration: 0.3, ease: EASE.sineOut },
-        );
+        updateBar(progress);
     },
 );
 </script>

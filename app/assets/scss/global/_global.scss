@@ -1,5 +1,6 @@
 @use "~/assets/scss/global/variables" as *;
 
+/** DEFAULT **/
 * {
     margin: 0;
     padding: 0;
@@ -38,26 +39,7 @@ input {
     font-family: var(--app-font);
 }
 
-button {
-    &:focus {
-        outline: none;
-        border: none;
-    }
-}
-
-.btn {
-    border-style: none;
-    padding: 4px 8px;
-    font-family: inherit;
-    font-weight: inherit;
-    cursor: pointer;
-
-    &:disabled {
-        opacity: 0.5;
-        pointer-events: none;
-    }
-}
-
+/** TRUCKNAV ICON **/
 .truck-nav-marker {
     position: relative;
     border-radius: 50%;
@@ -82,15 +64,7 @@ button {
     }
 }
 
-.pill {
-    color: var(--main-text-color);
-    font-weight: 600;
-    border-radius: 6px;
-    padding: 1px 8px;
-
-    width: fit-content;
-}
-
+/** DEFAULT SECTION **/
 .section {
     height: calc(100dvh - env(safe-area-inset-top));
     padding: 12px 2.4rem;
@@ -114,12 +88,22 @@ button {
     }
 }
 
+/** SMALL DESIGN UI ELEMENTS **/
 .separator {
     height: 2px;
 
     margin: 0 -3rem;
 
     background-color: $primaryAccentColor;
+}
+
+.pill {
+    color: var(--main-text-color);
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 1px 8px;
+
+    width: fit-content;
 }
 
 .small-separator {
@@ -140,6 +124,7 @@ button {
     opacity: 0.8;
 }
 
+/** GENERAL CATEGORIES **/
 .category-title {
     text-transform: uppercase;
     font-size: 1.5rem;
@@ -169,6 +154,27 @@ button {
     margin-top: -0.4rem;
 
     text-wrap-mode: nowrap;
+}
+
+/** PRIMARY BUTTONS **/
+button {
+    &:focus {
+        outline: none;
+        border: none;
+    }
+}
+
+.btn {
+    border-style: none;
+    padding: 4px 8px;
+    font-family: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
 }
 
 .nav-btn {
@@ -255,4 +261,53 @@ button {
 
 :root {
     --bottom-pill-tabs-height: 65px;
+}
+
+/** MISSING MAP / JOB **/
+.middle-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.bottom-text {
+    line-height: 1.2;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+
+    max-width: 90%;
+    text-align: center;
+    font-size: 1.4rem;
+    color: $white-font-text-muted;
+
+    .header-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .header {
+        opacity: 0.7;
+        font-weight: 600;
+        padding: 0;
+        font-size: 1.6rem;
+    }
+
+    .sub-header {
+        opacity: 0.5;
+    }
+}
+
+.middle-icon-wrapper {
+    flex-shrink: 0;
+
+    .middle-icon {
+        opacity: 0.13;
+    }
 }
