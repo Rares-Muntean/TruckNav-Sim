@@ -1,8 +1,39 @@
 <script lang="ts" setup>
-import { animate } from "motion";
+import { animate, type PanInfo } from "motion";
+import { motion } from "motion-v";
 import { EASE } from "~/types/easings";
 
 const { truckSpeed, fuel } = useEtsTelemetry();
+
+const tabs = ["currentJob", "vehicleWear"] as const;
+const activeTab = ref<"currentJob" | "vehicleWear">("currentJob");
+
+function handleDragEnd(_event: PointerEvent, info: PanInfo) {
+    const threshold = 50;
+    const velocityThreshold = 400;
+
+    const currentIndex = tabs.indexOf(activeTab.value);
+
+    if (info.offset.x < -threshold || info.velocity.x < -velocityThreshold) {
+        if (currentIndex < tabs.length - 1) {
+            activeTab.value = tabs[currentIndex + 1]!;
+        }
+    }
+
+    if (info.offset.x > threshold || info.velocity.x > velocityThreshold) {
+        if (currentIndex > 0) {
+            activeTab.value = tabs[currentIndex - 1]!;
+        }
+    }
+}
+
+function toggleCardview() {
+    if (activeTab.value === "currentJob") {
+        activeTab.value = "vehicleWear";
+    } else {
+        activeTab.value = "currentJob";
+    }
+}
 
 const { kmToUserUnits, literToUserUnits, speedUnit, fuelUnit } =
     useUnitConversion();
@@ -124,10 +155,19 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                     </div>
                 </div>
 
-                <div class="trip-info">
-                    <!-- TODO: add top pills with selectable trip categories 
-                    (current job / truck damage / etc)-->
-                    <div class="card delivery-info">
+                <motion.div
+                    @click="toggleCardview"
+                    drag="x"
+                    drag-snap-to-origin
+                    :drag-constraints="{ left: 0, right: 0 }"
+                    :drag-elastic="0"
+                    @drag-end="handleDragEnd"
+                    class="trip-info"
+                >
+                    <div
+                        v-if="activeTab === 'currentJob'"
+                        class="card delivery-info"
+                    >
                         <div class="card-title-wrapper">
                             <p class="card-title">Current Job</p>
                             <Icon name="lucide:box" class="card-icon" />
@@ -213,7 +253,126 @@ const fuelConverted = computed(() => literToUserUnits(fuel.value));
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <div
+                        v-if="activeTab === 'vehicleWear'"
+                        class="card delivery-info"
+                    >
+                        <div class="card-title-wrapper">
+                            <p class="card-title">Vehicle Wear</p>
+                            <Icon name="lucide:hammer" class="card-icon" />
+                        </div>
+
+                        <div class="card-pills"></div>
+
+                        <div class="card-content damage-wear">
+                            <div class="damage-data-wrapper">
+                                <Icon
+                                    name="tabler:engine"
+                                    class="damage-icon"
+                                />
+
+                                <div class="progress-percentage-wrapper">
+                                    <div class="percentage-wrapper">
+                                        <span>89</span>
+                                        <span class="percentage">%</span>
+                                    </div>
+
+                                    <ProgressBar
+                                        :progress="43"
+                                        :bar-height="4"
+                                        class="full-width-bar"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="damage-data-wrapper">
+                                <Icon
+                                    name="tabler:manual-gearbox"
+                                    class="damage-icon"
+                                />
+
+                                <div class="progress-percentage-wrapper">
+                                    <div class="percentage-wrapper">
+                                        <span>76</span>
+                                        <span class="percentage">%</span>
+                                    </div>
+
+                                    <ProgressBar
+                                        :progress="43"
+                                        :bar-height="4"
+                                        class="full-width-bar"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="damage-data-wrapper">
+                                <Icon name="tabler:truck" class="damage-icon" />
+
+                                <div class="progress-percentage-wrapper">
+                                    <div class="percentage-wrapper">
+                                        <span>52</span>
+                                        <span class="percentage">%</span>
+                                    </div>
+
+                                    <ProgressBar
+                                        :progress="43"
+                                        :bar-height="4"
+                                        class="full-width-bar"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="damage-data-wrapper">
+                                <Icon
+                                    name="tabler:car-4wd"
+                                    class="damage-icon"
+                                />
+
+                                <div class="progress-percentage-wrapper">
+                                    <div class="percentage-wrapper">
+                                        <span>92</span>
+                                        <span class="percentage">%</span>
+                                    </div>
+
+                                    <ProgressBar
+                                        :progress="43"
+                                        :bar-height="4"
+                                        class="full-width-bar"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="damage-data-wrapper">
+                                <Icon name="tabler:wheel" class="damage-icon" />
+
+                                <div class="progress-percentage-wrapper">
+                                    <div class="percentage-wrapper">
+                                        <span>100</span>
+                                        <span class="percentage">%</span>
+                                    </div>
+
+                                    <ProgressBar
+                                        :progress="43"
+                                        :bar-height="4"
+                                        class="full-width-bar"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="carousel-dots">
+                        <div
+                            class="dot"
+                            :class="{ active: activeTab === 'currentJob' }"
+                        ></div>
+                        <div
+                            class="dot"
+                            :class="{ active: activeTab === 'vehicleWear' }"
+                        ></div>
+                    </div>
+                </motion.div>
             </div>
         </div>
     </section>
