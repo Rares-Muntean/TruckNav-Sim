@@ -227,7 +227,7 @@ onMounted(async () => {
                     >
                         <div class="option-title">
                             <div class="icon-wrapper">
-                                <Icon name="fa6-brands:discord" class="icon" />
+                                <Icon name="ic:round-discord" class="icon" />
                             </div>
 
                             <p>{{ t("desktop.discordRpc") }}</p>

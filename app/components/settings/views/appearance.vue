@@ -1,8 +1,11 @@
 <script lang="ts" setup>
+import { generateTruckIcon } from "~/assets/utils/map/markers";
+
 const { activeSettings, updateProfile } = useSettings();
 const { t } = useTranslations();
 
 const isFontSelectOpened = ref(false);
+const truckImgSrc = ref("");
 
 const isTextThemeLight = computed(
     () => activeSettings.value.textColor === "light",
@@ -33,6 +36,31 @@ function updateFont(val: string) {
 function toggleFontSelectPanel() {
     isFontSelectOpened.value = !isFontSelectOpened.value;
 }
+
+function toggleOuterRim() {
+    updateProfile("outerRimEnabled", !activeSettings.value.outerRimEnabled);
+}
+
+async function updatePreviewIcon() {
+    const img = await generateTruckIcon(
+        activeSettings.value.arrowColor,
+        activeSettings.value.discColor,
+        activeSettings.value.rimColor,
+    );
+    truckImgSrc.value = img.src;
+}
+
+watch(
+    [
+        () => activeSettings.value.arrowColor,
+        () => activeSettings.value.discColor,
+        () => activeSettings.value.rimColor,
+    ],
+    updatePreviewIcon,
+    {
+        immediate: true,
+    },
+);
 </script>
 
 <template>
@@ -107,6 +135,72 @@ function toggleFontSelectPanel() {
 
                     <PreviewSetting :height="150">
                         <MapColorPreview />
+                    </PreviewSetting>
+                </div>
+            </div>
+
+            <div class="category-wrapper">
+                <p class="category-title small">Truck Marker</p>
+
+                <div class="items-wrapper-stacked">
+                    <ColorOption
+                        :option-title="t('settings.arrow')"
+                        color-element="arrowColor"
+                    >
+                        <template #icon>
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:navigation-2" class="icon" />
+                            </div>
+                        </template>
+                    </ColorOption>
+
+                    <div class="small-separator"></div>
+
+                    <ColorOption
+                        :option-title="t('settings.disc')"
+                        color-element="discColor"
+                    >
+                        <template #icon>
+                            <div class="icon-wrapper">
+                                <Icon name="ic:baseline-circle" class="icon" />
+                            </div>
+                        </template>
+                    </ColorOption>
+
+                    <div class="small-separator"></div>
+
+                    <ColorOption
+                        :option-title="t('settings.rimColor')"
+                        color-element="rimColor"
+                    >
+                        <template #icon>
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:circle" class="icon" />
+                            </div>
+                        </template>
+                    </ColorOption>
+
+                    <div class="option setting stacked" @click="toggleOuterRim">
+                        <div class="option-title">
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:circle-check" class="icon" />
+                            </div>
+
+                            <p>{{ t("settings.outerRim") }}</p>
+                        </div>
+
+                        <Switch v-model="activeSettings.outerRimEnabled" />
+                    </div>
+
+                    <PreviewSetting :height="40">
+                        <div
+                            class="actual-truck-preview truck-nav-marker"
+                            :style="{
+                                width: '50px',
+                                height: '50px',
+                                backgroundImage: `url('${truckImgSrc}')`,
+                            }"
+                        ></div>
                     </PreviewSetting>
                 </div>
             </div>

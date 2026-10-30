@@ -202,15 +202,29 @@ watch(
 );
 
 watch(
+    [
+        () => activeSettings.value.arrowColor,
+        () => activeSettings.value.discColor,
+        () => activeSettings.value.rimColor,
+        () => activeSettings.value.outerRimEnabled,
+    ],
+    async ([arrowColor, discColor, rimColor]) => {
+        const newTruckImg = await generateTruckIcon(
+            arrowColor,
+            discColor,
+            rimColor,
+        );
+        updateMarkerImage(newTruckImg.src);
+    },
+);
+
+watch(
     () => activeSettings.value.themeColor,
-    async (newColor) => {
+    (themeColor) => {
         if (!map.value) return;
 
-        const newTruckImg = await generateTruckIcon(newColor);
-        updateMarkerImage(newTruckImg.src);
-
         if (map.value.getLayer("prefab-zones")) {
-            const blended = blendWithBg(lightenColor(newColor, 0.3), 0.6);
+            const blended = blendWithBg(lightenColor(themeColor, 0.3), 0.6);
             map.value.setPaintProperty("prefab-zones", "fill-color", blended);
         }
     },
@@ -344,7 +358,9 @@ onMounted(async () => {
         if (!map.value) return;
 
         const initialTruckImg = await generateTruckIcon(
-            activeSettings.value.themeColor,
+            activeSettings.value.arrowColor,
+            activeSettings.value.discColor,
+            activeSettings.value.rimColor,
         );
         map.value.on("load", async () => {
             initMarker(initialTruckImg.src, settings.value.truckMarkerSize);

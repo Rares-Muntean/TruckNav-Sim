@@ -58,6 +58,26 @@ button {
     }
 }
 
+.truck-nav-marker {
+    position: relative;
+    border-radius: 50%;
+
+    &::after {
+        content: "";
+        pointer-events: none;
+
+        position: absolute;
+        inset: -1px;
+        border-radius: 50%;
+
+        opacity: var(--marker-rim-opacity, 1);
+        border: 2px solid var(--marker-rim-color);
+
+        border: 2px solid
+            color-mix(in srgb, var(--marker-rim-color) 25%, transparent);
+    }
+}
+
 .pill {
     color: var(--main-text-color);
     font-weight: 600;

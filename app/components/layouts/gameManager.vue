@@ -138,7 +138,7 @@ function runTruckAnimation() {
 
     truckAnimControl?.stop();
 
-    const trackWidth = (truckRef.value.parentElement.clientWidth || 180) - 24;
+    const trackWidth = (truckRef.value.parentElement.clientWidth || 180) - 56;
 
     truckAnimControl = animate(
         [
@@ -150,7 +150,7 @@ function runTruckAnimation() {
             [
                 truckRef.value,
                 { x: [0, trackWidth], opacity: 1, scale: 1 },
-                { duration: 3.5, ease: "easeInOut" },
+                { duration: 5, ease: "easeInOut" },
             ],
             [
                 truckRef.value,
@@ -198,12 +198,15 @@ watch(isModPanelOpen, async (isOpen) => {
 });
 
 watch(
-    () => activeSettings.value?.themeColor,
-    async (newColor) => {
-        if (newColor) {
-            const img = await generateTruckIcon(newColor);
-            truckImgSrc.value = img.src;
-        }
+    [
+        () => activeSettings.value?.arrowColor,
+        () => activeSettings.value?.discColor,
+        () => activeSettings.value?.rimColor,
+        () => activeSettings.value?.outerRimEnabled,
+    ],
+    async ([arrowColor, discColor, rimColor]) => {
+        const img = await generateTruckIcon(arrowColor, discColor, rimColor);
+        truckImgSrc.value = img.src;
     },
     { immediate: true },
 );
@@ -395,7 +398,10 @@ const isModActive = (modId: string) => {
                                         />
                                     </div>
 
-                                    <div ref="truckRef" class="route-truck">
+                                    <div
+                                        ref="truckRef"
+                                        class="route-truck truck-nav-marker"
+                                    >
                                         <img
                                             class="truck-icon"
                                             :src="truckImgSrc"

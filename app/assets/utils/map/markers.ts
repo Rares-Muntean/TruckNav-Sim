@@ -1,10 +1,12 @@
 import { darkenColor, lightenColor } from "~/assets/utils/shared/colors";
 
 export const generateTruckIcon = (
-    baseColor: string,
+    arrowColor: string,
+    discColor: string,
+    rimColor: string,
 ): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
-        const dark = darkenColor(baseColor, 0.05);
+        const dark = darkenColor(arrowColor, 0.05);
 
         // Scale by 3 for perfectly crisp rendering on Retina/high-DPI displays
         const scale = 3;
@@ -14,7 +16,7 @@ export const generateTruckIcon = (
             <svg width="${size * scale}" height="${
             size * scale
         }" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="32" cy="32" r="32" fill="#1f1f1f"/>
+                <circle cx="32" cy="32" r="32" fill="${discColor}"/>
 
                 <path 
                     d="M19.12 39.175L29.2716 16.9684C30.3399 14.6315 33.6601 14.6315 34.7284 16.9684L44.88 39.175C46.0062 41.6385 43.549 44.215 41.0349 43.2067L33.1167 40.0312C32.4 39.7437 31.6 39.7437 30.8833 40.0312L22.9651 43.2067C20.451 44.215 17.9938 41.6385 19.12 39.175Z" 

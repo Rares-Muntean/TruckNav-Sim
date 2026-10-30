@@ -117,20 +117,6 @@
     gap: 1rem;
 }
 
-:deep(.truck-nav-marker) {
-    border-radius: 50%;
-
-    &::after {
-        content: "";
-        position: absolute;
-        inset: -2px;
-        border-radius: 50%;
-        z-index: -1;
-
-        border: 2px solid rgba(255, 255, 255, 0.22);
-    }
-}
-
 .icon {
     width: var(--hud-btn-size);
     height: var(--hud-btn-size);

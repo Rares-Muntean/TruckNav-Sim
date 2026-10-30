@@ -40,13 +40,26 @@ function toggleDriveInfoPanel() {
 }
 
 async function updatePreviewIcon() {
-    const img = await generateTruckIcon(activeSettings.value.themeColor);
+    const img = await generateTruckIcon(
+        activeSettings.value.arrowColor,
+        activeSettings.value.discColor,
+        activeSettings.value.rimColor,
+    );
     truckImgSrc.value = img.src;
 }
 
-watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
-    immediate: true,
-});
+watch(
+    [
+        () => activeSettings.value.arrowColor,
+        () => activeSettings.value.discColor,
+        () => activeSettings.value.rimColor,
+        () => activeSettings.value.outerRimEnabled,
+    ],
+    updatePreviewIcon,
+    {
+        immediate: true,
+    },
+);
 </script>
 
 <template>
@@ -151,7 +164,7 @@ watch(() => activeSettings.value.themeColor, updatePreviewIcon, {
 
                             <PreviewSetting :height="40">
                                 <div
-                                    class="actual-truck-preview"
+                                    class="actual-truck-preview truck-nav-marker"
                                     :style="{
                                         width: settings.truckMarkerSize + 'px',
                                         height: settings.truckMarkerSize + 'px',

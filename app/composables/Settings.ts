@@ -14,6 +14,10 @@ export interface GameProfile {
     backgroundColor: string;
     landColor: string;
     roadColor: string;
+    arrowColor: string;
+    discColor: string;
+    rimColor: string;
+    outerRimEnabled: boolean;
     units: UnitSystem;
     ownedDlcs: number[];
     lastDestination: [number, number] | null;
@@ -45,6 +49,10 @@ const DEFAULT_PROFILE: GameProfile = {
     roadColor: "#515151",
     backgroundColor: "#1A1A1A",
     landColor: "#232323",
+    arrowColor: "#0ea674",
+    discColor: "#1f1f1f",
+    rimColor: "#ffffff",
+    outerRimEnabled: true,
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
     lastDestination: null,
@@ -105,7 +113,6 @@ export const useSettings = () => {
         );
 
         const isLight = activeSettings.value.textColor === "light";
-
         document.documentElement.style.setProperty(
             "--main-text-color",
             isLight ? "#f2f2f2" : "#2d2d2d",
@@ -124,6 +131,16 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--compact-trip-size",
             `${settings.value.compactTripFontSize}rem`,
+        );
+
+        document.documentElement.style.setProperty(
+            "--marker-rim-color",
+            activeSettings.value.rimColor,
+        );
+
+        document.documentElement.style.setProperty(
+            "--marker-rim-opacity",
+            activeSettings.value.outerRimEnabled ? "1" : "0",
         );
     };
 
