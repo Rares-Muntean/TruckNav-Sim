@@ -41,6 +41,10 @@ function toggleOuterRim() {
     updateProfile("outerRimEnabled", !activeSettings.value.outerRimEnabled);
 }
 
+function toggleGlowEffect() {
+    updateProfile("glowEnabled", !activeSettings.value.glowEnabled);
+}
+
 async function updatePreviewIcon() {
     const img = await generateTruckIcon(
         activeSettings.value.arrowColor,
@@ -180,6 +184,8 @@ watch(
                         </template>
                     </ColorOption>
 
+                    <div class="small-separator"></div>
+
                     <div class="option setting stacked" @click="toggleOuterRim">
                         <div class="option-title">
                             <div class="icon-wrapper">
@@ -190,6 +196,36 @@ watch(
                         </div>
 
                         <Switch v-model="activeSettings.outerRimEnabled" />
+                    </div>
+
+                    <div class="small-separator"></div>
+
+                    <ColorOption
+                        :option-title="t('settings.glowColor')"
+                        color-element="glowColor"
+                    >
+                        <template #icon>
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:circle" class="icon" />
+                            </div>
+                        </template>
+                    </ColorOption>
+
+                    <div class="small-separator"></div>
+
+                    <div
+                        class="option setting stacked"
+                        @click="toggleGlowEffect"
+                    >
+                        <div class="option-title">
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:circle-check" class="icon" />
+                            </div>
+
+                            <p>{{ t("settings.glowEffect") }}</p>
+                        </div>
+
+                        <Switch v-model="activeSettings.glowEnabled" />
                     </div>
 
                     <PreviewSetting :height="40">

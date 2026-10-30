@@ -94,6 +94,8 @@
         "description": "TruckNav Preferences",
         "drivingInfo": "Driving Info",
         "general": "General",
+        "glowColor": "Glow Color",
+        "glowEffect": "Glow Effect",
         "guidanceTime": "Guidance & Time",
         "estimatedTime": "Estimated Time",
         "gameTime": "Game",
@@ -147,8 +149,6 @@
         "speedDescription": "Displays your current driving speed in your preferred unit.",
         "speedLimitDescription": "Displays the legal speed limit for the road you are currently on.",
         "speedLimitTitle": "Speed Sign",
-        "speedTitle": "Speed",
-        "topBarDescription": "Hides the whole top bar with drive info.",
-        "topBarTitle": "Top Bar"
+        "speedTitle": "Speed"
     }
 }

@@ -17,6 +17,8 @@ export interface GameProfile {
     arrowColor: string;
     discColor: string;
     rimColor: string;
+    glowColor: string;
+    glowEnabled: boolean;
     outerRimEnabled: boolean;
     units: UnitSystem;
     ownedDlcs: number[];
@@ -52,6 +54,8 @@ const DEFAULT_PROFILE: GameProfile = {
     arrowColor: "#0ea674",
     discColor: "#1f1f1f",
     rimColor: "#ffffff",
+    glowColor: "#0ea674",
+    glowEnabled: false,
     outerRimEnabled: true,
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
@@ -141,6 +145,16 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--marker-rim-opacity",
             activeSettings.value.outerRimEnabled ? "1" : "0",
+        );
+
+        document.documentElement.style.setProperty(
+            "--marker-glow-color",
+            activeSettings.value.glowColor,
+        );
+
+        document.documentElement.style.setProperty(
+            "--marker-glow-opacity",
+            activeSettings.value.glowEnabled ? "15px" : "0",
         );
     };
 
