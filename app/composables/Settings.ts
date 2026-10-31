@@ -3,7 +3,7 @@ import type { GameType } from "~/types";
 export type UnitSystem = "metric" | "imperial";
 export type TextTheme = "light" | "dark";
 export type RouteTimeMode = "game" | "real";
-export type UiComponent = "speed" | "speedLimit";
+export type UiComponent = "speed" | "speedLimit" | "fuel";
 export type ActiveComponents = UiComponent[];
 export type LocaleCode = "en" | "de" | "nl" | "cs" | "sk" | "ko" | "ro";
 
@@ -84,7 +84,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     hudBtnSize: 31,
     truckMarkerSize: 40,
     compactTripFontSize: 2,
-    activeUiComponents: ["speedLimit", "speed"],
+    activeUiComponents: ["speedLimit", "speed", "fuel"],
     locale: "en",
     routeTimeMode: "game",
     uiScale: 100,
