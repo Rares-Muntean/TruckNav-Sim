@@ -105,6 +105,16 @@ const {
 const { activeSettings, settings } = useSettings();
 const { t } = useTranslations();
 
+const isFuelHudEnabled = computed(
+    () =>
+        settings.value.activeUiComponents.includes("fuel") &&
+        gameConnected.value,
+);
+
+const showCompactInfoBar = computed(
+    () => isSheetHidden.value && (isRouteActive.value || isFuelHudEnabled.value),
+);
+
 let uiTimer: ReturnType<typeof setTimeout> | null = null;
 let routeTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -621,19 +631,19 @@ const handleTabClicked = (tab: "drive" | "trip" | "settings") => {
                     />
                 </div>
 
-                <div
-                    class="trip-info-compact"
-                    v-if="isRouteActive && isSheetHidden"
-                >
-                    <SpeedLimit />
+                <div class="trip-info-compact" v-if="showCompactInfoBar">
+                    <SpeedLimit v-if="isRouteActive" />
 
                     <CompactTrip
+                        v-if="isRouteActive"
                         :route-distance-converted="routeDistanceConverted"
                         :distance-unit="distanceUnit"
                         :route-eta-hours="routeEtaHours"
                         :route-eta-minutes="routeEtaMinutes"
                         @click="isSheetHidden = false"
                     />
+
+                    <FuelGauge v-if="isFuelHudEnabled" />
                 </div>
 
                 <SheetSlide

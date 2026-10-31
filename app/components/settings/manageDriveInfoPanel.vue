@@ -22,6 +22,12 @@ const components = computed<Component[]>(() => [
         description: t("uiComponents.speedLimitDescription"),
         iconName: "lucide:octagon-alert",
     },
+    {
+        id: "fuel",
+        title: t("uiComponents.fuelTitle"),
+        description: t("uiComponents.fuelDescription"),
+        iconName: "lucide:fuel",
+    },
 ]);
 
 function toggleUiComponent(componentId: UiComponent) {

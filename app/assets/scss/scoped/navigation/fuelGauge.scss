@@ -1,0 +1,79 @@
+.fuel-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+
+    padding: 5px 14px;
+    margin-left: auto;
+
+    font-size: var(--compact-trip-size);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+    color: $white-font-text;
+
+    border: $el-border-design;
+    border-radius: $default-border-radius;
+
+    backdrop-filter: $backdrop-filter;
+    background-color: rgba($color: $primaryColor, $alpha: 0.9);
+
+    &.is-low {
+        color: $warning-color;
+        animation: fuel-hud-pulse 1.8s ease-in-out infinite;
+    }
+}
+
+.fuel-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+
+    .fuel-icon {
+        width: 1.6rem;
+        height: 1.6rem;
+        align-self: center;
+        color: var(--theme-color);
+    }
+
+    .value {
+        font-weight: 700;
+    }
+
+    .unit {
+        font-size: 0.75em;
+        color: $white-font-text-muted;
+    }
+}
+
+.fuel-time {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+
+    font-size: 0.8em;
+    color: $white-font-text-muted;
+
+    .clock-icon {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+}
+
+@keyframes fuel-hud-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.55;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fuel-hud.is-low {
+        animation: none;
+    }
+}
