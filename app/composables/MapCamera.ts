@@ -43,6 +43,10 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             markerEl.style.pointerEvents = "none";
             markerEl.style.zIndex = "10";
             markerEl.style.willChange = "transform";
+            markerEl.style.filter =
+                "drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.17))";
+
+            markerEl.className = "truck-nav-marker";
 
             markerEl.style.display = "none";
 
@@ -132,11 +136,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                     const effectivePitch = pitch * 0.83;
 
                     markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${effectivePitch}deg) rotateZ(${screenRot}deg)`;
-                    markerEl.style.filter =
-                        "drop-shadow(0px 6px 6px rgba(0, 0, 0, 0.17))";
-
-                    markerEl.className = "truck-nav-marker";
-                    markerEl.style.borderRadius = "50%";
                 }
             }
         } else {

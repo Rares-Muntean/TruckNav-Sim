@@ -238,19 +238,21 @@ export function getRestPercentage(minutesLeft: number, game: GameType): number {
 }
 
 export function formatRemainingTime(totalMinutes: number) {
-    if (!totalMinutes || totalMinutes < 0) return { hours: 0, mins: 0 };
+    if (!Number.isFinite(totalMinutes) || totalMinutes <= 0) {
+        return { hours: 0, mins: 0 };
+    }
 
-    const hours = Math.floor(totalMinutes / 60);
-
-    const mins = totalMinutes % 60;
-
-    console.log(totalMinutes);
+    const roundedMinutes = Math.round(totalMinutes);
+    const hours = Math.floor(roundedMinutes / 60);
+    const mins = roundedMinutes % 60;
 
     return { hours, mins };
 }
 
-export function formatNumber(value: number) {
-    if (value === null) return "0";
+export function formatNumber(value: number | null | undefined) {
+    if (value === null || value === undefined || !Number.isFinite(value)) {
+        return "0";
+    }
 
     return value.toLocaleString("en-US");
 }
