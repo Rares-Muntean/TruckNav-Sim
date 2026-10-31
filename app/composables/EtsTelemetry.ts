@@ -58,6 +58,7 @@ const jobState = reactive<JobState>({
     income: 0,
     deadlineTime: new Date(),
     remainingTime: 0,
+    initialDeliveryMinutes: 0,
     sourceCity: "0",
     sourceCompany: "0",
     destinationCity: "0",
@@ -246,6 +247,7 @@ export function useEtsTelemetry() {
             destinationCityName,
             sourceCityName,
             sourceCompanyName,
+            initialDeliveryMinutes,
         } = getJobState(data, settings.value.selectedGame);
 
         Object.assign(jobState, {
@@ -255,6 +257,7 @@ export function useEtsTelemetry() {
             income: income,
             remainingTime: remainingTime,
             cargo: cargo,
+            initialDeliveryMinutes: initialDeliveryMinutes,
 
             destinationCompanyName: destinationCompanyName,
             destinationCityName: destinationCityName,

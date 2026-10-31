@@ -42,6 +42,7 @@ export interface AppSettingsState {
     activeUiComponents: ActiveComponents;
     locale: LocaleCode;
     routeTimeMode: RouteTimeMode;
+    uiScale: number;
 }
 
 const DEFAULT_PROFILE: GameProfile = {
@@ -86,6 +87,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     activeUiComponents: ["speedLimit", "speed"],
     locale: "en",
     routeTimeMode: "game",
+    uiScale: 100,
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -101,6 +103,12 @@ export const useSettings = () => {
     });
 
     const applySideEffects = () => {
+        const scaleMultiplier = (settings.value.uiScale || 100) / 100;
+        document.documentElement.style.setProperty(
+            "--ui-scale",
+            scaleMultiplier.toString(),
+        );
+
         document.documentElement.style.setProperty(
             "--theme-color",
             activeSettings.value.themeColor,
@@ -247,6 +255,7 @@ export const useSettings = () => {
         settings.value.compactTripFontSize =
             DEFAULT_SETTINGS.compactTripFontSize;
         settings.value.routeTimeMode = DEFAULT_SETTINGS.routeTimeMode;
+        settings.value.uiScale = DEFAULT_SETTINGS.uiScale;
 
         settings.value.activeUiComponents = [
             ...DEFAULT_SETTINGS.activeUiComponents,

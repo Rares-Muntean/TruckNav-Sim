@@ -117,6 +117,28 @@ watch(
                     <div class="items-wrapper-stacked">
                         <div class="preview-increase">
                             <IncreaseOption
+                                option-title="App Sizing"
+                                setting-name="uiScale"
+                                :max-value="125"
+                                :min-value="80"
+                                :amount="1"
+                                unit="%"
+                            >
+                                <template #icon>
+                                    <div class="icon-wrapper">
+                                        <Icon
+                                            name="lucide:copy-plus"
+                                            class="icon"
+                                        />
+                                    </div>
+                                </template>
+                            </IncreaseOption>
+                        </div>
+                    </div>
+
+                    <div class="items-wrapper-stacked">
+                        <div class="preview-increase">
+                            <IncreaseOption
                                 :option-title="t('settings.hudButtonSize')"
                                 setting-name="hudBtnSize"
                                 :max-value="40"
