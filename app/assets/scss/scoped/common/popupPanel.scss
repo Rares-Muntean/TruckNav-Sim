@@ -14,7 +14,7 @@
 
     scrollbar-width: none;
     -ms-overflow-style: none;
-    z-index: 10;
+    z-index: $ui-priority-index;
 }
 
 .no-padding {
@@ -32,7 +32,7 @@
 
     color: $white-font-text;
     background-color: $primaryBackgroundColor;
-    padding-top: calc(env(safe-area-inset-top) + 12px);
+    padding-top: calc(env(safe-area-inset-top) + 1.2rem);
 
     display: flex;
     flex-direction: column;

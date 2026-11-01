@@ -1,5 +1,4 @@
 .game-btn {
-    height: 100%;
     width: 100%;
 
     border-radius: $default-border-radius;
@@ -25,7 +24,9 @@
     }
 
     display: flex;
+    align-items: center;
     flex-direction: column;
+    height: 4.6rem;
 
     opacity: 0.5;
     transition: 0.3s opacity;
@@ -37,8 +38,9 @@
 .game-card-wrapper {
     display: flex;
     align-items: center;
+    height: 100%;
 
-    padding: 8px;
+    padding: 0.8rem;
 
     .icon {
         height: 100%;

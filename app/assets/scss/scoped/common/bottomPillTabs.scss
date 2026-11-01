@@ -15,13 +15,19 @@
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 
-    padding: 1rem 1rem;
+    padding: 1rem 0rem;
     padding-bottom: 1.6rem;
 
     z-index: $bottom-pill-z-index;
 
     border-top: $el-border-design;
-    box-shadow: $el-box-shadow-design;
+    box-shadow: $el-box-shadow-design,
+        0 0px 9px rgba($color: #000000, $alpha: 0.05);
+
+    @media (orientation: landscape), (min-width: 768px) {
+        width: min(45%, 40rem);
+        padding-bottom: 1rem;
+    }
 }
 
 .tab-item {

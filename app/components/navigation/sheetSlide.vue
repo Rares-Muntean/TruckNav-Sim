@@ -47,7 +47,7 @@ const cancelAutoStart = () => {
 
 const startCountdown = () => {
     cancelAutoStart();
-    countdown.value = 10;
+    countdown.value = 9;
 
     countdownTimer = setInterval(() => {
         countdown.value = countdown.value - 1;
@@ -60,7 +60,7 @@ const startCountdown = () => {
         progressAnim = animate(
             progressBarRef.value,
             { scaleX: [1, 0] },
-            { duration: 10, ease: "linear" },
+            { duration: 9, ease: "linear" },
         );
 
         progressAnim.finished

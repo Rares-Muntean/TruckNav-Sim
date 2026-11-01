@@ -1,7 +1,7 @@
 .notification-container {
     display: flex;
     pointer-events: none;
-    z-index: 50;
+    z-index: $ui-z-index;
 
     position: relative;
 
@@ -9,7 +9,7 @@
 }
 
 .notification-wrapper {
-    width: 210px;
+    width: 21rem;
 
     border: 1px solid $primaryAccentColor;
     box-shadow: $el-box-shadow-design;
@@ -21,7 +21,7 @@
     color: $white-font-text;
     font-size: 1.6rem;
 
-    height: 42px;
+    height: 4.2rem;
     display: flex;
     align-items: center;
 }

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { motion, type PanInfo } from "motion-v";
 import { ref, onMounted, shallowRef, Transition } from "vue";
 import "maplibre-gl/dist/maplibre-gl.css";
 import maplibregl from "maplibre-gl";
@@ -22,6 +23,10 @@ const isAddingStopMode = ref(false);
 // UI STATE
 const isSheetHidden = ref(false);
 const activeTab = ref<"drive" | "trip" | "settings">("drive");
+
+const tabs = ["fuel-rest", "destination", "cargo"] as const;
+const activeCardsTab = ref<"fuel-rest" | "destination" | "cargo">("fuel-rest");
+
 const activeSettingsWindowView = ref<settingsView>("main");
 
 // JOB STATE
@@ -34,15 +39,11 @@ const clickingNotificationTrigger = ref(0);
 const {
     startTelemetry,
     stopTelemetry,
-    gameTime,
     gameConnected,
     truckCoords,
     truckSpeed,
     speedLimit,
     truckHeading,
-    fuel,
-    restStoptime,
-    restStopMinutes,
     hasInGameMarker,
     hasActiveJob,
     destinationCity,
@@ -83,7 +84,6 @@ const {
 
 const {
     setupRouteLayer,
-    handleMultiRouteCalculation,
     handleRouteClick,
     updateRouteProgress,
     clearRouteState,
@@ -151,13 +151,21 @@ watch([currentJobTarget, isMapReady], async ([jobTarget, isReady]) => {
         destinationCompany.value,
     );
 
-    if (destCoords && truckCoords.value) {
+    let targetRoute: [number, number][];
+
+    const savedJob = activeSettings.value.lastJob;
+    if (savedJob?.key === jobTarget && savedJob?.lastRoute?.length) {
+        targetRoute = savedJob.lastRoute;
+    } else {
+        targetRoute = destCoords ? [destCoords] : [];
+    }
+
+    if (targetRoute.length > 0 && truckCoords.value) {
         currentJobKey.value = jobTarget;
-        clearRouteState();
         isClickingEnabled.value = false;
 
         await handleRouteClick(
-            destCoords,
+            targetRoute,
             truckCoords.value,
             truckHeading.value,
             scale.value,
@@ -169,16 +177,17 @@ watch([currentJobTarget, isMapReady], async ([jobTarget, isReady]) => {
 watch([hasActiveJob, isMapReady], ([hasJob, isReady]) => {
     if (!isReady || hasJob) return;
 
-    const destination = activeSettings.value.lastDestination;
+    const savedRoute = activeSettings.value.lastJob?.lastRoute;
 
     if (
-        destination &&
+        savedRoute &&
+        savedRoute.length > 0 &&
         !isRouteActive.value &&
         !isCalculatingRoute.value &&
         truckCoords.value
     ) {
         handleRouteClick(
-            destination,
+            savedRoute,
             truckCoords.value,
             truckHeading.value,
             scale.value,
@@ -497,6 +506,35 @@ const handleTabClicked = (tab: "drive" | "trip" | "settings") => {
         activeSettingsWindowView.value = "main";
     }
 };
+
+function handleDragEnd(_event: PointerEvent, info: PanInfo) {
+    const threshold = 50;
+    const velocityThreshold = 400;
+
+    const currentIndex = tabs.indexOf(activeCardsTab.value);
+
+    if (info.offset.x < -threshold || info.velocity.x < -velocityThreshold) {
+        if (currentIndex < tabs.length - 1) {
+            activeCardsTab.value = tabs[currentIndex + 1]!;
+        }
+    }
+
+    if (info.offset.x > threshold || info.velocity.x > velocityThreshold) {
+        if (currentIndex > 0) {
+            activeCardsTab.value = tabs[currentIndex - 1]!;
+        }
+    }
+}
+
+function clickCardView() {
+    const currentIndex = tabs.indexOf(activeCardsTab.value);
+
+    if (currentIndex === tabs.length - 1) {
+        activeCardsTab.value = tabs[0];
+    } else {
+        activeCardsTab.value = tabs[currentIndex + 1]!;
+    }
+}
 </script>
 
 <template>
@@ -651,6 +689,53 @@ const handleTabClicked = (tab: "drive" | "trip" | "settings") => {
                     :truck-speed="truckSpeed"
                     @update:add-stop-clicked="toggleAddStopClicked"
                 />
+
+                <motion.div
+                    @pan-end="handleDragEnd"
+                    @click="clickCardView"
+                    class="drive-hud-panel"
+                >
+                    <div
+                        v-if="activeCardsTab === 'fuel-rest'"
+                        class="hud-panel-group"
+                    >
+                        <VehicleCard variant="drive-view" />
+                        <RestCard variant="drive-view" />
+                    </div>
+
+                    <div
+                        v-if="activeCardsTab === 'destination'"
+                        class="hud-panel-group"
+                    >
+                        <DriveJobCard variant="drive-view" />
+                    </div>
+
+                    <div
+                        v-if="activeCardsTab === 'cargo'"
+                        class="hud-panel-group"
+                    >
+                        <DriveCargoCard variant="drive-view" />
+                    </div>
+
+                    <div class="carousel-dots">
+                        <div
+                            class="dot"
+                            :class="{ active: activeCardsTab === 'fuel-rest' }"
+                        ></div>
+
+                        <div
+                            class="dot"
+                            :class="{
+                                active: activeCardsTab === 'destination',
+                            }"
+                        ></div>
+
+                        <div
+                            class="dot"
+                            :class="{ active: activeCardsTab === 'cargo' }"
+                        ></div>
+                    </div>
+                </motion.div>
             </div>
 
             <SettingsPanel

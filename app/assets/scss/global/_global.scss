@@ -1,4 +1,5 @@
 @use "~/assets/scss/global/variables" as *;
+@use "~/assets/scss/global/mixins" as *;
 
 /** DEFAULT **/
 * {
@@ -10,6 +11,13 @@
 :root {
     --ui-scale: 1;
     --bottom-pill-tabs-height: 7.5rem;
+
+    --warning-color: #f59e0b;
+    --red-color: #dd4a34;
+
+    @media (orientation: landscape), (min-width: 768px) {
+        --bottom-pill-tabs-height: 6.5rem;
+    }
 }
 
 /** MEDIA GLOBAL FONT-SIZE **/
@@ -33,6 +41,12 @@ html {
 @media (min-width: 768px) and (min-height: 600px) {
     html {
         font-size: calc(75% * var(--ui-scale, 1));
+    }
+}
+
+@media (min-width: 1000px) and (min-height: 700px) {
+    html {
+        font-size: calc(81.25% * var(--ui-scale, 1));
     }
 }
 
@@ -77,21 +91,23 @@ input {
         pointer-events: none;
 
         position: absolute;
-        inset: -1px;
+        inset: -3px;
         border-radius: 50%;
 
         opacity: var(--marker-rim-opacity, 1);
-        border: 2px solid var(--marker-rim-color);
 
         border: 2px solid
-            color-mix(in srgb, var(--marker-rim-color) 25%, transparent);
+            color-mix(in srgb, var(--marker-rim-color) 22%, transparent);
     }
 }
 
 /** DEFAULT SECTION **/
 .section {
     height: calc(100dvh - env(safe-area-inset-top));
-    padding: 12px 2.4rem;
+    padding: 1.2rem 2.4rem;
+
+    flex: 1;
+    min-height: 0;
 }
 
 .section-title {
@@ -107,8 +123,8 @@ input {
     .icon {
         margin-top: 2px;
         color: var(--theme-color);
-        width: 20px;
-        height: 20px;
+        width: 2rem;
+        height: 2rem;
     }
 }
 
@@ -192,7 +208,7 @@ button {
 
 .btn {
     border-style: none;
-    padding: 4px 8px;
+    padding: 0.4rem 0.8rem;
     font-family: inherit;
     font-weight: inherit;
     cursor: pointer;
@@ -217,7 +233,7 @@ button {
     height: fit-content;
     border: none;
     border-radius: $default-border-radius;
-    padding: 6px 1.6rem;
+    padding: 0.6rem 1.6rem;
     box-shadow: $behind-shadow;
 
     justify-content: center;
@@ -261,7 +277,7 @@ button {
         height: auto;
         width: auto;
         aspect-ratio: 1;
-        padding: 6px;
+        padding: 0.6rem;
 
         display: flex;
         align-items: center;
@@ -270,7 +286,7 @@ button {
 
     &.icon {
         aspect-ratio: 1;
-        padding: 4px 6px;
+        padding: 0.4rem 0.6rem;
     }
 
     &.icon-close {
@@ -293,6 +309,11 @@ button {
     align-items: center;
     justify-content: center;
     height: 100%;
+
+    @include for-phone-landscape {
+        flex-direction: row;
+        gap: 0.8rem;
+    }
 }
 
 .bottom-text {
@@ -323,6 +344,11 @@ button {
 
     .sub-header {
         opacity: 0.5;
+    }
+
+    @include for-phone-landscape {
+        align-items: start;
+        text-align: start;
     }
 }
 

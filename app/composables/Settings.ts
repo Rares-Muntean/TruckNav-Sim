@@ -7,6 +7,12 @@ export type UiComponent = "speed" | "speedLimit";
 export type ActiveComponents = UiComponent[];
 export type LocaleCode = "en" | "de" | "nl" | "cs" | "sk" | "ko" | "ro";
 
+export interface SavedJob {
+    key: string;
+    initialMinutes: number;
+    lastRoute: [number, number][] | null;
+}
+
 export interface GameProfile {
     themeColor: string;
     textColor: TextTheme;
@@ -22,7 +28,7 @@ export interface GameProfile {
     outerRimEnabled: boolean;
     units: UnitSystem;
     ownedDlcs: number[];
-    lastDestination: [number, number] | null;
+    lastJob: SavedJob;
     hasTurnNavigation: boolean;
     drawTurnNavigation: boolean;
     fontFamily: string;
@@ -60,7 +66,7 @@ const DEFAULT_PROFILE: GameProfile = {
     outerRimEnabled: true,
     units: "metric",
     ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
-    lastDestination: null,
+    lastJob: { initialMinutes: 0, key: "", lastRoute: [] },
     hasTurnNavigation: true,
     drawTurnNavigation: false,
     fontFamily: "Jakarta",
@@ -243,12 +249,12 @@ export const useSettings = () => {
     const resetSettings = () => {
         const game = settings.value.selectedGame || "ets2";
 
-        const currentDest = settings.value.profiles[game].lastDestination;
+        const currentJob = settings.value.profiles[game].lastJob;
 
         const freshProfile = JSON.parse(
             JSON.stringify(DEFAULT_SETTINGS.profiles[game]),
         );
-        freshProfile.lastDestination = currentDest;
+        freshProfile.lastJob = currentJob;
 
         settings.value.hudBtnSize = DEFAULT_SETTINGS.hudBtnSize;
         settings.value.truckMarkerSize = DEFAULT_SETTINGS.truckMarkerSize;

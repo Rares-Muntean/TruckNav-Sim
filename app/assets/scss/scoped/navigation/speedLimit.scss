@@ -18,6 +18,8 @@
 
     border-radius: $default-border-radius;
 
+    box-shadow: 0 0px 9px rgba($color: #000000, $alpha: 0.05);
+
     .dot {
         background-color: $white-font-text;
     }

@@ -16,8 +16,8 @@
     border: 1px solid $primaryLightButtonColor;
 
     .icon {
-        width: 20px;
-        height: 20px;
+        width: 2rem;
+        height: 2rem;
 
         color: $white-font-text-muted;
     }
@@ -41,8 +41,8 @@
     color: $primaryLightButtonColor;
 
     .icon-check {
-        width: 22px;
-        height: 22px;
+        width: 2.2rem;
+        height: 2.2rem;
 
         &.is-active {
             color: var(--theme-color);

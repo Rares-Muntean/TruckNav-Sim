@@ -13,7 +13,7 @@ $button-padding: 8px 10px;
     display: flex;
     flex-direction: column;
 
-    padding-top: calc(env(safe-area-inset-top) + 12px);
+    padding-top: calc(env(safe-area-inset-top) + 1.2rem);
 
     z-index: $ui-priority-index;
 }
@@ -49,18 +49,29 @@ $button-padding: 8px 10px;
     flex-direction: column;
     align-items: center;
 
+    padding-top: 1.4rem;
+
     font-size: 1.2rem;
     color: rgba($color: $white-font-text-muted, $alpha: 0.6);
     line-height: 1.25;
+
+    @media (orientation: landscape), (min-width: 768px) {
+        width: 53%;
+
+        position: absolute;
+        right: 0;
+        align-items: start;
+        bottom: calc(var(--bottom-pill-tabs-height) / 3.5);
+    }
 }
 
 .menu-list {
     overflow-y: auto;
 
-    display: flex;
-    flex-direction: column;
-    gap: 2.2rem;
+    gap: 2rem;
 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 27rem), 1fr));
     @include no-scrollbar;
 }
 
@@ -88,8 +99,8 @@ $button-padding: 8px 10px;
 }
 
 .selector {
-    min-width: 150px;
-    max-width: 200px;
+    min-width: 15rem;
+    max-width: 20rem;
 
     background: $primaryLightButtonColor;
     border-radius: $default-border-radius;
@@ -109,8 +120,8 @@ $button-padding: 8px 10px;
 }
 
 .icon-btn {
-    min-width: 26px;
-    min-height: 26px;
+    min-width: 2.6rem;
+    min-height: 2.6rem;
 
     display: flex;
     align-items: center;
@@ -286,8 +297,8 @@ $button-padding: 8px 10px;
 }
 
 .change-color-btn {
-    width: 30px;
-    height: 30px;
+    width: 3rem;
+    height: 3rem;
 
     margin: 0.15rem 0;
 
@@ -370,12 +381,12 @@ $button-padding: 8px 10px;
         top: 7px;
 
         color: $green-color;
-        width: 18px;
-        height: 18px;
+        width: 1.8rem;
+        height: 1.8rem;
     }
 
     .flag-icon {
-        width: 38px;
+        width: 3.8rem;
         border-radius: $default-border-radius;
         box-shadow: 0px 2px 8px rgba($color: #000000, $alpha: 0.15);
     }

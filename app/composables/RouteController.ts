@@ -34,6 +34,14 @@ export const useRouteController = (
     const { settings, activeSettings, updateGlobal, updateProfile } =
         useSettings();
 
+    const {
+        initialDeliveryMinutes,
+        remainingTime,
+        destinationCity,
+        destinationCompany,
+        hasActiveJob,
+    } = useEtsTelemetry();
+
     const currentRoutePath = shallowRef<[number, number][] | null>(null);
     const routeStatsCache = shallowRef<Float32Array | null>(null);
 
@@ -99,6 +107,29 @@ export const useRouteController = (
         } else {
             clearTurnArrows(map.value);
         }
+    }
+
+    function saveCurrentJobRoute() {
+        let initialMinutes = 0;
+
+        const jobKey =
+            hasActiveJob.value && destinationCity.value
+                ? `${destinationCity.value}|${destinationCompany.value}`
+                : "";
+
+        const prevJob = activeSettings.value.lastJob;
+
+        if (jobKey !== prevJob?.key) {
+            initialMinutes = initialDeliveryMinutes.value;
+        } else {
+            initialMinutes = prevJob.initialMinutes || 0;
+        }
+
+        updateProfile("lastJob", {
+            key: jobKey,
+            initialMinutes,
+            lastRoute: [...waypointList.value],
+        });
     }
 
     watch(
@@ -310,6 +341,7 @@ export const useRouteController = (
 
                 const lastStop =
                     waypointList.value[waypointList.value.length - 1]!;
+
                 destinationName.value = getGameLocationName(
                     lastStop[0],
                     lastStop[1],
@@ -350,11 +382,8 @@ export const useRouteController = (
                 }
 
                 routeFound.value = true;
-                currentRouteIndex.value = 0;
-                updateProfile(
-                    "lastDestination",
-                    waypointList.value[waypointList.value.length - 1]!,
-                );
+
+                saveCurrentJobRoute();
             } else {
                 routeFound.value = false;
             }
@@ -487,7 +516,7 @@ export const useRouteController = (
     }
 
     async function handleRouteClick(
-        clickCoords: [number, number],
+        coords: [number, number] | [number, number][],
         truckCoords: [number, number],
         truckHeading: number,
         sdkScale: number,
@@ -496,14 +525,20 @@ export const useRouteController = (
     ) {
         let testList: [number, number][] = [];
 
-        if (!isRouteActive.value) {
-            testList = [clickCoords];
-        } else if (isInsertMode) {
-            const idx = findBestWaypointInsertionIndex(clickCoords);
-            testList = [...waypointList.value];
-            testList.splice(idx, 0, clickCoords);
+        if (Array.isArray(coords[0])) {
+            testList = coords as [number, number][];
         } else {
-            testList = [...waypointList.value, clickCoords];
+            const singleCoord = coords as [number, number];
+
+            if (!isRouteActive.value) {
+                testList = [singleCoord];
+            } else if (isInsertMode) {
+                const idx = findBestWaypointInsertionIndex(singleCoord);
+                testList = [...waypointList.value];
+                testList.splice(idx, 0, singleCoord);
+            } else {
+                testList = [...waypointList.value, singleCoord];
+            }
         }
 
         await handleMultiRouteCalculation(
@@ -1107,7 +1142,7 @@ export const useRouteController = (
         snappedWaypointNodeIds.value = [];
         isYardStart.value = false;
         fullRouteDirections.value = [];
-        updateProfile("lastDestination", null);
+
         stopNavigationMode();
 
         nextTurnDistance.value = 0;

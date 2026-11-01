@@ -3,8 +3,12 @@ import { animate } from "motion";
 import { EASE } from "~/types/easings";
 
 const props = withDefaults(
-    defineProps<{ progress: number; barHeight?: number }>(),
-    { barHeight: 6 },
+    defineProps<{
+        progress: number;
+        barHeight?: number;
+        color?: string;
+    }>(),
+    { barHeight: 6, color: "var(--theme-color)" },
 );
 
 const fillRef = ref<HTMLElement | null>(null);
@@ -35,7 +39,11 @@ watch(
 
 <template>
     <div class="progress-bar-bg" :style="{ height: barHeight + 'px' }">
-        <div class="progress-bar-fill" ref="fillRef"></div>
+        <div
+            class="progress-bar-fill"
+            :style="{ backgroundColor: color }"
+            ref="fillRef"
+        ></div>
     </div>
 </template>
 

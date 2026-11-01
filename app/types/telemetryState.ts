@@ -47,6 +47,7 @@ export interface JobState {
 
     deadlineTime: Date;
     remainingTime: number;
+    initialDeliveryMinutes: number;
     sourceCity: string;
     sourceCompany: string;
     destinationCity: string;

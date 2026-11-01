@@ -118,6 +118,8 @@ export function getNavigationState(data: TelemetryPacket) {
     return { speedLimit, restStoptime, restStopMinutes: totalMinutes };
 }
 
+let cachedJobKey = "";
+let initialDeliveryMinutes = 0;
 export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
     let companyTarget = "";
     let cityTarget = "";
@@ -167,6 +169,19 @@ export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
 
     const income = data.job.income;
     const remainingTime = data.job.remainingDeliveryTime;
+    const jobKey = hasActiveJob
+        ? `${destinationCity}|${destinationCompany}`
+        : "";
+
+    if (hasActiveJob) {
+        if (jobKey !== cachedJobKey && remainingTime > 0) {
+            cachedJobKey = jobKey;
+            initialDeliveryMinutes = remainingTime;
+        }
+    } else {
+        cachedJobKey = "";
+        initialDeliveryMinutes = 0;
+    }
 
     const cargo = {
         mass: data.job.cargo.mass,
@@ -181,6 +196,7 @@ export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
         trailerCoords,
         income,
         remainingTime,
+        initialDeliveryMinutes,
         cargo,
 
         destinationCityName,
@@ -307,6 +323,59 @@ function convertTelemtryTime(time: string) {
             .padStart(2, "0")}`,
         raw: date,
     };
+}
+
+export function getStatusLevel(
+    type:
+        | "fuel"
+        | "rest"
+        | "damage"
+        | "speed"
+        | "remainingTime"
+        | "cargoDamage",
+    percentage: number,
+    speedLimit?: number,
+    truckSpeedConverted?: number,
+): string {
+    if (type === "fuel") {
+        if (percentage <= 15) return "var(--red-color)";
+        if (percentage <= 25) return "var(--warning-color)";
+        return "var(--theme-color)";
+    }
+
+    if (type === "rest") {
+        if (percentage <= 10) return "var(--red-color)";
+        if (percentage <= 25) return "var(--warning-color)";
+        return "var(--theme-color)";
+    }
+
+    if (type === "damage") {
+        if (percentage >= 70) return "var(--red-color)";
+        if (percentage >= 35) return "var(--warning-color)";
+        return "var(--theme-color)";
+    }
+
+    if (type === "speed" && speedLimit && truckSpeedConverted) {
+        if (speedLimit <= 0) return "var(--theme-color)";
+        if (truckSpeedConverted > speedLimit + 5) return "var(--red-color)";
+        if (truckSpeedConverted > speedLimit + 1) return "var(--warning-color)";
+
+        return "var(--theme-color)";
+    }
+
+    if (type === "remainingTime") {
+        if (percentage <= 10) return "var(--red-color)";
+        if (percentage <= 20) return "var(--warning-color)";
+        return "var(--theme-color)";
+    }
+
+    if (type === "cargoDamage") {
+        if (percentage >= 50) return "var(--red-color)";
+        if (percentage >= 20) return "var(--warning-color)";
+        return "var(--theme-color)";
+    }
+
+    return "var(--theme-color)";
 }
 
 export function cleanText(value: string | null | undefined): string {

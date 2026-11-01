@@ -115,9 +115,84 @@
     justify-content: space-between;
 
     gap: 1rem;
+
+    @media (orientation: landscape), (min-width: 768px) {
+        width: min(45%, 40rem);
+        bottom: calc(var(--bottom-pill-tabs-height) + 0.8rem);
+        left: 0;
+        margin: 0;
+        padding: 0 0.8rem;
+        padding-right: 0;
+    }
 }
 
 .icon {
     width: var(--hud-btn-size);
     height: var(--hud-btn-size);
+}
+
+.drive-hud-panel {
+    display: none;
+
+    @media (orientation: landscape), (min-width: 768px) {
+        position: absolute;
+        display: flex;
+
+        bottom: 0;
+        right: 0;
+        margin-inline: auto;
+
+        width: min(calc(55% - 0.8rem), 50rem);
+        z-index: $ui-z-index;
+
+        pointer-events: auto;
+
+        .card {
+            box-shadow: 0 0px 9px rgba($color: #000000, $alpha: 0.05);
+        }
+    }
+
+    .hud-panel-group {
+        display: flex;
+        align-items: center;
+
+        background-color: $primaryColor;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        display: flex;
+
+        flex: 1;
+        min-width: 0;
+
+        height: calc(var(--bottom-pill-tabs-height));
+
+        padding: 0.8rem 0.8rem;
+        gap: 0.8rem;
+
+        &.no-gap {
+            .drive-view {
+                gap: 0.2rem;
+            }
+        }
+    }
+}
+
+.carousel-dots {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+
+    min-width: 1.8rem;
+
+    .dot {
+        height: 7px;
+        width: 7px;
+        background-color: $white-font-text-muted;
+
+        &.active {
+            background-color: var(--theme-color);
+        }
+    }
 }

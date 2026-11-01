@@ -17,20 +17,14 @@
 
     font-size: 1.6rem;
 
-    @media (orientation: landscape) {
-        width: 30%;
-        left: 8%;
-        transform: translate(0%, 0);
-
-        @media (max-width: 700px) {
-            left: 11%;
-        }
+    @media (orientation: landscape), (min-width: 768px) {
+        width: 55%;
     }
 }
 
 .direction-arrow {
-    width: 32px;
-    height: 32px;
+    width: 3.2rem;
+    height: 3.2rem;
 }
 
 .turn-info {
