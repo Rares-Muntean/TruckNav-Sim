@@ -4,7 +4,7 @@ const emit = defineEmits(["close"]);
 
 <template>
     <div class="popup-overlay">
-        <div class="section popup-window">
+        <div class="section popup-window safe-padding-left safe-padding-right">
             <div class="title-wrapper">
                 <div class="section-title">
                     <button

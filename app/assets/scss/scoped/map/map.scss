@@ -133,6 +133,11 @@
     @media (orientation: landscape), (min-width: 768px) {
         right: calc(var(--safe-side-right) + 1.8rem);
         min-width: min(calc(40% - 0.8rem - var(--safe-side-right)), 50rem);
+
+        &.no-bottom-card {
+            bottom: 0.8rem;
+            right: var(--safe-side-right);
+        }
     }
 }
 

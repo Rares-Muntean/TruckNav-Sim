@@ -701,7 +701,15 @@ function toggleIsSheetHidden() {
                     <SpeedLimit />
                 </div>
 
-                <div class="compact-trip">
+                <div
+                    :class="{
+                        'no-bottom-card':
+                            !settings.activeUiComponents.includes(
+                                'details-cards',
+                            ),
+                    }"
+                    class="compact-trip"
+                >
                     <CompactTrip
                         :route-distance-converted="routeDistanceConverted"
                         :distance-unit="distanceUnit"
