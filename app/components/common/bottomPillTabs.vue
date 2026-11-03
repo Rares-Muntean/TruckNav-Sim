@@ -10,7 +10,7 @@ function handleTabClick(tab: "drive" | "trip" | "settings") {
 </script>
 
 <template>
-    <div class="tabs-container">
+    <div class="tabs-container safe-padding-left safe-padding-right">
         <div
             class="tab-item"
             :class="{ 'is-active': model === 'drive' }"

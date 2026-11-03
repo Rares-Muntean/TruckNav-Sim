@@ -36,7 +36,11 @@ const restStatusColor = computed(() =>
                 class="data-value-wrapper"
                 :class="{ 'data-title': variant === 'drive-view' }"
             >
-                <Icon name="lucide:bed" class="icon" />
+                <Icon
+                    v-if="variant === 'drive-view'"
+                    name="lucide:bed"
+                    class="icon"
+                />
 
                 <div class="unit-group">
                     <p class="card-value-number">

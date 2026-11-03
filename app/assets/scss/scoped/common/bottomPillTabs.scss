@@ -21,11 +21,10 @@
     z-index: $bottom-pill-z-index;
 
     border-top: $el-border-design;
-    box-shadow: $el-box-shadow-design,
-        0 0px 9px rgba($color: #000000, $alpha: 0.05);
+    box-shadow: 0 0px 9px rgba($color: #000000, $alpha: 0.05);
 
     @media (orientation: landscape), (min-width: 768px) {
-        width: min(45%, 40rem);
+        width: min(40%, 40rem);
         padding-bottom: 1rem;
     }
 }

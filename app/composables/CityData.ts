@@ -5,6 +5,8 @@ import {
 import { getActiveMapFolder } from "~/assets/utils/map/helpers";
 import type { WorkerCityArea } from "~/assets/utils/routing/routeStats";
 import { getMapFileUrl } from "~/assets/utils/shared/fileManager";
+import countryList from "country-list";
+import states from "us-state-converter";
 
 // --- Types ---
 export interface ScsCityArea {
@@ -31,6 +33,12 @@ export interface MapScaleConfig {
     ruralScale: number;
     urbanScale: number;
     hasUkRule: boolean;
+}
+
+export interface LocationData {
+    city: string;
+    country: string;
+    coords: [number, number];
 }
 
 interface GeoJsonProperties {
@@ -276,8 +284,12 @@ export function useCityData() {
         return areasOut;
     }
 
-    function getGameLocationName(targetLng: number, targetLat: number): string {
-        if (!isLoaded.value) return "Loading data...";
+    function getLocationDataFromCoords(
+        targetLng: number,
+        targetLat: number,
+    ): LocationData {
+        if (!isLoaded.value)
+            return { city: "Loading data...", country: "", coords: [0, 0] };
 
         let bestName = "";
         let bestCountry = "";
@@ -313,40 +325,49 @@ export function useCityData() {
                 if (dist < minDistance) {
                     minDistance = dist;
                     bestName = feature.properties.name;
-                    bestCountry = feature.properties.state || "";
+
+                    bestCountry = formatCountryToken(feature.properties.state);
                 }
             }
         }
 
         if (bestName) {
-            const threshold = 0.3;
+            const locationData: LocationData = {
+                city: bestName,
+                country: bestCountry,
+                coords: [targetLng, targetLat],
+            };
 
-            const fullName = bestCountry
-                ? `${bestName} · ${bestCountry}`
-                : bestName;
-
-            if (minDistance < threshold) {
-                return fullName;
-            } else {
-                return `${fullName}`;
-            }
+            return locationData;
         }
 
-        return "Open Road";
+        return { city: "Open Road", country: "", coords: [0, 0] };
     }
 
+    const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
     function formatCountryToken(token?: string): string {
         if (!token) return "";
-        return token
-            .replace(/_/g, " ")
-            .replace(/\b\w/g, (c) => c.toUpperCase());
+        const clean = token.replace(/_/g, " ").trim();
+        if (clean.length === 2) return clean.toUpperCase();
+
+        const state = states(clean) as any;
+        const stateCode = state?.usps;
+        if (stateCode) return stateCode;
+
+        const countryCode = countryList.getCode(clean);
+        if (countryCode) return countryCode;
+
+        if (clean.toLowerCase() === "czech") return "CZ";
+        if (clean.toLowerCase() === "uk") return "GB";
+
+        return clean.toUpperCase();
     }
 
     return {
         scsCitiesData,
         mapScaleConfig,
         loadLocationData,
-        getGameLocationName,
+        getGameLocationName: getLocationDataFromCoords,
         getWorkerCityData,
         findDestinationCoords,
     };

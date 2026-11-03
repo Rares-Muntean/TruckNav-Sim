@@ -21,7 +21,7 @@ const isClickingEnabled = ref(true);
 const isAddingStopMode = ref(false);
 
 // UI STATE
-const isSheetHidden = ref(false);
+const isSheetHidden = ref(true);
 const activeTab = ref<"drive" | "trip" | "settings">("drive");
 
 const tabs = ["fuel-rest", "destination", "cargo"] as const;
@@ -88,6 +88,7 @@ const {
     updateRouteProgress,
     clearRouteState,
     destinationName,
+    stopsNames,
     routeDistance,
     routeEtaHours,
     routeEtaMinutes,
@@ -110,6 +111,10 @@ let routeTimer: ReturnType<typeof setTimeout> | null = null;
 
 loading.value = true;
 progress.value = 0;
+
+const routeDistanceConverted = computed(() =>
+    kmToUserUnits(routeDistance.value),
+);
 
 const isTruckSpawned = computed(() => {
     return (
@@ -193,6 +198,12 @@ watch([hasActiveJob, isMapReady], ([hasJob, isReady]) => {
             scale.value,
             averageSpeed.value,
         );
+    }
+});
+
+watch(isRouteActive, (routeActive) => {
+    if (!routeActive) {
+        clearRouteState();
     }
 });
 
@@ -308,6 +319,10 @@ watch(
 );
 
 watch(routeFound, (newVal) => {
+    if (newVal === true) {
+        isSheetHidden.value = false;
+    }
+
     if (newVal !== null) {
         if (uiTimer) clearTimeout(uiTimer);
 
@@ -419,9 +434,24 @@ onUnmounted(() => {
     }
 });
 
-const routeDistanceConverted = computed(() =>
-    kmToUserUnits(routeDistance.value),
-);
+function resetJob() {
+    const destCoords = findDestinationCoords(
+        destinationCity.value,
+        destinationCompany.value,
+    );
+
+    if (destCoords && isTruckSpawned.value && truckCoords.value) {
+        handleRouteClick(
+            destCoords,
+            truckCoords.value,
+            truckHeading.value,
+            scale.value,
+            averageSpeed.value,
+            false,
+            true,
+        );
+    }
+}
 
 function onTelemetryUpdate() {
     if (!truckCoords.value || !map.value) return;
@@ -505,6 +535,10 @@ const handleTabClicked = (tab: "drive" | "trip" | "settings") => {
     if (tab === "settings" && activeTab.value === "settings") {
         activeSettingsWindowView.value = "main";
     }
+
+    if (tab === "drive" && activeTab.value === "drive") {
+        toggleIsSheetHidden();
+    }
 };
 
 function handleDragEnd(_event: PointerEvent, info: PanInfo) {
@@ -535,6 +569,10 @@ function clickCardView() {
         activeCardsTab.value = tabs[currentIndex + 1]!;
     }
 }
+
+function toggleIsSheetHidden() {
+    isSheetHidden.value = !isSheetHidden.value;
+}
 </script>
 
 <template>
@@ -545,11 +583,11 @@ function clickCardView() {
     >
         <div ref="mapEl" class="map-container"></div>
 
+        <LoadingScreen v-if="loading" :progress="progress" />
+
         <div class="ui-safe-container">
             <div class="map-ui-layer">
-                <LoadingScreen v-if="loading" :progress="progress" />
-
-                <div class="maneuver-notifications-wrapper">
+                <div class="maneuver-notifications-wrapper safe-side-left">
                     <ManeuverCard
                         v-show="
                             isNavigating && activeSettings.hasTurnNavigation
@@ -596,7 +634,7 @@ function clickCardView() {
                     </NotificationGeneral>
                 </div>
 
-                <div class="hud-buttons">
+                <div class="hud-buttons safe-side-right">
                     <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
                         <Icon name="lucide:fullscreen" class="icon" />
                     </HudButton>
@@ -659,41 +697,46 @@ function clickCardView() {
                     />
                 </div>
 
-                <div
-                    class="trip-info-compact"
-                    v-if="isRouteActive && isSheetHidden"
-                >
+                <div class="speed-limit-wrapper safe-side-left">
                     <SpeedLimit />
+                </div>
 
+                <div class="compact-trip">
                     <CompactTrip
                         :route-distance-converted="routeDistanceConverted"
                         :distance-unit="distanceUnit"
+                        :is-route-active="isRouteActive"
                         :route-eta-hours="routeEtaHours"
                         :route-eta-minutes="routeEtaMinutes"
-                        @click="isSheetHidden = false"
+                        :is-slide-sheet-opened="!isSheetHidden"
+                        @click="toggleIsSheetHidden"
                     />
                 </div>
 
                 <SheetSlide
-                    v-if="isRouteActive"
                     :on-stop-navigation="onCancelRoute"
                     :is-navigating="isNavigating"
                     :on-start-navigation="onStartNavigation"
+                    :has-active-job="hasActiveJob"
                     :on-resume-navigation="onResumeNavigation"
                     :destination-name="destinationName"
+                    :stops-names="stopsNames"
                     v-model:is-sheet-hidden="isSheetHidden"
                     :route-distance-converted="routeDistanceConverted"
                     :route-eta-hours="routeEtaHours"
                     :route-eta-minutes="routeEtaMinutes"
                     :speed-limit="speedLimit"
                     :truck-speed="truckSpeed"
+                    :is-route-active="isRouteActive"
                     @update:add-stop-clicked="toggleAddStopClicked"
+                    @update:reset-job-clicked="resetJob"
                 />
 
                 <motion.div
                     @pan-end="handleDragEnd"
                     @click="clickCardView"
-                    class="drive-hud-panel"
+                    class="drive-hud-panel safe-side-right"
+                    v-if="settings.activeUiComponents.includes('details-cards')"
                 >
                     <div
                         v-if="activeCardsTab === 'fuel-rest'"

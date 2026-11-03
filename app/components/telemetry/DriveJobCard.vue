@@ -6,17 +6,30 @@ import {
     getStatusLevel,
 } from "~/assets/utils/telemetry/helpers";
 
-const { destinationCityName, destinationCompanyName, remainingTime } =
+const { destinationCityName, destinationCompanyName, remainingTime, scale } =
     useEtsTelemetry();
 
-const { activeSettings } = useSettings();
+const { settings, activeSettings } = useSettings();
+const { mapScaleConfig } = useCityData();
 
 const props = defineProps<{
     variant?: "drive-view";
 }>();
 
+const displayRemainingMinutes = computed(() => {
+    if (settings.value.routeTimeMode === "real") {
+        const highwayScale =
+            mapScaleConfig.value?.ruralScale ||
+            (settings.value.selectedGame === "ats" ? 20 : 19);
+
+        return Math.max(0, Math.round(remainingTime.value / highwayScale));
+    }
+
+    return remainingTime.value;
+});
+
 const remainingTimeObj = computed(() =>
-    formatRemainingTime(remainingTime.value),
+    formatRemainingTime(displayRemainingMinutes.value),
 );
 
 const initialDeliveryMinutes = computed(() => {
@@ -35,7 +48,7 @@ const remainingTimeStatusColor = computed(() =>
 
 <template>
     <div class="card" :class="variant">
-        <div class="data-pill">
+        <div class="data-content data-pill">
             <div class="data-value-wrapper data-title ellipsis">
                 <Icon name="lucide:map-pin-check" class="icon" />
 

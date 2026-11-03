@@ -18,6 +18,7 @@ import {
 import RouteWorker from "~/workers/route.worker?worker&inline";
 import { clearTurnArrows, drawTurnArrows } from "~/assets/utils/map/turnArrows";
 import type { RoadEdge } from "~/types";
+import type { LocationData } from "./CityData";
 
 const REAL_TIME_DELAY_FACTOR = 0.25;
 const MAX_REAL_TIME_DELAY_MINUTES = 10;
@@ -45,7 +46,9 @@ export const useRouteController = (
     const currentRoutePath = shallowRef<[number, number][] | null>(null);
     const routeStatsCache = shallowRef<Float32Array | null>(null);
 
-    const destinationName = ref<string>("");
+    const destinationName = ref<LocationData>();
+    const stopsTimeline = ref<LocationData[]>([]);
+
     const routeDistance = ref<number>(0);
     const routeEtaHours = ref<string>("");
     const routeEtaMinutes = ref<string>("");
@@ -342,6 +345,16 @@ export const useRouteController = (
                 const lastStop =
                     waypointList.value[waypointList.value.length - 1]!;
 
+                stopsTimeline.value = [
+                    getGameLocationName(
+                        startConfig.projectedCoords[0],
+                        startConfig.projectedCoords[1],
+                    ),
+                    ...waypointList.value.map((coord) =>
+                        getGameLocationName(coord[0], coord[1]),
+                    ),
+                ];
+
                 destinationName.value = getGameLocationName(
                     lastStop[0],
                     lastStop[1],
@@ -522,10 +535,15 @@ export const useRouteController = (
         sdkScale: number,
         avgSpeed: number,
         isInsertMode: boolean = false,
+        isResetJobMode: boolean = false,
     ) {
         let testList: [number, number][] = [];
 
-        if (Array.isArray(coords[0])) {
+        if (isResetJobMode) {
+            testList = Array.isArray(coords[0])
+                ? (coords as [number, number][])
+                : [coords as [number, number]];
+        } else if (Array.isArray(coords[0])) {
             testList = coords as [number, number][];
         } else {
             const singleCoord = coords as [number, number];
@@ -1134,9 +1152,14 @@ export const useRouteController = (
         deleteMapLibreData(map.value, "turn-arrows-line-source");
         deleteMapLibreData(map.value, "turn-arrows-head-source");
 
+        stopsTimeline.value = [];
         isRouteActive.value = false;
         endNodeId.value = null;
         currentRoutePath.value = null;
+
+        routeDistance.value = 0;
+        routeEtaHours.value = "0";
+        routeEtaMinutes.value = "0";
 
         waypointList.value = [];
         snappedWaypointNodeIds.value = [];
@@ -1152,6 +1175,7 @@ export const useRouteController = (
     return {
         worker,
         destinationName,
+        stopsNames: stopsTimeline,
         routeDistance,
         routeEtaHours,
         routeEtaMinutes,

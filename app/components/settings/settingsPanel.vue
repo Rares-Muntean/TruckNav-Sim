@@ -51,7 +51,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="section settings-panel">
+    <div class="section settings-panel safe-padding-left safe-padding-right">
         <div class="section-title wrapper">
             <div class="title-text">
                 <button

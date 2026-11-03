@@ -12,6 +12,7 @@ export async function initializeMap(
     container: HTMLElement,
 ): Promise<MapLibreGl> {
     const { settings, activeSettings } = useSettings();
+    const { isMobile } = usePlatform();
 
     const baseUrl = window.location.origin;
 
@@ -23,29 +24,34 @@ export async function initializeMap(
 
     async function loadPmtiles(fileName: string, key: string) {
         const folder = getActiveMapFolder(settings.value);
+
+        if (isMobile.value) {
+            try {
+                const localServerUrl = `http://localhost:8765/maps/${folder}/map-data/tiles/${fileName}.mp3`;
+                const pmtilesInstance = new PMTiles(localServerUrl);
+                pmtilesInstance.source.getKey = () => key;
+
+                const testCheck = await fetch(localServerUrl, {
+                    headers: { Range: "bytes=0-10" },
+                });
+                if (!testCheck.ok) throw new Error("Local server failed");
+
+                protocol.add(pmtilesInstance);
+                return;
+            } catch {
+                console.warn("[PMTiles] Local server failed. Fallback to blob");
+            }
+        }
+
         const url = await getMapFileUrl(
             folder,
             `map-data/tiles/${fileName}.mp3`,
         );
-
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Failed to load ${fileName}`);
-
-            const blob = await response.blob();
-            const pmtilesInstance = new PMTiles(new BlobSource(blob, key));
-            protocol.add(pmtilesInstance);
-
-            console.log(
-                `Successfully loaded ${fileName} into memory (${(
-                    blob.size /
-                    1024 /
-                    1024
-                ).toFixed(2)} MB)`,
-            );
-        } catch (error) {
-            console.error("Error loading PMTiles blob:", error);
-        }
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const pmtilesInstance = new PMTiles(new BlobSource(blob, key));
+        protocol.add(pmtilesInstance);
+        console.log(`[PMTiles] Running on Blob fallback: ${fileName}`);
     }
 
     await Promise.all([
@@ -358,8 +364,8 @@ export async function initializeMap(
                 "text-size": 13,
                 "text-anchor": "center",
                 "text-offset": [0, 0],
-                "text-allow-overlap": true,
-                "text-ignore-placement": true,
+                "text-allow-overlap": false,
+                "text-ignore-placement": false,
             },
             paint: {
                 "text-color": "#ffffff",
@@ -455,8 +461,8 @@ export async function initializeMap(
                 "text-size": 15,
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],
-                "text-allow-overlap": true,
-                "text-ignore-placement": true,
+                "text-allow-overlap": false,
+                "text-ignore-placement": false,
             },
             paint: {
                 "text-color": "#ffffff",
@@ -481,8 +487,8 @@ export async function initializeMap(
                 "text-font": [activeSettings.value.fontFamily || "Jakarta"],
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],
-                "text-allow-overlap": true,
-                "text-ignore-placement": true,
+                "text-allow-overlap": false,
+                "text-ignore-placement": false,
             },
             paint: {
                 "text-color": "#ffffff",
@@ -505,8 +511,8 @@ export async function initializeMap(
                 "text-font": [activeSettings.value.fontFamily || "Jakarta"],
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],
-                "text-allow-overlap": true,
-                "text-ignore-placement": true,
+                "text-allow-overlap": false,
+                "text-ignore-placement": false,
             },
             paint: {
                 "text-color": "#ffffff",

@@ -206,25 +206,20 @@
     }
 }
 
-.truck-name-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: baseline;
-    line-height: 1.25;
-}
-
-.data-pill {
+.data-content {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.8rem;
 
-    background-color: rgba($color: $primaryBackgroundColor, $alpha: 0.3);
-    border-radius: $default-border-radius;
-    border: 1px solid rgba($color: $primaryBackgroundColor, $alpha: 0.6);
-    padding: 0.3rem 0.8rem;
-
     min-width: 0;
+}
+
+.truck-name-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+    line-height: 1.25;
 }
 
 .data-title-wrapper {
@@ -377,7 +372,7 @@
     }
 
     &.small {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
 
         .unit {
             font-size: 1.2rem;

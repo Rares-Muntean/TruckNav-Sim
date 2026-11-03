@@ -9,6 +9,9 @@ const props = defineProps<{
     routeDistanceConverted: number;
 }>();
 
+const { settings } = useSettings();
+const { mapScaleConfig } = useCityData();
+
 const {
     income,
     remainingTime,
@@ -24,8 +27,20 @@ const { distanceUnit, kgToUserUnits, weightUnit } = useUnitConversion();
 
 const cargoWeightConverted = computed(() => kgToUserUnits(cargo.value.mass));
 
+const displayRemainingMinutes = computed(() => {
+    if (settings.value.routeTimeMode === "real") {
+        const highwayScale =
+            mapScaleConfig.value?.ruralScale ||
+            (settings.value.selectedGame === "ats" ? 20 : 19);
+
+        return Math.max(0, Math.round(remainingTime.value / highwayScale));
+    }
+
+    return remainingTime.value;
+});
+
 const remainingTimeObj = computed(() =>
-    formatRemainingTime(remainingTime.value),
+    formatRemainingTime(displayRemainingMinutes.value),
 );
 </script>
 

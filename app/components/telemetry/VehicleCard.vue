@@ -61,7 +61,7 @@ const fuelStatusColor = computed(() =>
             </div>
         </div>
 
-        <div class="data-pill">
+        <div class="data-content data-pill">
             <div class="data-title-wrapper">
                 <div class="data-title">
                     <Icon

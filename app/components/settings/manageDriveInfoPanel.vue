@@ -22,6 +22,13 @@ const components = computed<Component[]>(() => [
         description: t("uiComponents.speedLimitDescription"),
         iconName: "lucide:octagon-alert",
     },
+
+    {
+        id: "details-cards",
+        title: t("uiComponents.landscapeHudCards"),
+        description: t("uiComponents.landscapeHudDescription"),
+        iconName: "lucide:chart-column-decreasing",
+    },
 ]);
 
 function toggleUiComponent(componentId: UiComponent) {

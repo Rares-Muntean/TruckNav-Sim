@@ -309,7 +309,9 @@ const isModActive = (modId: string) => {
 </script>
 
 <template>
-    <section class="section section-mobile-menu">
+    <section
+        class="section section-mobile-menu safe-padding-left safe-padding-right"
+    >
         <div class="title-wrapper">
             <div class="section-title">
                 <div v-if="isElectron" class="back-btn" @click="emit('goBack')">

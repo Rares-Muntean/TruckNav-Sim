@@ -30,7 +30,7 @@
         "selectGame": "Select Game",
         "selectSimulator": "Simulators",
         "session": "Session",
-        "startNavigation": "Start Navigation",
+        "startNavigation": "Start",
         "stop": "Stop",
         "trucknav": "TruckNav",
         "trucknavMoto": "Your Trucking Companion"
@@ -70,7 +70,7 @@
         "followRoute": "Follow Route",
         "tappingDisabled": "Tapping Disabled",
         "tappingEnabled": "Tapping Enabled",
-        "addStop": "Add Stop"
+        "addStop": "Add"
     },
     "mobile": {
         "pairWithComputer": "Connect to PC"
@@ -144,6 +144,8 @@
         "fuelTitle": "Fuel",
         "gameTimeDescription": "Shows the current in-game time.",
         "gameTimeTitle": "Game Time",
+        "landscapeHudCards": "Landscape HUD Cards",
+        "landscapeHudDescription": "Show fuel, rest, job, and cargo cards at the bottom in landscape view.",
         "sleepDescription": "Displays the time remaining until your next mandatory rest stop.",
         "sleepTitle": "Sleep Time",
         "speedDescription": "Displays your current driving speed in your preferred unit.",

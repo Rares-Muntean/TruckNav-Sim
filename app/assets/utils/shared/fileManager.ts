@@ -50,7 +50,6 @@ export async function downloadMapData(
             console.log(`[DEBUG] Running on Web. Base URL is ${base}`);
             const progressInterval = setInterval(async () => {
                 const res = await axios.get(`${base}/api/download-progress`);
-                console.log(`[DEBUG] Web Progress: ${res.data.progress}%`);
                 if (onProgress) onProgress(res.data.progress);
             }, 500);
 

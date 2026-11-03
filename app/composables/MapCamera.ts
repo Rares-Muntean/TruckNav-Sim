@@ -30,8 +30,10 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         if (!markerEl) {
             markerEl = document.createElement("div");
             markerEl.style.position = "absolute";
+            markerEl.className = "truck-nav-marker";
             markerEl.style.top = "0";
             markerEl.style.left = "0";
+            markerEl.style.borderRadius = "50%";
 
             markerEl.style.width = `${size}px`;
             markerEl.style.height = `${size}px`;
@@ -43,6 +45,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             markerEl.style.pointerEvents = "none";
             markerEl.style.zIndex = "10";
             markerEl.style.willChange = "transform";
+            markerEl.style.boxShadow = "0px 1px 8px rgba(0, 0, 0, 0.15)";
 
             markerEl.style.display = "none";
 
@@ -63,17 +66,16 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         }
     };
 
-    const getNavPadding = () => {
-        if (!map.value) return { top: 0, bottom: 0, left: 0, right: 0 };
-
+    let cachedPadding = { top: 0, bottom: 0, left: 0, right: 0 };
+    const updateCachedPadding = () => {
+        if (!map.value) return;
         const container = map.value.getContainer();
         const height = container.clientHeight;
         const width = container.clientWidth;
         const isLandscape = width > height;
-
         const topRatio = isLandscape ? 0.3 : 0.4;
 
-        return {
+        cachedPadding = {
             top: Math.round(height * topRatio),
             bottom: 0,
             left: 0,
@@ -85,8 +87,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         if (!isNavigating.value) {
             return { top: 0, bottom: 0, left: 0, right: 0 };
         }
-
-        return getNavPadding();
+        return cachedPadding;
     };
 
     const renderLoop = (timestamp: number) => {
@@ -120,9 +121,11 @@ export const useMapCamera = (map: Ref<Map | null>) => {
 
             if (markerEl) {
                 if (isTargetAtOrigin) {
-                    markerEl.style.display = "none";
+                    if (markerEl.style.display !== "none")
+                        markerEl.style.display = "none";
                 } else {
-                    markerEl.style.display = "block";
+                    if (markerEl.style.display !== "block")
+                        markerEl.style.display = "block";
 
                     const pos = map.value.project(currentTruckCoords);
                     const pitch = map.value.getPitch();
@@ -132,11 +135,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                     const effectivePitch = pitch * 0.83;
 
                     markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${effectivePitch}deg) rotateZ(${screenRot}deg)`;
-                    markerEl.style.filter =
-                        "drop-shadow(0px 1px 8px rgba(0, 0, 0, 0.1))";
-
-                    markerEl.className = "truck-nav-marker";
-                    markerEl.style.borderRadius = "50%";
                 }
             }
         } else {
@@ -173,9 +171,11 @@ export const useMapCamera = (map: Ref<Map | null>) => {
     const initCameraListeners = () => {
         if (!map.value) return;
         startRenderLoop();
+        updateCachedPadding();
+
+        map.value.on("resize", updateCachedPadding);
 
         const breakLockEvents = ["mousedown", "touchstart", "wheel"];
-
         breakLockEvents.forEach((event) => {
             map.value!.on(event, (e) => {
                 if (e.originalEvent && !isEasing) {
@@ -299,7 +299,16 @@ export const useMapCamera = (map: Ref<Map | null>) => {
     onUnmounted(() => {
         stopRenderLoop();
         if (easeTimeout) clearTimeout(easeTimeout);
-        if (markerEl) markerEl.remove();
+        if (autoLockTimer) clearTimeout(autoLockTimer);
+
+        if (map.value) {
+            map.value.off("resize", updateCachedPadding);
+        }
+
+        if (markerEl) {
+            markerEl.remove();
+            markerEl = null;
+        }
     });
 
     return {

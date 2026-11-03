@@ -12,12 +12,17 @@
     --ui-scale: 1;
     --bottom-pill-tabs-height: 7.5rem;
 
+    --speed-limit-card-width: 7.5rem;
+
     --warning-color: #f59e0b;
     --red-color: #dd4a34;
 
     @media (orientation: landscape), (min-width: 768px) {
         --bottom-pill-tabs-height: 6.5rem;
     }
+
+    --safe-side-right: calc(1.6rem + env(safe-area-inset-right, 0px));
+    --safe-side-left: calc(1.6rem + env(safe-area-inset-left, 0px));
 }
 
 /** MEDIA GLOBAL FONT-SIZE **/
@@ -75,6 +80,22 @@ body,
 
 input {
     font-family: var(--app-font);
+}
+
+.safe-side-right {
+    right: var(--safe-side-right) !important;
+}
+
+.safe-side-left {
+    left: var(--safe-side-left) !important;
+}
+
+.safe-padding-right {
+    padding-right: var(--safe-side-right) !important;
+}
+
+.safe-padding-left {
+    padding-left: var(--safe-side-left) !important;
 }
 
 /** TRUCKNAV ICON **/
@@ -135,6 +156,13 @@ input {
     margin: 0 -3rem;
 
     background-color: $primaryAccentColor;
+}
+
+.data-pill {
+    background-color: rgba($color: $primaryBackgroundColor, $alpha: 0.3);
+    border-radius: $default-border-radius;
+    border: 1px solid rgba($color: $primaryBackgroundColor, $alpha: 0.6);
+    padding: 0.3rem 0.8rem;
 }
 
 .pill {
@@ -222,6 +250,7 @@ button {
 .nav-btn {
     background-color: var(--theme-color);
     display: flex;
+    align-items: center;
     gap: 0.4rem;
 
     font-family: inherit;
@@ -233,7 +262,7 @@ button {
     height: fit-content;
     border: none;
     border-radius: $default-border-radius;
-    padding: 0.6rem 1.6rem;
+    padding: 4px 1.6rem;
     box-shadow: $behind-shadow;
 
     justify-content: center;
@@ -299,6 +328,13 @@ button {
         opacity: 0.5;
         pointer-events: none;
     }
+}
+
+.drive-hud-panel,
+.trip-info {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 /** MISSING MAP / JOB **/

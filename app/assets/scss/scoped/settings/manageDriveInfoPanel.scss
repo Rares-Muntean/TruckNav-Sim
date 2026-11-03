@@ -1,7 +1,7 @@
 .manage-drive-info-wrapper {
     color: $white-font-text;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
     gap: 1rem;
 }
 

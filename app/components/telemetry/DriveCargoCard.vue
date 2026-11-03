@@ -18,7 +18,7 @@ const cargoDamageStatusColor = computed(() =>
 
 <template>
     <div class="card" :class="variant">
-        <div class="data-pill">
+        <div class="data-content data-pill">
             <div class="data-value-wrapper data-title">
                 <Icon name="lucide:box" class="icon" />
 

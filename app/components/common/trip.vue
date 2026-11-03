@@ -43,7 +43,7 @@ function toggleCardview() {
     <section class="section-trip">
         <div class="background-dim"></div>
 
-        <div class="section trip-content">
+        <div class="section trip-content safe-padding-left safe-padding-right">
             <div class="trip-col-left">
                 <VehicleCard />
 
