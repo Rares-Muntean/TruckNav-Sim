@@ -263,8 +263,6 @@ export function formatRemainingTime(totalMinutes: number) {
 
     const mins = totalMinutes % 60;
 
-    console.log(totalMinutes);
-
     return { hours, mins };
 }
 

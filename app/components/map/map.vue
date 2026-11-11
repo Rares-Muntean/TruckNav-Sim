@@ -342,6 +342,9 @@ watch(
 
 watch(routeFound, (newVal) => {
     if (newVal === true) {
+        if (isNavigating.value) return;
+        if (stopsNames.value.length > 2) return;
+
         isSheetHidden.value = false;
     }
 });

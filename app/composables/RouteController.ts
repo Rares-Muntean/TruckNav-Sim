@@ -277,7 +277,7 @@ export const useRouteController = (
             }
 
             isYardStart.value = startConfig.type === "yard";
-            startNodeId.value = startConfig.toId;
+            startNodeId.value = startConfig.fromId;
 
             const waypointsNodeGroups: number[][] = [];
             for (const waypoint of targetWaypoints) {
@@ -314,6 +314,7 @@ export const useRouteController = (
 
             if (result) {
                 isRouteActive.value = true;
+                currentRouteIndex.value = 0;
                 endNodeId.value = result.endId;
                 snappedWaypointNodeIds.value = result.snappedNodeIds || [];
 
@@ -1030,7 +1031,7 @@ export const useRouteController = (
         lastMathPos.value = truckCoords;
 
         const path = currentRoutePath.value;
-        let bestIndex = currentRouteIndex.value;
+        let bestIndex = Math.min(currentRouteIndex.value, path.length - 2);
         let minSqDist = Infinity;
 
         const searchLimit = Math.min(path.length - 1, bestIndex + 500);
@@ -1062,18 +1063,19 @@ export const useRouteController = (
         const lastIdx = (path.length - 1) * 3;
         const currentIdx = bestIndex * 3;
 
-        const totalKm = cache[lastIdx]!;
-        const totalGameHours = cache[lastIdx + 1]!;
-        const totalRealHours = cache[lastIdx + 2]!;
+        const totalKm = cache[lastIdx] ?? 0;
+        const totalGameHours = cache[lastIdx + 1] ?? 0;
+        const totalRealHours = cache[lastIdx + 2] ?? 0;
 
-        const currentKm = cache[currentIdx]!;
-        const currentGameHours = cache[currentIdx + 1]!;
-        const currentRealHours = cache[currentIdx + 2]!;
+        const currentKm = cache[currentIdx] ?? 0;
+        const currentGameHours = cache[currentIdx + 1] ?? 0;
+        const currentRealHours = cache[currentIdx + 2] ?? 0;
 
         const remKm = totalKm - currentKm;
         const remGameHours = totalGameHours - currentGameHours;
         const remRealHours = totalRealHours - currentRealHours;
-        routeDistance.value = Math.round(remKm);
+
+        routeDistance.value = isNaN(remKm) ? 0 : Math.round(remKm);
 
         updateRouteEta(remGameHours, remRealHours);
 
@@ -1084,7 +1086,9 @@ export const useRouteController = (
                 const distKm = upcomingTurn.cumulativeKm - currentKm;
                 const distRounded = +distKm.toFixed(1);
 
-                nextTurnDistance.value = Math.max(0, distRounded);
+                nextTurnDistance.value = isNaN(distRounded)
+                    ? 0
+                    : Math.max(0, distRounded);
 
                 const targetExitKm =
                     upcomingTurn.exitCumulativeKm !== undefined
