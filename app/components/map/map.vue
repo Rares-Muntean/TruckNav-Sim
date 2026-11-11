@@ -663,7 +663,7 @@ watch(
             <AnimTransition type="fade">
                 <div
                     class="map-ui-layer"
-                    v-if="activeTab === 'drive'"
+                    v-show="activeTab === 'drive'"
                     key="drive"
                 >
                     <AnimTransitionGroup
@@ -851,27 +851,29 @@ watch(
                             )
                         "
                     >
-                        <div
-                            v-if="activeCardsTab === 'fuel-rest'"
-                            class="hud-panel-group"
-                        >
-                            <VehicleCard variant="drive-view" />
-                            <RestCard variant="drive-view" />
-                        </div>
+                        <AnimTransition type="fade">
+                            <div
+                                v-if="activeCardsTab === 'fuel-rest'"
+                                class="hud-panel-group"
+                            >
+                                <VehicleCard variant="drive-view" />
+                                <RestCard variant="drive-view" />
+                            </div>
 
-                        <div
-                            v-if="activeCardsTab === 'destination'"
-                            class="hud-panel-group"
-                        >
-                            <DriveJobCard variant="drive-view" />
-                        </div>
+                            <div
+                                v-if="activeCardsTab === 'destination'"
+                                class="hud-panel-group"
+                            >
+                                <DriveJobCard variant="drive-view" />
+                            </div>
 
-                        <div
-                            v-if="activeCardsTab === 'cargo'"
-                            class="hud-panel-group"
-                        >
-                            <DriveCargoCard variant="drive-view" />
-                        </div>
+                            <div
+                                v-if="activeCardsTab === 'cargo'"
+                                class="hud-panel-group"
+                            >
+                                <DriveCargoCard variant="drive-view" />
+                            </div>
+                        </AnimTransition>
 
                         <div class="carousel-dots">
                             <div
@@ -890,7 +892,9 @@ watch(
 
                             <div
                                 class="dot"
-                                :class="{ active: activeCardsTab === 'cargo' }"
+                                :class="{
+                                    active: activeCardsTab === 'cargo',
+                                }"
                             ></div>
                         </div>
                     </motion.div>

@@ -9,9 +9,7 @@ const props = defineProps<{
     exit?: number | undefined;
 }>();
 
-const displayTurn = computed(() => {
-    return props.upcomingTurns.slice(1, 2);
-});
+const currentTurn = computed(() => props.upcomingTurns[1]);
 
 const { kmToUserUnits, distanceUnit } = useUnitConversion();
 
@@ -22,14 +20,18 @@ const routeDistanceConverted = computed(() =>
 
 <template>
     <div class="card">
-        <DirectionIcon
-            v-for="turn in displayTurn"
-            :key="turn.id"
-            :type="turn.type"
-            :exit-count="
-                turn.type === 'roundabout' ? turn.exitCount : undefined
-            "
-        />
+        <AnimTransition type="fade">
+            <DirectionIcon
+                v-if="currentTurn"
+                :key="currentTurn.id"
+                :type="currentTurn.type"
+                :exit-count="
+                    currentTurn.type === 'roundabout'
+                        ? currentTurn.exitCount
+                        : undefined
+                "
+            />
+        </AnimTransition>
         <div class="turn-info">
             <p class="distance">
                 {{ routeDistanceConverted }}

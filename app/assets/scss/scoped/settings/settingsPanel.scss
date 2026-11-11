@@ -56,12 +56,8 @@ $button-padding: 8px 10px;
     line-height: 1.25;
 
     @media (orientation: landscape), (min-width: 768px) {
-        width: 53%;
-
-        position: absolute;
-        right: 0;
-        align-items: start;
-        bottom: calc(var(--bottom-pill-tabs-height) / 3.5);
+        align-items: end;
+        margin-bottom: calc(-1 * var(--bottom-pill-tabs-height));
     }
 }
 

@@ -42,29 +42,31 @@ onMounted(() => {
     >
         <div></div>
 
-        <template v-if="isRouteActive">
-            <div class="route-info">
-                <div class="route-distance-wrapper">
-                    <span>{{ routeDistanceConverted }}</span>
-                    <span class="unit">{{ distanceUnit }} </span>
-                </div>
+        <AnimTransition type="ticker">
+            <template v-if="isRouteActive">
+                <div class="route-info">
+                    <div class="route-distance-wrapper">
+                        <span>{{ routeDistanceConverted }}</span>
+                        <span class="unit">{{ distanceUnit }} </span>
+                    </div>
 
-                <span class="dot"></span>
-                <div class="route-distance-wrapper">
-                    <span>{{ routeEtaHours }}</span>
-                    <span class="unit white">h</span>
-                </div>
+                    <span class="dot"></span>
+                    <div class="route-distance-wrapper">
+                        <span>{{ routeEtaHours }}</span>
+                        <span class="unit white">h</span>
+                    </div>
 
-                <div class="route-distance-wrapper">
-                    <span>{{ routeEtaMinutes }}</span>
-                    <span class="unit white">m</span>
+                    <div class="route-distance-wrapper">
+                        <span>{{ routeEtaMinutes }}</span>
+                        <span class="unit white">m</span>
+                    </div>
                 </div>
-            </div>
-        </template>
+            </template>
 
-        <template v-else>
-            <span class="free-roam">Free Roam</span>
-        </template>
+            <template v-else>
+                <span class="free-roam">Free Roam</span>
+            </template>
+        </AnimTransition>
 
         <button class="icon">
             <template v-if="!isSidePanel">
