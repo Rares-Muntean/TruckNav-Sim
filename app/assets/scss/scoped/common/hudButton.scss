@@ -11,7 +11,8 @@
     outline: $el-border-design;
     border-radius: $default-border-radius;
     overflow: hidden;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: color 0.25s $css-transition-bezier,
+        background-color 0.2s $css-transition-bezier;
     box-shadow: 0 2px 6px rgba($color: #000000, $alpha: 0.08);
 
     &:hover,
@@ -28,7 +29,6 @@
 
         &:active {
             background-color: $primaryBackgroundColor;
-            transform: translateY(1px);
         }
     }
 }

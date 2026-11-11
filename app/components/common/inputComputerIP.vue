@@ -1,15 +1,78 @@
 <script lang="ts" setup>
-import { isBridgeRunning } from "~/assets/utils/telemetry/helpers";
 const props = defineProps<{ requireGame?: boolean }>();
-
 const isConnected = defineModel<boolean>({ default: false });
 
 const { settings, updateGlobal } = useSettings();
 const { t } = useTranslations();
 
-const connectionError = ref(t("common.disconnected"));
 const ipInput = ref(settings.value.savedIP || "");
 const isLoading = ref(false);
+
+let ws: WebSocket | null = null;
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+function connect() {
+    if (retryTimer) clearTimeout(retryTimer);
+
+    if (ws) {
+        ws.onopen = null;
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.close();
+        ws = null;
+    }
+
+    const ip = ipInput.value.trim();
+    if (!ip) {
+        isConnected.value = false;
+        isLoading.value = false;
+        return;
+    }
+
+    isLoading.value = true;
+
+    try {
+        ws = new WebSocket(`ws://${ip}:30001`);
+
+        ws.onopen = () => {
+            isConnected.value = true;
+            isLoading.value = false;
+            updateGlobal("savedIP", ip);
+        };
+
+        ws.onclose = () => {
+            isConnected.value = false;
+            isLoading.value = false;
+            ws = null;
+            retryTimer = setTimeout(connect, 1500);
+        };
+
+        ws.onerror = () => {
+            isConnected.value = false;
+            isLoading.value = false;
+        };
+    } catch {
+        isConnected.value = false;
+        isLoading.value = false;
+        retryTimer = setTimeout(connect, 1500);
+    }
+}
+
+watch(ipInput, (newIp) => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    if (!newIp.trim()) {
+        isConnected.value = false;
+        isLoading.value = false;
+        if (ws) ws.close();
+        return;
+    }
+
+    isLoading.value = true;
+    debounceTimer = setTimeout(() => {
+        connect();
+    }, 400);
+});
 
 watch(
     () => settings.value.savedIP,
@@ -21,71 +84,25 @@ watch(
 );
 
 onMounted(() => {
-    if (ipInput.value) {
-        handleConnect();
+    if (ipInput.value.trim()) {
+        connect();
     }
-});
-
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-let handleConntectTimer: ReturnType<typeof setInterval> | null = null;
-
-watch(ipInput, (nVal) => {
-    isLoading.value = true;
-    if (debounceTimer) clearTimeout(debounceTimer);
-    if (handleConntectTimer) clearInterval(handleConntectTimer);
-
-    if (!nVal) {
-        connectionError.value = t("input.missingValue");
-        isConnected.value = false;
-        isLoading.value = false;
-        return;
-    }
-
-    debounceTimer = setTimeout(() => {
-        handleConnect();
-    }, 300);
 });
 
 onUnmounted(() => {
     if (debounceTimer) clearTimeout(debounceTimer);
-    if (handleConntectTimer) clearInterval(handleConntectTimer);
+    if (retryTimer) clearTimeout(retryTimer);
+    if (ws) {
+        ws.onopen = null;
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.close();
+        ws = null;
+    }
 });
 
-const handleConnect = async () => {
-    if (handleConntectTimer) clearInterval(handleConntectTimer);
-    const currentIp = ipInput.value.trim();
-    if (!currentIp) {
-        connectionError.value = t("input.missingValue");
-        isLoading.value = false;
-        return;
-    }
-
-    isLoading.value = true;
-
-    try {
-        const isRunning = await isBridgeRunning(currentIp);
-        if (currentIp !== ipInput.value.trim()) return;
-
-        if (!isRunning) throw new Error(t("input.bridgeNotReachable"));
-
-        isConnected.value = true;
-        isLoading.value = false;
-        updateGlobal("savedIP", ipInput.value);
-    } catch (error) {
-        if (currentIp !== ipInput.value.trim()) return;
-        isConnected.value = false;
-        isLoading.value = false;
-
-        connectionError.value = t("common.disconnected");
-
-        handleConntectTimer = setInterval(() => {
-            handleConnect();
-        }, 5000);
-    }
-};
-
 const connectedValue = computed(() => {
-    return isConnected.value ? t("common.connected") : connectionError.value;
+    return isConnected.value ? t("common.connected") : t("common.disconnected");
 });
 </script>
 

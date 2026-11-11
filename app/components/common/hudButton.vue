@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-    <button class="option-btn" :class="type" @click.prevent="onClick">
+    <button v-press class="option-btn" :class="type" @click.prevent="onClick">
         <slot />
     </button>
 </template>

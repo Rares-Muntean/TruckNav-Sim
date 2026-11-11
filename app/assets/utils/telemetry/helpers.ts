@@ -189,6 +189,8 @@ export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
         cargoDamage: Math.round(data.job.cargo.cargoDamage * 100),
     };
 
+    const specialJob = data.job.specialJob || false;
+
     return {
         hasActiveJob,
         cityTarget,
@@ -203,6 +205,7 @@ export function getJobState(data: TelemetryPacket, selectedGame: GameType) {
         destinationCompanyName,
         sourceCityName,
         sourceCompanyName,
+        specialJob,
     };
 }
 

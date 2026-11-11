@@ -1,23 +1,56 @@
 <script lang="ts" setup>
-import { isBridgeRunning } from "~/assets/utils/telemetry/helpers";
-
 const { fetchIp, fetchPort, localIP, localPort } = useNetwork();
 const { updateGlobal } = useSettings();
 const { settings, updateDesktopSetting } = useDesktopSettings();
 const { t } = useTranslations();
 
 const isServerRunning = ref(false);
-const polling = ref<any>(null);
 const isRemoteGpsWindowOpened = ref(false);
 const etsActive = ref(false);
 const atsActive = ref(false);
 
 const startWithWindows = computed(() => settings.value.startWithWindows);
 const startMinimized = computed(() => settings.value.startMinimized);
+const autoStartNavigation = computed(() => settings.value.autoStartNavigation);
 
-const checkStatus = async () => {
-    isServerRunning.value = await isBridgeRunning("127.0.0.1");
+let ws: WebSocket | null = null;
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
+function monitorServer() {
+    if (retryTimer) clearTimeout(retryTimer);
+
+    if (ws) {
+        ws.onopen = null;
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.close();
+        ws = null;
+    }
+
+    try {
+        ws = new WebSocket("ws://127.0.0.1:30001");
+
+        ws.onopen = () => {
+            isServerRunning.value = true;
+        };
+
+        ws.onclose = () => {
+            isServerRunning.value = false;
+            ws = null;
+            retryTimer = setTimeout(monitorServer, 1500);
+        };
+
+        ws.onerror = () => {
+            isServerRunning.value = false;
+        };
+    } catch {
+        isServerRunning.value = false;
+        retryTimer = setTimeout(monitorServer, 1500);
+    }
+}
+
+const checkPlugins = async () => {
+    if (!(window as any).electronAPI?.checkPluginStatuses) return;
     const statuses = await (window as any).electronAPI.checkPluginStatuses();
     etsActive.value = statuses.ets2;
     atsActive.value = statuses.ats;
@@ -33,30 +66,20 @@ const handleLocalLaunch = async () => {
 onMounted(async () => {
     await fetchIp();
     await fetchPort();
+    await checkPlugins();
 
-    const settings = await (window as any).electronAPI.getSettings();
-    if (!settings.startMinimized) {
+    const desktopSettings = await (window as any).electronAPI.getSettings();
+    if (!desktopSettings.startMinimized) {
         (window as any).electronAPI.setWindowSize(950, 700, false, false);
     }
 
-    checkStatus();
-    const bootTimer = setInterval(async () => {
-        if (isServerRunning.value) {
-            clearInterval(bootTimer);
-            startRegularPolling();
-            return;
-        }
-
-        await checkStatus();
-    }, 1500);
+    monitorServer();
 });
 
 const handleExplorerLaunch = async (gameName: string) => {
     const result = await (window as any).electronAPI.selectGameFolder(gameName);
-
     if (result.success) {
-        console.log("Plugin installed at:", result.path);
-        checkStatus();
+        await checkPlugins();
     } else {
         if (result.message !== "Cancelled") {
             alert("Error: " + result.message);
@@ -65,14 +88,15 @@ const handleExplorerLaunch = async (gameName: string) => {
 };
 
 onUnmounted(() => {
-    if (polling.value) clearInterval(polling.value);
+    if (retryTimer) clearTimeout(retryTimer);
+    if (ws) {
+        ws.onopen = null;
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.close();
+        ws = null;
+    }
 });
-
-const startRegularPolling = () => {
-    polling.value = setInterval(async () => {
-        await checkStatus();
-    }, 7000);
-};
 
 const openLink = async (url: string) => {
     (window as any).electronAPI.openExternal(url);
@@ -172,6 +196,22 @@ const toggleRemoteGpsWindow = () => {
                             :active="startMinimized"
                         />
                     </div>
+
+                    <div class="toggle-button">
+                        <span class="toggle-title">Auto-Start Navigation</span>
+                        <SegmentedControl
+                            left-option="On"
+                            right-option="Off"
+                            @connect="
+                                updateDesktopSetting(
+                                    'autoStartNavigation',
+                                    !autoStartNavigation,
+                                )
+                            "
+                            size="small"
+                            :active="autoStartNavigation"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -213,6 +253,15 @@ const toggleRemoteGpsWindow = () => {
         <div class="bottom">
             <div class="setup-games-sdk">
                 <div class="game-status">
+                    <div class="troubleshoot">
+                        <InfoBox type="note">
+                            <template #content
+                                >If you're using a cracked version or a repack,
+                                the plugin may show as 'Missing' even after
+                                setup
+                            </template>
+                        </InfoBox>
+                    </div>
                     <span class="game-name">{{ t("desktop.ets2") }}</span>
                     <div class="icon-status-wrapper">
                         <div
@@ -287,15 +336,6 @@ const toggleRemoteGpsWindow = () => {
                     <InputComputerIP @connected="emit('connected')" />
                 </div>
             </div>
-        </div>
-
-        <div class="troubleshoot">
-            <InfoBox type="note">
-                <template #content
-                    >If you're using a cracked version or a repack, the plugin
-                    may show as 'Missing' even after setup
-                </template>
-            </InfoBox>
         </div>
     </section>
 </template>

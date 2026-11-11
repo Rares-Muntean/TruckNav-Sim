@@ -57,4 +57,5 @@ export interface JobState {
     destinationCityName: string;
     sourceCityName: string;
     sourceCompanyName: string;
+    specialJob: boolean;
 }

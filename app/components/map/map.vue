@@ -11,6 +11,11 @@ import {
 } from "~/assets/utils/shared/colors";
 import { generateTruckIcon } from "~/assets/utils/map/markers";
 import type { settingsView } from "~/types";
+import {
+    getPercentage,
+    getRestPercentage,
+} from "~/assets/utils/telemetry/helpers";
+import { anim } from "~/assets/utils/animations/anim";
 
 const emit = defineEmits(["goHome"]);
 
@@ -29,11 +34,13 @@ const activeCardsTab = ref<"fuel-rest" | "destination" | "cargo">("fuel-rest");
 
 const activeSettingsWindowView = ref<settingsView>("main");
 
+const hudBtnsRef = ref<HTMLElement | null>(null);
+
 // JOB STATE
 const currentJobKey = ref<string>("");
 
 // NOTIFICATION TRIGGERS
-const clickingNotificationTrigger = ref(0);
+const notificationPing = ref(0);
 
 // Telemetry Data
 const {
@@ -50,6 +57,10 @@ const {
     scale,
     averageSpeed,
     destinationCompany,
+    fuel,
+    fuelCapacity,
+    restStopMinutes,
+    remainingTime,
 } = useEtsTelemetry();
 
 // Map Areas Data
@@ -67,19 +78,22 @@ const { kmToUserUnits, distanceUnit } = useUnitConversion();
 
 // Maplibre Camera
 const {
-    isCameraLocked,
-    isAutoFollowEnabled,
-    isNavigating,
     initCameraListeners,
     followTruck,
     startNavigationMode,
-    resumeCameraLock,
     stopNavigationMode,
     initMarker,
     updateMarkerSize,
     updateMarkerImage,
-    toggleAutoFollow,
     resetTruck,
+    isCameraLocked,
+    isNavigating,
+    isHeadingActive,
+    isNorthActive,
+    toggleHeadingFollow,
+    toggleNorthFollow,
+    resumeCameraLock,
+    focusTruckInitial,
 } = useMapCamera(map);
 
 const {
@@ -106,11 +120,12 @@ const {
 const { activeSettings, settings } = useSettings();
 const { t } = useTranslations();
 
-let uiTimer: ReturnType<typeof setTimeout> | null = null;
 let routeTimer: ReturnType<typeof setTimeout> | null = null;
 
 loading.value = true;
 progress.value = 0;
+
+const hasInitialFocused = ref(false);
 
 const routeDistanceConverted = computed(() =>
     kmToUserUnits(routeDistance.value),
@@ -130,6 +145,13 @@ const isMapReady = computed(
         isWorkerReady.value &&
         isTruckSpawned.value,
 );
+
+watch(isMapReady, (ready) => {
+    if (ready && !hasInitialFocused.value && truckCoords.value) {
+        hasInitialFocused.value = true;
+        focusTruckInitial(truckCoords.value, truckHeading.value);
+    }
+});
 
 const currentJobTarget = computed(() => {
     if (!hasActiveJob.value || !destinationCity.value) return null;
@@ -322,36 +344,24 @@ watch(routeFound, (newVal) => {
     if (newVal === true) {
         isSheetHidden.value = false;
     }
-
-    if (newVal !== null) {
-        if (uiTimer) clearTimeout(uiTimer);
-
-        uiTimer = setTimeout(() => {
-            routeFound.value = null;
-        }, 1000);
-    }
-});
-
-watch([loading, gameConnected], ([isLoading, isGameConnected]) => {
-    if (!isLoading) {
-        setTimeout(() => {
-            isCameraLocked.value = true;
-        }, 100);
-
-        if (isGameConnected) {
-            setTimeout(() => {
-                isCameraLocked.value = true;
-            }, 500);
-        }
-    }
 });
 
 watch(gameConnected, (isConnected) => {
     if (!map.value) return;
     if (!isConnected) {
         isCameraLocked.value = false;
+        hasInitialFocused.value = false;
         clearRouteState();
         resetTruck();
+    }
+});
+
+watch(loading, async (isLoading) => {
+    if (!isLoading) {
+        if (hudBtnsRef.value) {
+            await nextTick();
+            anim.staggerListXReverse(hudBtnsRef.value, 0.1);
+        }
     }
 });
 
@@ -426,7 +436,6 @@ onUnmounted(() => {
     destroyWorker();
 
     if (routeTimer) clearTimeout(routeTimer);
-    if (uiTimer) clearTimeout(uiTimer);
 
     if (map.value) {
         map.value.remove();
@@ -487,16 +496,8 @@ function onResumeNavigation() {
 function toggleEnableClicking() {
     isClickingEnabled.value = !isClickingEnabled.value;
 
-    clickingNotificationTrigger.value++;
+    notificationPing.value++;
 }
-
-const onResetNorth = () => {
-    map.value?.easeTo({
-        bearing: 0,
-        pitch: 0,
-        duration: 500,
-    });
-};
 
 const toggleAddStopClicked = () => {
     isAddingStopMode.value = !isAddingStopMode.value;
@@ -573,6 +574,79 @@ function clickCardView() {
 function toggleIsSheetHidden() {
     isSheetHidden.value = !isSheetHidden.value;
 }
+
+const lowNotificationPing = ref(0);
+
+const fuelPercentage = computed(() => {
+    return getPercentage(fuel.value, fuelCapacity.value);
+});
+
+const restPercentage = computed(() => {
+    return getRestPercentage(
+        restStopMinutes.value,
+        settings.value.selectedGame,
+    );
+});
+
+const initialDeliveryMinutes = computed(() => {
+    const saved = activeSettings.value.lastJob;
+    return saved.initialMinutes;
+});
+
+const remainingTimePercentage = computed(() =>
+    getPercentage(remainingTime.value, initialDeliveryMinutes.value),
+);
+
+const lowNotification = computed(() => {
+    if (!isMapReady.value || !isTruckSpawned.value) return null;
+
+    const isFuelLow = fuelPercentage.value < 15;
+    const isRestLow = restPercentage.value < 18;
+    const isJobUrgent =
+        hasActiveJob.value && remainingTimePercentage.value < 12;
+
+    if (isFuelLow && isRestLow && isJobUrgent) {
+        return {
+            text: "Critical: Fuel, Rest & Job",
+            icon: "lucide:alert-triangle",
+        };
+    }
+
+    if (isFuelLow && isRestLow) {
+        return { text: "Low Fuel & Rest", icon: "lucide:alert-triangle" };
+    }
+    if (isFuelLow && isJobUrgent) {
+        return { text: "Low Fuel & Urgent Job", icon: "lucide:alert-triangle" };
+    }
+    if (isRestLow && isJobUrgent) {
+        return { text: "Rest & Urgent Job", icon: "lucide:alert-triangle" };
+    }
+
+    if (isFuelLow) {
+        return { text: "Low Fuel", icon: "lucide:fuel" };
+    }
+    if (isRestLow) {
+        return { text: "Rest Required", icon: "lucide:bed" };
+    }
+    if (isJobUrgent) {
+        return {
+            text:
+                remainingTime.value <= 0 ? "Delivery Late" : "Delivery Urgent",
+            icon: "lucide:clock-alert",
+        };
+    }
+
+    return null;
+});
+
+watch(
+    () => lowNotification.value?.text,
+    (newText, oldText) => {
+        if (newText && newText !== oldText) {
+            lowNotificationPing.value++;
+        }
+    },
+);
 </script>
 
 <template>
@@ -583,223 +657,263 @@ function toggleIsSheetHidden() {
     >
         <div ref="mapEl" class="map-container"></div>
 
-        <LoadingScreen v-if="loading" :progress="progress" />
+        <LoadingScreen :show="loading" :progress="progress" />
 
         <div class="ui-safe-container">
-            <div class="map-ui-layer">
-                <div class="maneuver-notifications-wrapper safe-side-left">
-                    <ManeuverCard
-                        v-show="
-                            isNavigating && activeSettings.hasTurnNavigation
-                        "
-                        :upcoming-turns="fullRouteDirections"
-                        :distance-to-next-turn="nextTurnDistance"
-                        :next-instruction="
-                            fullRouteDirections[1]?.text || t('map.followRoute')
-                        "
-                    />
-
-                    <NotificationRoute
-                        v-if="routeFound !== null || isCalculatingRoute"
-                        :is-route-found="routeFound"
-                        :is-calculating-route="isCalculatingRoute"
-                    />
-
-                    <NotificationGeneral
-                        v-else
-                        :trigger="clickingNotificationTrigger"
-                        :text="
-                            isClickingEnabled
-                                ? t('map.tappingEnabled')
-                                : t('map.tappingDisabled')
-                        "
+            <AnimTransition type="fade">
+                <div
+                    class="map-ui-layer"
+                    v-if="activeTab === 'drive'"
+                    key="drive"
+                >
+                    <AnimTransitionGroup
+                        type="turnCard"
+                        class="maneuver-notifications-wrapper safe-side-left"
                     >
-                        <template #icon>
+                        <ManeuverCard
+                            v-if="
+                                isNavigating && activeSettings.hasTurnNavigation
+                            "
+                            :upcoming-turns="fullRouteDirections"
+                            :distance-to-next-turn="nextTurnDistance"
+                            key="maneuver"
+                            :next-instruction="
+                                fullRouteDirections[1]?.text ||
+                                t('map.followRoute')
+                            "
+                        />
+
+                        <NotificationGeneral
+                            v-if="!gameConnected"
+                            :persistent="true"
+                            key="offline"
+                            :text="t('common.gameOffline')"
+                        >
+                            <template #icon>
+                                <Icon
+                                    name="lucide:wifi-off"
+                                    class="notif-icon failed"
+                                    size="24"
+                                    :style="{ color: '#dd4a34' }"
+                                />
+                            </template>
+                        </NotificationGeneral>
+
+                        <NotificationRoute
+                            v-if="routeFound !== null || isCalculatingRoute"
+                            :is-route-found="routeFound"
+                            key="route"
+                            :is-calculating-route="isCalculatingRoute"
+                            v-model="routeFound"
+                        />
+
+                        <NotificationGeneral
+                            v-if="!!lowNotification"
+                            key="low-notif"
+                            :text="lowNotification?.text || ''"
+                            :trigger="lowNotificationPing"
+                            :duration="10000"
+                        >
+                            <template #icon>
+                                <Icon
+                                    :name="
+                                        lowNotification?.icon ||
+                                        'lucide:alert-triangle'
+                                    "
+                                    class="notif-icon"
+                                    :style="{ color: '#dd4a34' }"
+                                />
+                            </template>
+                        </NotificationGeneral>
+
+                        <NotificationGeneral
+                            :trigger="notificationPing"
+                            :text="
+                                isClickingEnabled
+                                    ? t('map.tappingEnabled')
+                                    : t('map.tappingDisabled')
+                            "
+                            :duration="2000"
+                        >
+                            <template #icon>
+                                <Icon
+                                    v-if="isClickingEnabled"
+                                    class="notif-icon"
+                                    name="lucide:pointer"
+                                    :style="{ color: '#0ea674' }"
+                                />
+
+                                <Icon
+                                    v-else
+                                    class="notif-icon"
+                                    name="lucide:pointer-off"
+                                    :style="{ color: '#dd4a34' }"
+                                />
+                            </template>
+                        </NotificationGeneral>
+                    </AnimTransitionGroup>
+
+                    <div ref="hudBtnsRef" class="hud-buttons safe-side-right">
+                        <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
+                            <Icon name="lucide:fullscreen" class="icon" />
+                        </HudButton>
+
+                        <HudButton
+                            :is-active="isNorthActive"
+                            :class="{ 'theme-color': isNorthActive }"
+                            :onClick="toggleNorthFollow"
+                        >
+                            <Icon name="lucide:compass" class="icon" />
+                        </HudButton>
+
+                        <HudButton
+                            :is-active="isHeadingActive"
+                            :class="{ 'theme-color': isHeadingActive }"
+                            :onClick="toggleHeadingFollow"
+                        >
+                            <Icon name="lucide:navigation-2" class="icon" />
+                        </HudButton>
+
+                        <HudButton
+                            :is-active="isClickingEnabled"
+                            :class="isClickingEnabled ? 'theme-color' : ''"
+                            :onClick="toggleEnableClicking"
+                        >
                             <Icon
                                 v-if="isClickingEnabled"
-                                class="notification-icon"
                                 name="lucide:pointer"
-                                size="24"
-                                :style="{ color: '#0ea674' }"
+                                class="icon"
                             />
-
                             <Icon
                                 v-else
-                                class="notification-icon"
                                 name="lucide:pointer-off"
-                                size="24"
-                                :style="{ color: '#dd4a34' }"
+                                class="icon"
                             />
-                        </template>
-                    </NotificationGeneral>
-                </div>
+                        </HudButton>
 
-                <div class="hud-buttons safe-side-right">
-                    <HudButton v-if="isWeb" :onClick="onToggleFullscreen">
-                        <Icon name="lucide:fullscreen" class="icon" />
-                    </HudButton>
+                        <HudButton
+                            class="add-stop-hud-btn"
+                            v-if="isAddingStopMode"
+                            :onClick="toggleAddStopClicked"
+                        >
+                            <Icon name="lucide:map-pin-plus" class="icon" />
+                        </HudButton>
+                    </div>
 
-                    <HudButton :onClick="onResetNorth">
-                        <Icon name="lucide:compass" class="icon" />
-                    </HudButton>
+                    <div class="speed-limit-wrapper safe-side-left">
+                        <SpeedLimit />
+                    </div>
 
-                    <HudButton
-                        :is-active="isAutoFollowEnabled"
-                        :class="{ 'theme-color': isAutoFollowEnabled }"
-                        :onClick="toggleAutoFollow"
+                    <div
+                        :class="{
+                            'no-bottom-card':
+                                !settings.activeUiComponents.includes(
+                                    'details-cards',
+                                ),
+                        }"
+                        class="compact-trip"
                     >
-                        <Icon
-                            v-if="isAutoFollowEnabled"
-                            name="lucide:locate-fixed"
-                            class="icon"
+                        <CompactTrip
+                            :route-distance-converted="routeDistanceConverted"
+                            :distance-unit="distanceUnit"
+                            :is-route-active="isRouteActive"
+                            :route-eta-hours="routeEtaHours"
+                            :route-eta-minutes="routeEtaMinutes"
+                            :is-slide-sheet-opened="!isSheetHidden"
+                            @click="toggleIsSheetHidden"
                         />
-                        <Icon v-else name="lucide:locate" class="icon" />
-                    </HudButton>
+                    </div>
 
-                    <HudButton
-                        :is-active="isClickingEnabled"
-                        :class="isClickingEnabled ? 'theme-color' : ''"
-                        :onClick="toggleEnableClicking"
-                    >
-                        <Icon
-                            v-if="isClickingEnabled"
-                            name="lucide:pointer"
-                            class="icon"
-                        />
-                        <Icon v-else name="lucide:pointer-off" class="icon" />
-                    </HudButton>
-
-                    <HudButton
-                        class="add-stop-hud-btn"
-                        v-if="isAddingStopMode"
-                        :onClick="toggleAddStopClicked"
-                    >
-                        <Icon name="lucide:map-pin-plus" class="icon" />
-                    </HudButton>
-                </div>
-
-                <div
-                    class="warnings"
-                    :class="{
-                        'has-active-route': isRouteActive && isSheetHidden,
-                    }"
-                >
-                    <WarningSlide
-                        :show-if="hasInGameMarker && !isRouteActive"
-                        :reset-on="isRouteActive"
-                        :text="t('map.externalRouteDetected')"
-                    />
-
-                    <WarningSlide
-                        :show-if="!gameConnected"
-                        :reset-on="gameConnected"
-                        :text="t('common.gameOffline')"
-                    />
-                </div>
-
-                <div class="speed-limit-wrapper safe-side-left">
-                    <SpeedLimit />
-                </div>
-
-                <div
-                    :class="{
-                        'no-bottom-card':
-                            !settings.activeUiComponents.includes(
-                                'details-cards',
-                            ),
-                    }"
-                    class="compact-trip"
-                >
-                    <CompactTrip
+                    <SheetSlide
+                        :on-stop-navigation="onCancelRoute"
+                        :is-navigating="isNavigating"
+                        :on-start-navigation="onStartNavigation"
+                        :has-active-job="hasActiveJob"
+                        :on-resume-navigation="onResumeNavigation"
+                        :destination-name="destinationName"
+                        :stops-names="stopsNames"
+                        v-model:is-sheet-hidden="isSheetHidden"
                         :route-distance-converted="routeDistanceConverted"
-                        :distance-unit="distanceUnit"
-                        :is-route-active="isRouteActive"
                         :route-eta-hours="routeEtaHours"
                         :route-eta-minutes="routeEtaMinutes"
-                        :is-slide-sheet-opened="!isSheetHidden"
-                        @click="toggleIsSheetHidden"
+                        :is-route-active="isRouteActive"
+                        @update:add-stop-clicked="toggleAddStopClicked"
+                        @update:reset-job-clicked="resetJob"
                     />
+
+                    <motion.div
+                        @pan-end="handleDragEnd"
+                        @click="clickCardView"
+                        class="drive-hud-panel safe-side-right"
+                        v-if="
+                            settings.activeUiComponents.includes(
+                                'details-cards',
+                            )
+                        "
+                    >
+                        <div
+                            v-if="activeCardsTab === 'fuel-rest'"
+                            class="hud-panel-group"
+                        >
+                            <VehicleCard variant="drive-view" />
+                            <RestCard variant="drive-view" />
+                        </div>
+
+                        <div
+                            v-if="activeCardsTab === 'destination'"
+                            class="hud-panel-group"
+                        >
+                            <DriveJobCard variant="drive-view" />
+                        </div>
+
+                        <div
+                            v-if="activeCardsTab === 'cargo'"
+                            class="hud-panel-group"
+                        >
+                            <DriveCargoCard variant="drive-view" />
+                        </div>
+
+                        <div class="carousel-dots">
+                            <div
+                                class="dot"
+                                :class="{
+                                    active: activeCardsTab === 'fuel-rest',
+                                }"
+                            ></div>
+
+                            <div
+                                class="dot"
+                                :class="{
+                                    active: activeCardsTab === 'destination',
+                                }"
+                            ></div>
+
+                            <div
+                                class="dot"
+                                :class="{ active: activeCardsTab === 'cargo' }"
+                            ></div>
+                        </div>
+                    </motion.div>
                 </div>
+            </AnimTransition>
 
-                <SheetSlide
-                    :on-stop-navigation="onCancelRoute"
-                    :is-navigating="isNavigating"
-                    :on-start-navigation="onStartNavigation"
-                    :has-active-job="hasActiveJob"
-                    :on-resume-navigation="onResumeNavigation"
-                    :destination-name="destinationName"
-                    :stops-names="stopsNames"
-                    v-model:is-sheet-hidden="isSheetHidden"
+            <AnimTransition type="view">
+                <Trip
+                    v-show="activeTab === 'trip'"
+                    key="trip"
                     :route-distance-converted="routeDistanceConverted"
-                    :route-eta-hours="routeEtaHours"
-                    :route-eta-minutes="routeEtaMinutes"
-                    :speed-limit="speedLimit"
-                    :truck-speed="truckSpeed"
-                    :is-route-active="isRouteActive"
-                    @update:add-stop-clicked="toggleAddStopClicked"
-                    @update:reset-job-clicked="resetJob"
                 />
+            </AnimTransition>
 
-                <motion.div
-                    @pan-end="handleDragEnd"
-                    @click="clickCardView"
-                    class="drive-hud-panel safe-side-right"
-                    v-if="settings.activeUiComponents.includes('details-cards')"
-                >
-                    <div
-                        v-if="activeCardsTab === 'fuel-rest'"
-                        class="hud-panel-group"
-                    >
-                        <VehicleCard variant="drive-view" />
-                        <RestCard variant="drive-view" />
-                    </div>
-
-                    <div
-                        v-if="activeCardsTab === 'destination'"
-                        class="hud-panel-group"
-                    >
-                        <DriveJobCard variant="drive-view" />
-                    </div>
-
-                    <div
-                        v-if="activeCardsTab === 'cargo'"
-                        class="hud-panel-group"
-                    >
-                        <DriveCargoCard variant="drive-view" />
-                    </div>
-
-                    <div class="carousel-dots">
-                        <div
-                            class="dot"
-                            :class="{ active: activeCardsTab === 'fuel-rest' }"
-                        ></div>
-
-                        <div
-                            class="dot"
-                            :class="{
-                                active: activeCardsTab === 'destination',
-                            }"
-                        ></div>
-
-                        <div
-                            class="dot"
-                            :class="{ active: activeCardsTab === 'cargo' }"
-                        ></div>
-                    </div>
-                </motion.div>
-            </div>
-
-            <SettingsPanel
-                @go-home="emit('goHome')"
-                @go-map-view="activeTab = 'drive'"
-                v-model="activeSettingsWindowView"
-                v-show="activeTab === 'settings'"
-            />
-
-            <Trip
-                v-show="activeTab === 'trip'"
-                :route-distance-converted="routeDistanceConverted"
-            />
+            <AnimTransition type="view">
+                <SettingsPanel
+                    @go-home="emit('goHome')"
+                    @go-map-view="activeTab = 'drive'"
+                    v-model="activeSettingsWindowView"
+                    key="settings"
+                    v-show="activeTab === 'settings'"
+                />
+            </AnimTransition>
 
             <BottomPillTabs
                 v-model="activeTab"

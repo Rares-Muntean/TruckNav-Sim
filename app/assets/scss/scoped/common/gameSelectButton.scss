@@ -1,14 +1,18 @@
 .game-btn {
     width: 100%;
+    opacity: 0.45;
 
     border-radius: $default-border-radius;
     background-color: $primaryColor;
+    border-bottom: 2px solid transparent;
+
+    transition: opacity 0.2s $css-transition-bezier;
 
     &.is-selected {
+        opacity: 1;
         border-bottom: 2px solid var(--theme-color);
 
         color: $white-font-text;
-        opacity: 1;
 
         border-color: color-mix(in srgb, var(--theme-color) 70%, transparent);
 

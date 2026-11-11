@@ -471,7 +471,7 @@ export async function initializeMap(
                 "text-halo-width": 0.3,
             },
             minzoom: 6,
-            maxzoom: 8,
+            maxzoom: 12,
         });
 
         // DISPLAYING CAPITAL NAMES

@@ -14,6 +14,8 @@ const props = withDefaults(
     },
 );
 
+const { specialJob } = useEtsTelemetry();
+
 const MEDIA_QUERY = "(orientation: landscape), (min-width: 768px)";
 const isSidePanel = ref(false);
 
@@ -33,7 +35,11 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="compact-trip-progress">
+    <div
+        v-press
+        class="compact-trip-progress"
+        :class="{ 'special-cargo': specialJob }"
+    >
         <div></div>
 
         <template v-if="isRouteActive">

@@ -34,6 +34,7 @@ function resetColor() {
         </div>
         <div class="color-options">
             <UPopover
+                :content="{ side: 'left', align: 'start', sideOffset: 10 }"
                 :ui="{
                     content: 'ring-0 border-0 outline-none',
                 }"
@@ -56,6 +57,7 @@ function resetColor() {
                     />
                     <div class="picker-footer">
                         <button
+                            v-press
                             @click.prevent="resetColor"
                             class="settings-btn primary-color small-reset"
                             title="Reset to default"

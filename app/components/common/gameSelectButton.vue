@@ -1,12 +1,24 @@
 <script lang="ts" setup>
-defineProps<{
+import { anim } from "~/assets/utils/animations/anim";
+
+const props = defineProps<{
     gameName: "ats" | "ets2";
+    isSelected: boolean;
     selectCard: (game: "ets2" | "ats" | null) => void;
 }>();
+
+function handleBtnClick(gameName: "ets2" | "ats" | null) {
+    props.selectCard(gameName);
+}
 </script>
 
 <template>
-    <div @click.prevent="selectCard(gameName)" class="game-btn">
+    <div
+        v-press
+        @click.prevent="handleBtnClick(gameName)"
+        class="game-btn"
+        :class="{ 'is-selected': isSelected }"
+    >
         <div class="game-card-wrapper">
             <div class="game-name-wrapper">
                 <slot name="icon"></slot>

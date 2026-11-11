@@ -3,7 +3,9 @@ import { animate } from "motion";
 import ProgressBar from "./progressBar.vue";
 import { EASE } from "~/types/easings.js";
 
-defineProps<{ progress: number }>();
+withDefaults(defineProps<{ show?: boolean; progress: number }>(), {
+    show: true,
+});
 const { activeSettings } = useSettings();
 
 const progressTextRef = ref<HTMLElement | null>(null);
@@ -30,24 +32,26 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="loading-screen">
-        <div
-            ref="progressTextRef"
-            class="progress-text"
-            :style="{
-                color: activeSettings.themeColor,
-            }"
-        >
-            <div class="progress-text-wrapper">
-                <p class="progress">
-                    {{ progress }}
-                </p>
+    <AnimTransition type="page">
+        <div v-if="show" class="loading-screen">
+            <div
+                ref="progressTextRef"
+                class="progress-text"
+                :style="{
+                    color: activeSettings.themeColor,
+                }"
+            >
+                <div class="progress-text-wrapper">
+                    <p class="progress">
+                        {{ progress }}
+                    </p>
 
-                <p class="percentage">%</p>
+                    <p class="percentage">%</p>
+                </div>
             </div>
+            <ProgressBar class="loading-screen-bar" :progress="progress" />
         </div>
-        <ProgressBar class="loading-screen-bar" :progress="progress" />
-    </div>
+    </AnimTransition>
 </template>
 
 <style

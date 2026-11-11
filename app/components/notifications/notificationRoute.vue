@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { animate } from "motion";
+
 const props = defineProps<{
     isCalculatingRoute: boolean;
     isRouteFound: boolean | null;
@@ -6,6 +8,10 @@ const props = defineProps<{
 
 const { isWeb } = usePlatform();
 const { t } = useTranslations();
+
+const routeFound = defineModel<boolean | null>({ default: false });
+let timer: ReturnType<typeof setTimeout> | null = null;
+const fillRef = ref<HTMLElement | null>(null);
 
 const notificationName = computed(() => {
     if (props.isRouteFound === true) {
@@ -20,6 +26,30 @@ const notificationName = computed(() => {
 const isVisible = computed(() => {
     return props.isCalculatingRoute || props.isRouteFound !== null;
 });
+
+watch(fillRef, (el) => {
+    if (el) startBar();
+});
+
+watch(routeFound, (newVal) => {
+    if (newVal !== null) {
+        if (timer) clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            routeFound.value = null;
+        }, 2000);
+    }
+});
+
+onUnmounted(() => {
+    if (timer) clearTimeout(timer);
+});
+
+function startBar() {
+    if (!fillRef.value || props.isCalculatingRoute) return;
+
+    animate(fillRef.value, { scaleX: [1, 0] }, { duration: 2, ease: "linear" });
+}
 </script>
 
 <template>
@@ -46,6 +76,12 @@ const isVisible = computed(() => {
                     size="24"
                 />
             </div>
+
+            <div
+                v-if="!isCalculatingRoute && routeFound !== null"
+                ref="fillRef"
+                class="timer-progress"
+            ></div>
         </div>
     </div>
 </template>
@@ -53,5 +89,5 @@ const isVisible = computed(() => {
 <style
     lang="scss"
     scoped
-    src="~/assets/scss/scoped/notifications/notificationRoute.scss"
+    src="~/assets/scss/scoped/notifications/notifications.scss"
 ></style>

@@ -10,6 +10,7 @@ const emit = defineEmits(["close"]);
                     <button
                         class="nav-btn icon-close primary-color"
                         @click="emit('close')"
+                        v-press
                     >
                         <Icon name="lucide:arrow-left" size="19" />
                     </button>

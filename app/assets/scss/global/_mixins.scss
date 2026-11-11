@@ -27,11 +27,25 @@ $desktop-min-width: 1024px;
     }
 }
 
-@mixin no-scrollbar {
+@mixin scrollbar-wrapper-design {
     scrollbar-width: none;
     -ms-overflow-style: none;
 
     &::-webkit-scrollbar {
         display: none;
+        width: 0px;
     }
+
+    mask-image: linear-gradient(
+        to bottom,
+        black calc(100% - 2.8rem),
+        transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        black calc(100% - 2.8rem),
+        transparent 100%
+    );
+
+    padding-bottom: 1.8rem;
 }

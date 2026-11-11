@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { App } from "@capacitor/app";
+import { anim } from "~/assets/utils/animations/anim";
 import type { settingsView } from "~/types";
 
 const { t } = useTranslations();
@@ -55,173 +56,203 @@ onMounted(async () => {
         <div class="section-title wrapper">
             <div class="title-text">
                 <button
+                    v-press
                     class="nav-btn primary-color icon-close"
                     @click="handleBack"
                 >
                     <Icon name="lucide:arrow-left" size="17" />
                 </button>
 
-                <div class="category">
-                    <div class="category-title w-description">
-                        <slot name="category-title">{{ settingsTitle }}</slot>
-                    </div>
+                <AnimTransition type="ticker" mode="out-in">
+                    <div :key="currentView" class="category">
+                        <div class="category-title w-description">
+                            <slot name="category-title">{{
+                                settingsTitle
+                            }}</slot>
+                        </div>
 
-                    <div class="category-description">
-                        <slot name="category-description">{{
-                            settingsDescription
-                        }}</slot>
+                        <div class="category-description">
+                            <slot name="category-description">{{
+                                settingsDescription
+                            }}</slot>
+                        </div>
                     </div>
-                </div>
+                </AnimTransition>
             </div>
         </div>
 
         <div class="settings-panel-content">
-            <div v-if="currentView === 'main'" class="main-content" key="main">
-                <div class="menu-list">
-                    <div class="category-wrapper">
-                        <p class="category-title small">
-                            {{ t("preferences") }}
-                        </p>
+            <AnimTransition type="view">
+                <div
+                    v-if="currentView === 'main'"
+                    class="main-content"
+                    key="main"
+                >
+                    <div class="menu-list">
+                        <div class="category-wrapper">
+                            <p class="category-title small">
+                                {{ t("preferences") }}
+                            </p>
 
-                        <div class="items-wrapper-stacked">
-                            <div
-                                class="option stacked main-setting"
-                                @click="setView('general')"
-                            >
-                                <div class="option-text">
-                                    <div class="icon-wrapper">
-                                        <Icon
-                                            name="lucide:settings-2"
-                                            class="icon"
-                                        />
+                            <div class="items-wrapper-stacked">
+                                <div
+                                    v-press
+                                    class="option stacked main-setting"
+                                    @click="setView('general')"
+                                >
+                                    <div class="option-text">
+                                        <div class="icon-wrapper">
+                                            <Icon
+                                                name="lucide:settings-2"
+                                                class="icon"
+                                            />
+                                        </div>
+
+                                        <div class="option-text-wrapper">
+                                            <span>{{
+                                                t("settings.general")
+                                            }}</span>
+
+                                            <p class="option-description">
+                                                {{
+                                                    t(
+                                                        "settings.preferencesSystem",
+                                                    )
+                                                }}
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <div class="option-text-wrapper">
-                                        <span>{{ t("settings.general") }}</span>
-
-                                        <p class="option-description">
-                                            {{
-                                                t("settings.preferencesSystem")
-                                            }}
-                                        </p>
-                                    </div>
+                                    <Icon
+                                        name="lucide:chevron-right"
+                                        class="icon chevron"
+                                    />
                                 </div>
 
-                                <Icon
-                                    name="lucide:chevron-right"
-                                    class="icon chevron"
-                                />
+                                <div class="small-separator"></div>
+
+                                <div
+                                    v-press
+                                    class="option stacked main-setting"
+                                    @click="setView('appearance')"
+                                >
+                                    <div class="option-text">
+                                        <div class="icon-wrapper">
+                                            <Icon
+                                                name="lucide:palette"
+                                                class="icon"
+                                            />
+                                        </div>
+
+                                        <div class="option-text-wrapper">
+                                            <span>{{
+                                                t("settings.appearance")
+                                            }}</span>
+                                            <p class="option-description">
+                                                {{
+                                                    t(
+                                                        "settings.themesMapStyling",
+                                                    )
+                                                }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <Icon
+                                        name="lucide:chevron-right"
+                                        class="icon chevron"
+                                    />
+                                </div>
+
+                                <div class="small-separator"></div>
+
+                                <div
+                                    v-press
+                                    class="option stacked main-setting"
+                                    @click="setView('navigation')"
+                                >
+                                    <div class="option-text">
+                                        <div class="icon-wrapper">
+                                            <Icon
+                                                name="lucide:navigation"
+                                                class="icon"
+                                            />
+                                        </div>
+
+                                        <div class="option-text-wrapper">
+                                            <span>{{
+                                                t("settings.navigation")
+                                            }}</span>
+                                            <p class="option-description">
+                                                {{ t("settings.timeHud") }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <Icon
+                                        name="lucide:chevron-right"
+                                        class="icon chevron"
+                                    />
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="small-separator"></div>
+                        <div class="category-wrapper">
+                            <p class="category-title small">
+                                {{ t("session") }}
+                            </p>
 
-                            <div
-                                class="option stacked main-setting"
-                                @click="setView('appearance')"
-                            >
-                                <div class="option-text">
-                                    <div class="icon-wrapper">
-                                        <Icon
-                                            name="lucide:palette"
-                                            class="icon"
-                                        />
-                                    </div>
+                            <div class="items-wrapper">
+                                <div
+                                    v-press
+                                    class="option"
+                                    @click="emit('goHome')"
+                                >
+                                    <div class="option-text">
+                                        <div class="icon-wrapper">
+                                            <Icon
+                                                name="lucide:door-open"
+                                                class="icon"
+                                            />
+                                        </div>
 
-                                    <div class="option-text-wrapper">
-                                        <span>{{
-                                            t("settings.appearance")
-                                        }}</span>
-                                        <p class="option-description">
-                                            {{ t("settings.themesMapStyling") }}
-                                        </p>
-                                    </div>
-                                </div>
+                                        <div class="option-text-wrapper">
+                                            <span>{{
+                                                t("settings.backToMainMenu")
+                                            }}</span>
 
-                                <Icon
-                                    name="lucide:chevron-right"
-                                    class="icon chevron"
-                                />
-                            </div>
-
-                            <div class="small-separator"></div>
-
-                            <div
-                                class="option stacked main-setting"
-                                @click="setView('navigation')"
-                            >
-                                <div class="option-text">
-                                    <div class="icon-wrapper">
-                                        <Icon
-                                            name="lucide:navigation"
-                                            class="icon"
-                                        />
-                                    </div>
-
-                                    <div class="option-text-wrapper">
-                                        <span>{{
-                                            t("settings.navigation")
-                                        }}</span>
-                                        <p class="option-description">
-                                            {{ t("settings.timeHud") }}
-                                        </p>
+                                            <p class="option-description">
+                                                {{
+                                                    t("settings.switchGameMaps")
+                                                }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <Icon
-                                    name="lucide:chevron-right"
-                                    class="icon chevron"
-                                />
                             </div>
                         </div>
                     </div>
 
-                    <div class="category-wrapper">
-                        <p class="category-title small">{{ t("session") }}</p>
-
-                        <div class="items-wrapper">
-                            <div class="option" @click="emit('goHome')">
-                                <div class="option-text">
-                                    <div class="icon-wrapper">
-                                        <Icon
-                                            name="lucide:door-open"
-                                            class="icon"
-                                        />
-                                    </div>
-
-                                    <div class="option-text-wrapper">
-                                        <span>{{
-                                            t("settings.backToMainMenu")
-                                        }}</span>
-
-                                        <p class="option-description">
-                                            {{ t("settings.switchGameMaps") }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="footer">
+                        <p>{{ t("common.trucknav") }} {{ appVersion }}</p>
+                        <p>{{ t("common.trucknavMoto") }}</p>
                     </div>
                 </div>
 
-                <div class="footer">
-                    <p>{{ t("common.trucknav") }} {{ appVersion }}</p>
-                    <p>{{ t("common.trucknavMoto") }}</p>
-                </div>
-            </div>
+                <General v-else-if="currentView === 'general'" key="general" />
 
-            <General v-else-if="currentView === 'general'" key="general" />
+                <Appearance
+                    v-else-if="currentView === 'appearance'"
+                    class="menu-list"
+                    key="appearance"
+                />
 
-            <Appearance
-                v-else-if="currentView === 'appearance'"
-                class="menu-list"
-                key="appearance"
-            />
-
-            <Navigation
-                v-else-if="currentView === 'navigation'"
-                class="menu-list"
-                key="navigation"
-            />
+                <Navigation
+                    v-else-if="currentView === 'navigation'"
+                    class="menu-list"
+                    key="navigation"
+                />
+            </AnimTransition>
         </div>
     </div>
 </template>

@@ -20,7 +20,7 @@
     }
 
     .roundabout-content {
-        transform: scale(0.9) translate(-30%, -25%);
+        transform: scale(0.75) translate(-35%, -30%);
     }
 
     fill: $white-font-text;
@@ -29,16 +29,11 @@
 
 .exit-number {
     position: absolute;
-    bottom: -30%;
-    right: 3%;
-    transform: translate(-8%, -63%);
-
-    font-size: 1.8rem;
-    opacity: 0.4;
-
+    bottom: 0px;
+    right: -4px;
+    font-size: 1.5rem;
+    font-weight: 700;
     color: $white-font-text;
-    opacity: 1;
-
-    pointer-events: none;
     line-height: 1;
+    pointer-events: none;
 }

@@ -8,24 +8,26 @@ import {
     uninstallMapData,
 } from "~/assets/utils/shared/fileManager";
 import { generateTruckIcon } from "~/assets/utils/map/markers";
+import { anim } from "~/assets/utils/animations/anim";
 
-const { selectedGame } = useGameSelection();
-const { commitSelection } = useGameSelection();
-const { updateProfile, activeSettings } = useSettings();
+const { selectedGame, isBaseDownloaded } = useGameSelection();
+const { updateProfile, updateGlobal, activeSettings } = useSettings();
 const { isMobile, isElectron } = usePlatform();
 const { t } = useTranslations();
 
 const emit = defineEmits(["connected", "goBack"]);
+const isAppReady = useState("isAppReady", () => false);
 
 const truckRef = ref<HTMLElement | null>(null);
 
 const isDownloading = ref(false);
 const downloadProgress = ref(0);
 const downloadingId = ref<string | null>(null);
-const isBaseDownloaded = ref(false);
 const isModPanelOpen = ref(false);
 const truckImgSrc = ref("");
 const isConnected = ref(false);
+
+const sectionRef = ref<HTMLElement | null>(null);
 
 let truckAnimControl: ReturnType<typeof animate> | null = null;
 let trackResizeObserver: ResizeObserver | null = null;
@@ -37,7 +39,7 @@ const availableMods = computed(() => {
 
     const vanillaMod = {
         id: "none",
-        name: "Vanilla",
+        name: `Vanilla`,
         description: "Base Game Map",
         url: `https://trucknavapp.com/${selectedGame.value}.zip`,
     };
@@ -122,8 +124,22 @@ const availableMods = computed(() => {
 });
 
 onMounted(async () => {
-    if (selectedGame.value) {
-        isBaseDownloaded.value = await isMapDownloaded(selectedGame.value);
+    if (isAppReady.value) {
+        anim.pageEnter(sectionRef.value);
+    }
+
+    checkModStatuses();
+});
+
+watch(isAppReady, (ready) => {
+    if (ready) {
+        anim.pageEnter(sectionRef.value);
+    }
+});
+
+watch(selectedGame, async (newGame) => {
+    if (newGame) {
+        isBaseDownloaded.value = await isMapDownloaded(newGame);
         await checkModStatuses();
     }
 });
@@ -191,12 +207,6 @@ watch(selectedGame, async (newGame) => {
     }
 });
 
-watch(isModPanelOpen, async (isOpen) => {
-    if (isOpen) {
-        await checkModStatuses();
-    }
-});
-
 watch(
     [
         () => activeSettings.value?.arrowColor,
@@ -211,6 +221,15 @@ watch(
     { immediate: true },
 );
 
+function handlePanelEnter(el: Element, done: () => void) {
+    anim.panelEnter(el, done);
+
+    const list = el.querySelector(".mod-list-container") as HTMLElement;
+    if (list) {
+        anim.staggerListX(list, 0.04);
+    }
+}
+
 async function checkModStatuses() {
     if (!selectedGame.value) return;
 
@@ -224,6 +243,8 @@ async function checkModStatuses() {
 }
 
 async function startDownload(mapId: string, zipUrl: string) {
+    if (isDownloading.value) return;
+
     isDownloading.value = true;
     downloadingId.value = mapId;
     downloadProgress.value = 0;
@@ -288,14 +309,21 @@ const activeModName = computed(() => {
     return matchedMod ? matchedMod.name : modId;
 });
 
+const activeGame = computed(() => {
+    if (selectedGame.value === "ets2") return "ETS2";
+    else return "ATS";
+});
+
 const handleConnect = () => {
-    commitSelection();
+    updateGlobal("selectedGame", selectedGame.value);
     emit("connected");
 };
 
-function selectMod(modId: string | "none") {
+function selectMod(modId: string | "none", modUrl: string) {
     if (downloadedMods.value[modId]) {
         updateProfile("activeMod", modId);
+    } else if (!downloadedMods.value[modId] && !isDownloading.value) {
+        startDownload(modId, modUrl);
     }
 }
 
@@ -310,11 +338,17 @@ const isModActive = (modId: string) => {
 
 <template>
     <section
+        ref="sectionRef"
         class="section section-mobile-menu safe-padding-left safe-padding-right"
     >
         <div class="title-wrapper">
             <div class="section-title">
-                <div v-if="isElectron" class="back-btn" @click="emit('goBack')">
+                <div
+                    v-if="isElectron"
+                    class="back-btn"
+                    @click="emit('goBack')"
+                    v-press
+                >
                     <Icon name="lucide:arrow-left" size="24" />
                 </div>
                 <Icon class="icon" name="lucide:cast" />
@@ -334,244 +368,313 @@ const isModActive = (modId: string) => {
                 </div>
             </div>
 
-            <div v-if="isBaseDownloaded && selectedGame" class="grid-wrapper">
-                <div class="connect" v-if="isMobile">
-                    <p class="category-title">
-                        {{ t("common.connection") }}
-                    </p>
+            <AnimTransition type="view">
+                <div
+                    :key="`${selectedGame}-${isBaseDownloaded}`"
+                    class="game-view-wrapper"
+                >
+                    <template v-if="isBaseDownloaded && selectedGame">
+                        <div class="grid-wrapper">
+                            <div class="connect" v-if="isMobile">
+                                <p class="category-title">
+                                    {{ t("common.connection") }}
+                                </p>
 
-                    <div class="input-ip">
-                        <InputComputerIP
-                            v-model="isConnected"
-                            :require-game="true"
-                        />
-                    </div>
-                </div>
+                                <div class="input-ip">
+                                    <InputComputerIP
+                                        v-model="isConnected"
+                                        :require-game="true"
+                                    />
+                                </div>
+                            </div>
 
-                <div class="top-buttons">
-                    <p class="category-title">
-                        {{ t("common.maps") }}
-                    </p>
+                            <div class="top-buttons">
+                                <p class="category-title">
+                                    {{ t("common.maps") }}
+                                </p>
 
-                    <div class="active-mod-wrapper">
-                        <div class="choose-map-wrapper">
-                            <button
-                                @click="toggleModPanel"
-                                class="btn nav-btn full-width primary-color choose-map-btn"
-                            >
-                                <Icon name="lucide:map" size="22" />
-                                <span class="active-mod">{{
-                                    activeModName
-                                }}</span>
-                                <div></div>
-                            </button>
+                                <div class="active-mod-wrapper">
+                                    <div class="choose-map-wrapper">
+                                        <button
+                                            @click="toggleModPanel"
+                                            class="btn nav-btn full-width primary-color choose-map-btn"
+                                            v-press
+                                        >
+                                            <Icon name="lucide:map" size="22" />
+                                            <div class="active-mod">
+                                                <span>
+                                                    {{ activeModName }}</span
+                                                >
+                                                <span>{{ activeGame }}</span>
+                                            </div>
+                                            <div></div>
+                                        </button>
 
-                            <button
-                                @click="uninstallMap()"
-                                class="btn nav-btn primary-color icon"
-                            >
-                                <Icon name="lucide:trash-2" size="20" />
-                            </button>
+                                        <button
+                                            @click="uninstallMap()"
+                                            class="btn nav-btn primary-color icon"
+                                            v-press
+                                        >
+                                            <Icon
+                                                name="lucide:trash-2"
+                                                size="20"
+                                            />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <template v-if="isBaseDownloaded && selectedGame">
-                <div class="live-route">
-                    <p class="category-title">{{ t("common.liveRoute") }}</p>
+                        <div class="live-route">
+                            <p class="category-title">
+                                {{ t("common.liveRoute") }}
+                            </p>
 
-                    <div class="route-card-anim">
-                        <div class="road-labels">
-                            <span class="route-caption">{{
-                                t("common.readyForDeparture")
-                            }}</span>
+                            <div class="route-card-anim">
+                                <div class="road-labels">
+                                    <span class="route-caption">{{
+                                        t("common.readyForDeparture")
+                                    }}</span>
+                                </div>
+
+                                <div class="route-widget">
+                                    <div class="route-anim">
+                                        <div class="route-line">
+                                            <div class="route-start">
+                                                <Icon
+                                                    name="lucide:warehouse"
+                                                    size="20"
+                                                />
+                                            </div>
+
+                                            <div
+                                                ref="truckRef"
+                                                class="route-truck truck-nav-marker"
+                                            >
+                                                <img
+                                                    class="truck-icon"
+                                                    :src="truckImgSrc"
+                                                    alt=""
+                                                />
+                                            </div>
+
+                                            <div class="route-end">
+                                                <Icon
+                                                    name="lucide:map-pin-check"
+                                                    size="20"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </template>
 
-                        <div class="route-widget">
-                            <div class="route-anim">
-                                <div class="route-line">
-                                    <div class="route-start">
+                    <template v-else>
+                        <div class="middle-wrapper">
+                            <div class="middle-icon-wrapper">
+                                <Icon
+                                    name="lucide:map-plus"
+                                    size="80"
+                                    class="middle-icon"
+                                />
+                            </div>
+
+                            <div class="bottom-text">
+                                <div class="header-wrapper">
+                                    <span class="header"
+                                        >Base Map Required</span
+                                    >
+                                    <InfoBox
+                                        position="left"
+                                        type="note"
+                                        class="info-box"
+                                    >
+                                        <template #content>
+                                            <p>
+                                                {{
+                                                    t("common.companionActive")
+                                                }}.
+                                            </p>
+                                        </template>
+                                    </InfoBox>
+                                </div>
+
+                                <span class="sub-header">
+                                    Download the map data to enable live GPS
+                                    navigation.
+                                </span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </AnimTransition>
+        </div>
+
+        <div class="bottom-action-wrapper" v-if="selectedGame">
+            <AnimTransition type="view">
+                <button
+                    v-if="isBaseDownloaded"
+                    @click.prevent="handleConnect"
+                    class="btn nav-btn full-width"
+                    key="nav-btn"
+                    v-press
+                >
+                    <Icon name="lucide:map-pinned" size="20" />
+                    <span>Start Navigation</span>
+                </button>
+
+                <button
+                    v-else
+                    key="download-btn"
+                    @click.prevent="
+                        startDownload(
+                            selectedGame,
+                            `https://trucknavapp.com/${selectedGame}.zip`,
+                        )
+                    "
+                    class="btn nav-btn full-width bottom-download-button"
+                    :disabled="isDownloading"
+                    v-press
+                >
+                    <Icon name="lucide:download" size="20" />
+                    <span>{{ t("common.downloadBaseMap") }}</span>
+
+                    <ProgressBar
+                        class="progress-bar"
+                        :show="isDownloading && downloadingId == selectedGame"
+                        :progress="
+                            downloadProgress === -1 ? 99 : downloadProgress
+                        "
+                    />
+                </button>
+            </AnimTransition>
+        </div>
+
+        <Transition
+            mode="out-in"
+            @enter="handlePanelEnter"
+            @leave="anim.panelLeave"
+        >
+            <PopupPanel
+                class="no-padding"
+                v-if="isModPanelOpen"
+                @close="toggleModPanel"
+            >
+                <template #category-title>Map Mods</template>
+                <template #category-description
+                    >Select your active map mod</template
+                >
+
+                <template #title>Select Map Mod</template>
+
+                <div class="mods-content">
+                    <p class="category-title">
+                        {{ selectedGame }} {{ t("common.mods") }}
+                    </p>
+                    <div class="mod-list-container">
+                        <div
+                            v-for="mod in availableMods"
+                            :key="mod.id"
+                            class="mod-item"
+                            :class="{ active: isModActive(mod.id) }"
+                            @click="selectMod(mod.id, mod.url)"
+                            v-press
+                        >
+                            <div class="mod-info">
+                                <span>{{ mod.name }}</span>
+                                <AnimTransition type="ticker">
+                                    <div
+                                        class="tag"
+                                        :class="{
+                                            square: downloadedMods[mod.id],
+                                        }"
+                                        key="installed"
+                                        v-if="downloadedMods[mod.id]"
+                                    >
                                         <Icon
-                                            name="lucide:warehouse"
-                                            size="20"
+                                            class="check-icon"
+                                            :class="{
+                                                active: isModActive(mod.id),
+                                            }"
+                                            name="lucide:check"
                                         />
                                     </div>
 
                                     <div
-                                        ref="truckRef"
-                                        class="route-truck truck-nav-marker"
+                                        class="tag"
+                                        key="not-installed"
+                                        :class="{
+                                            square: downloadedMods[mod.id],
+                                        }"
+                                        v-else
                                     >
-                                        <img
-                                            class="truck-icon"
-                                            :src="truckImgSrc"
-                                            alt=""
-                                        />
+                                        <div class="item-size">
+                                            <span>40</span>
+                                            <span class="unit">MB</span>
+                                        </div>
                                     </div>
+                                </AnimTransition>
+                            </div>
 
-                                    <div class="route-end">
+                            <div class="mod-actions">
+                                <div class="mod-desc">
+                                    {{ mod.description }}
+                                </div>
+
+                                <AnimTransition type="pop">
+                                    <span
+                                        class="downloading-text"
+                                        key="downloading"
+                                        v-if="downloadingId === mod.id"
+                                    >
+                                        {{ (downloadProgress || 0) + "%" }}
+                                    </span>
+
+                                    <button
+                                        v-else-if="!downloadedMods[mod.id]"
+                                        key="download"
+                                        class="nav-btn dark icon map-mod-icon"
+                                        @click.stop="
+                                            startDownload(mod.id, mod.url)
+                                        "
+                                        v-press
+                                    >
                                         <Icon
-                                            name="lucide:map-pin-check"
-                                            size="20"
+                                            name="lucide:download"
+                                            size="18"
                                         />
-                                    </div>
-                                </div>
+                                    </button>
+
+                                    <button
+                                        v-else
+                                        key="trash"
+                                        class="nav-btn dark icon trash-icon map-mod-icon"
+                                        @click.stop="uninstallMap(mod.id)"
+                                        v-press
+                                    >
+                                        <Icon name="lucide:trash-2" size="18" />
+                                    </button>
+                                </AnimTransition>
                             </div>
+
+                            <ProgressBar
+                                class="download-bar"
+                                :show="downloadingId === mod.id"
+                                :progress="
+                                    downloadProgress === -1
+                                        ? 99
+                                        : downloadProgress
+                                "
+                                style="margin-top: 8px"
+                                :bar-height="4"
+                            />
                         </div>
                     </div>
                 </div>
-            </template>
-
-            <template v-else-if="!isBaseDownloaded && selectedGame">
-                <div class="middle-wrapper">
-                    <div class="middle-icon-wrapper">
-                        <Icon
-                            name="lucide:map-plus"
-                            size="80"
-                            class="middle-icon"
-                        />
-                    </div>
-
-                    <div class="bottom-text">
-                        <div class="header-wrapper">
-                            <span class="header">Base Map Required</span>
-                            <InfoBox
-                                position="left"
-                                type="note"
-                                class="info-box"
-                            >
-                                <template #content>
-                                    <p>{{ t("common.companionActive") }}.</p>
-                                </template>
-                            </InfoBox>
-                        </div>
-
-                        <span class="sub-header">
-                            Download the map data to enable live GPS navigation.
-                        </span>
-                    </div>
-                </div>
-            </template>
-        </div>
-
-        <div class="bottom-action-wrapper" v-if="selectedGame">
-            <button
-                v-if="isBaseDownloaded"
-                @click.prevent="handleConnect"
-                class="btn nav-btn full-width"
-            >
-                <Icon name="lucide:map-pinned" size="20" />
-                <span>Start Navigation</span>
-            </button>
-
-            <button
-                v-else
-                @click.prevent="
-                    startDownload(
-                        selectedGame,
-                        `https://trucknavapp.com/${selectedGame}.zip`,
-                    )
-                "
-                class="btn nav-btn full-width bottom-download-button"
-                :disabled="isDownloading"
-            >
-                <Icon name="lucide:download" size="20" />
-                <span>{{ t("common.downloadBaseMap") }}</span>
-
-                <ProgressBar
-                    class="progress-bar"
-                    v-if="isDownloading && downloadingId == selectedGame"
-                    :progress="downloadProgress === -1 ? 99 : downloadProgress"
-                />
-            </button>
-        </div>
-
-        <PopupPanel
-            class="no-padding"
-            v-if="isModPanelOpen"
-            @close="toggleModPanel"
-        >
-            <template #category-title>Map Mods</template>
-            <template #category-description
-                >Select your active map mod</template
-            >
-
-            <template #title>Select Map Mod</template>
-
-            <div class="mods-content">
-                <p class="category-title">
-                    {{ selectedGame }} {{ t("common.mods") }}
-                </p>
-                <div class="mod-list-container">
-                    <div
-                        v-for="mod in availableMods"
-                        :key="mod.id"
-                        class="mod-item"
-                        :class="{ active: isModActive(mod.id) }"
-                        @click="selectMod(mod.id)"
-                    >
-                        <div class="mod-info">
-                            <span>{{ mod.name }}</span>
-                            <div
-                                class="tag"
-                                :class="{ square: downloadedMods[mod.id] }"
-                            >
-                                <Icon
-                                    class="check-icon"
-                                    :class="{ active: isModActive(mod.id) }"
-                                    v-if="downloadedMods[mod.id]"
-                                    name="lucide:check"
-                                />
-                                <div class="" v-else>
-                                    40
-                                    <span class="unit">MB</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mod-actions">
-                            <div class="mod-desc">
-                                {{ mod.description }}
-                            </div>
-
-                            <span
-                                class="downloading-text"
-                                v-if="downloadingId === mod.id"
-                            >
-                                {{ (downloadProgress || 0) + "%" }}
-                            </span>
-
-                            <button
-                                v-else-if="!downloadedMods[mod.id]"
-                                class="nav-btn dark icon map-mod-icon"
-                                @click.stop="startDownload(mod.id, mod.url)"
-                            >
-                                <Icon name="lucide:download" size="18" />
-                            </button>
-
-                            <div v-else class="mod-installed">
-                                <button
-                                    class="nav-btn dark icon trash-icon map-mod-icon"
-                                    @click.stop="uninstallMap(mod.id)"
-                                >
-                                    <Icon name="lucide:trash-2" size="18" />
-                                </button>
-                            </div>
-                        </div>
-
-                        <ProgressBar
-                            class="download-bar"
-                            v-if="downloadingId === mod.id"
-                            :progress="
-                                downloadProgress === -1 ? 99 : downloadProgress
-                            "
-                            style="margin-top: 8px"
-                            :bar-height="4"
-                        />
-                    </div>
-                </div>
-            </div>
-        </PopupPanel>
+            </PopupPanel>
+        </Transition>
     </section>
 </template>
 

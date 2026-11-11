@@ -4,8 +4,10 @@ import type { Map } from "maplibre-gl";
 
 export const useMapCamera = (map: Ref<Map | null>) => {
     const isCameraLocked = ref(false);
-    const isAutoFollowEnabled = ref(false);
     const isNavigating = ref(false);
+
+    const isHeadingActive = ref(false);
+    const isNorthActive = ref(false);
 
     let targetCoords: [number, number] | null = null;
     let targetHeading: number = 0;
@@ -21,6 +23,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
     let isEasing = false;
     let easeTimeout: ReturnType<typeof setTimeout> | null = null;
 
+    let easingUntil = 0;
     let autoLockTimer: ReturnType<typeof setTimeout> | null = null;
 
     let markerEl: HTMLDivElement | null = null;
@@ -109,12 +112,16 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             const isTargetAtOrigin =
                 targetCoords[0] === 0 && targetCoords[1] === 0;
 
-            if (isCameraLocked.value && !isEasing && !isTargetAtOrigin) {
+            const isCurrentlyEasing = now < easingUntil;
+
+            if (
+                isCameraLocked.value &&
+                !isCurrentlyEasing &&
+                !isTargetAtOrigin
+            ) {
                 map.value.jumpTo({
                     center: [currentTruckCoords[0], currentTruckCoords[1]],
-                    bearing: isAutoFollowEnabled.value
-                        ? currentTruckHeading
-                        : 0,
+                    bearing: isHeadingActive.value ? currentTruckHeading : 0,
                     padding: getPadding(),
                 });
             }
@@ -175,65 +182,152 @@ export const useMapCamera = (map: Ref<Map | null>) => {
 
         map.value.on("resize", updateCachedPadding);
 
-        const breakLockEvents = ["mousedown", "touchstart", "wheel"];
-        breakLockEvents.forEach((event) => {
-            map.value!.on(event, (e) => {
-                if (e.originalEvent && !isEasing) {
-                    isCameraLocked.value = false;
-                    if (autoLockTimer) clearTimeout(autoLockTimer);
+        const handleUserMapTouch = (e: any) => {
+            const isCurrentlyEasing = performance.now() < easingUntil;
+            if (!e.originalEvent || isCurrentlyEasing) return;
 
-                    if (isAutoFollowEnabled.value) {
-                        autoLockTimer = setTimeout(() => {
-                            resumeCameraLock();
-                        }, 1500);
-                    }
-                }
-            });
+            isCameraLocked.value = false;
+
+            if (autoLockTimer) clearTimeout(autoLockTimer);
+
+            if (isHeadingActive.value || isNorthActive.value) {
+                autoLockTimer = setTimeout(() => {
+                    resumeCameraLock();
+                }, 2300);
+            }
+        };
+
+        const breakLockEvents = [
+            "mousedown",
+            "touchstart",
+            "wheel",
+            "dragstart",
+        ];
+        breakLockEvents.forEach((event) => {
+            map.value!.on(event, handleUserMapTouch);
         });
 
         map.value.on("move", (e) => {
-            if (e.originalEvent && !isCameraLocked.value && !isEasing) {
-                if (autoLockTimer) clearTimeout(autoLockTimer);
-
-                if (isAutoFollowEnabled.value) {
-                    autoLockTimer = setTimeout(() => {
-                        resumeCameraLock();
-                    }, 1500);
-                }
+            if (e.originalEvent && !isCameraLocked.value) {
+                handleUserMapTouch(e);
             }
         });
     };
 
-    const resumeCameraLock = (isFollowButtonEnabled?: boolean) => {
-        if (!map.value || !currentTruckCoords) return;
-        isAutoFollowEnabled.value = isFollowButtonEnabled ?? true;
-        isCameraLocked.value = true;
-        isEasing = true;
+    const easeCameraTo = (options: any) => {
+        if (!map.value) return;
 
-        if (easeTimeout) clearTimeout(easeTimeout);
-        easeTimeout = setTimeout(() => {
-            isEasing = false;
-        }, 500);
+        const duration = options.duration ?? 800;
+
+        easingUntil = performance.now() + duration;
 
         map.value.easeTo({
-            center: currentTruckCoords,
-            bearing: currentTruckHeading,
-            pitch: map.value.getPitch(),
-            zoom: map.value.getZoom(),
-            duration: 350,
-            padding: getPadding(),
+            ...options,
+            duration,
+            essential: true,
+            easing: (t: number) =>
+                t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
         });
     };
 
-    const toggleAutoFollow = () => {
-        isAutoFollowEnabled.value = !isAutoFollowEnabled.value;
+    const toggleNorthFollow = () => {
+        if (!map.value) return;
+        const centerPos = currentTruckCoords || targetCoords;
 
-        if (isAutoFollowEnabled.value) {
-            resumeCameraLock();
+        if (autoLockTimer) clearTimeout(autoLockTimer);
+
+        if (!isNorthActive.value) {
+            isNorthActive.value = true;
+            isHeadingActive.value = false;
+            isCameraLocked.value = true;
+
+            easeCameraTo({
+                center: centerPos,
+                bearing: 0,
+                pitch: map.value.getPitch(),
+                zoom: map.value.getZoom(),
+                padding: getPadding(),
+            });
         } else {
+            isNorthActive.value = false;
             isCameraLocked.value = false;
-            if (autoLockTimer) clearTimeout(autoLockTimer);
         }
+    };
+
+    const toggleHeadingFollow = () => {
+        if (!map.value) return;
+        const centerPos = currentTruckCoords || targetCoords;
+
+        if (autoLockTimer) clearTimeout(autoLockTimer);
+
+        if (!isHeadingActive.value) {
+            isHeadingActive.value = true;
+            isNorthActive.value = false;
+            isCameraLocked.value = true;
+
+            easeCameraTo({
+                center: centerPos,
+                bearing: currentTruckHeading,
+                pitch: map.value.getPitch(),
+                zoom: map.value.getZoom(),
+                duration: 700,
+                padding: getPadding(),
+            });
+        } else {
+            isHeadingActive.value = false;
+            isCameraLocked.value = false;
+        }
+    };
+
+    const resumeCameraLock = (isFollowButtonEnabled?: boolean) => {
+        if (!map.value || !currentTruckCoords) return;
+        const centerPos = currentTruckCoords || targetCoords;
+        if (!centerPos) return;
+
+        if (!isHeadingActive.value && !isNorthActive.value) {
+            isHeadingActive.value = true;
+        }
+
+        const currentPitch = map.value.getPitch();
+        const currentZoom = map.value.getZoom();
+        isCameraLocked.value = true;
+
+        if (isHeadingActive.value) {
+            easeCameraTo({
+                center: centerPos,
+                bearing: currentTruckHeading,
+                pitch: currentPitch,
+                zoom: currentZoom,
+                duration: 700,
+                padding: getPadding(),
+            });
+        } else if (isNorthActive.value) {
+            easeCameraTo({
+                center: centerPos,
+                bearing: 0,
+                pitch: currentPitch,
+                zoom: currentZoom,
+                duration: 700,
+                padding: getPadding(),
+            });
+        }
+    };
+
+    const focusTruckInitial = (coords: [number, number], heading: number) => {
+        if (!map.value) return;
+
+        isHeadingActive.value = true;
+        isNorthActive.value = false;
+        isCameraLocked.value = true;
+
+        easeCameraTo({
+            center: coords,
+            bearing: heading,
+            zoom: 9,
+            pitch: 30,
+            duration: 1200,
+            padding: getPadding(),
+        });
     };
 
     const followTruck = (coords: [number, number], heading: number) => {
@@ -268,32 +362,37 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         if (!map.value) return;
         isNavigating.value = true;
         isCameraLocked.value = true;
-        isAutoFollowEnabled.value = true;
+        isHeadingActive.value = true;
+        isNorthActive.value = false;
+
         targetCoords = coords;
         targetHeading = heading;
 
-        isEasing = true;
-        if (easeTimeout) clearTimeout(easeTimeout);
-
-        easeTimeout = setTimeout(() => {
-            isEasing = false;
-        }, 300);
-
-        map.value.easeTo({
+        easeCameraTo({
             center: coords,
-            bearing: isNavigating.value ? heading : 0,
+            bearing: heading,
             zoom: 11,
             pitch: 50,
-            duration: 350,
             padding: getPadding(),
         });
     };
 
     const stopNavigationMode = () => {
         if (!map.value || !currentTruckCoords) return;
-        isNavigating.value = false;
+        const centerPos = currentTruckCoords || targetCoords;
+        if (!isNavigating.value) return;
 
-        resumeCameraLock(false);
+        isNavigating.value = false;
+        isNorthActive.value = true;
+        isHeadingActive.value = false;
+        isCameraLocked.value = true;
+
+        easeCameraTo({
+            center: centerPos,
+            pitch: 0,
+            bearing: 0,
+            padding: { top: 0, bottom: 0, left: 0, right: 0 },
+        });
     };
 
     onUnmounted(() => {
@@ -314,7 +413,10 @@ export const useMapCamera = (map: Ref<Map | null>) => {
     return {
         isCameraLocked,
         isNavigating,
-        isAutoFollowEnabled,
+        isHeadingActive,
+        isNorthActive,
+        toggleHeadingFollow,
+        toggleNorthFollow,
         initMarker,
         updateMarkerSize,
         updateMarkerImage,
@@ -322,9 +424,9 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         followTruck,
         stopNavigationMode,
         resumeCameraLock,
-        toggleAutoFollow,
         lockCamera,
         startNavigationMode,
         resetTruck,
+        focusTruckInitial,
     };
 };

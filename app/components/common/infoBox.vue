@@ -21,9 +21,11 @@ const popupOpened = ref(false);
         >
             <Icon name="lucide:info" class="icon" />
 
-            <div v-if="popupOpened" class="popup" :class="position">
-                <slot name="content"></slot>
-            </div>
+            <AnimTransition type="pop">
+                <div v-if="popupOpened" class="popup" :class="position">
+                    <slot name="content"></slot>
+                </div>
+            </AnimTransition>
         </button>
     </div>
 </template>

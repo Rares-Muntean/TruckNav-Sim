@@ -1,10 +1,14 @@
 <script lang="ts" setup>
 import { ets2Expansions } from "~/data/ets2/ets2Expansions";
 import { atsExpansions } from "~/data/ats/atsExpansions";
+import { anim } from "~/assets/utils/animations/anim";
 
-const { settings, activeSettings, updateProfile, resetSettings } =
+const { settings, activeSettings, updateProfile, resetSettings, updateGlobal } =
     useSettings();
 const { locale, setLocale, t } = useTranslations();
+
+const { isElectron } = usePlatform();
+
 const {
     settings: desktopSettings,
     initDesktopSettings,
@@ -16,6 +20,8 @@ const isLanguagePanelOpened = ref(false);
 
 const isMetric = computed(() => activeSettings.value.units === "metric");
 const rpcEnabled = computed(() => desktopSettings.value.rpcEnabled);
+const autoStartEnabled = computed(() => settings.value.autoStartNav);
+
 const selectedExpansion = computed(() => {
     return settings.value.selectedGame === "ets2"
         ? ets2Expansions
@@ -80,6 +86,19 @@ function toggleLanguagePanel() {
     isLanguagePanelOpened.value = !isLanguagePanelOpened.value;
 }
 
+function toggleAutoStartNav() {
+    updateGlobal("autoStartNav", !settings.value.autoStartNav);
+}
+
+function handlePanelEnter(el: Element, done: () => void, query: string) {
+    anim.panelEnter(el, done);
+
+    const list = el.querySelector(`.${query}`) as HTMLElement;
+    if (list) {
+        anim.staggerListX(list, 0.04);
+    }
+}
+
 onMounted(async () => {
     if ((window as any).electronAPI) {
         await initDesktopSettings();
@@ -98,6 +117,7 @@ onMounted(async () => {
                 <div class="items-wrapper-stacked">
                     <div
                         v-if="activeSettings.activeMod === 'none'"
+                        v-press
                         class="option setting stacked"
                         @click.prevent="toggleDlcPanel"
                     >
@@ -146,6 +166,7 @@ onMounted(async () => {
                     <div class="small-separator"></div>
 
                     <div
+                        v-press
                         @click.self="toggleLanguagePanel"
                         class="option setting stacked"
                     >
@@ -175,44 +196,6 @@ onMounted(async () => {
                                 class="chevron translate-y"
                             />
                         </div>
-
-                        <PopupPanel
-                            v-if="isLanguagePanelOpened"
-                            @close="toggleLanguagePanel"
-                        >
-                            <template #category-title>Language</template>
-                            <template #category-description
-                                >Choose your preferred language</template
-                            >
-
-                            <div class="languages">
-                                <div
-                                    v-for="language in languageItems"
-                                    class="language"
-                                    :class="{
-                                        active:
-                                            language.label ===
-                                            currentLanguageLabel,
-                                    }"
-                                    @click="setLocale(language.value)"
-                                >
-                                    <div class="flag">
-                                        <Icon
-                                            :name="language.icon"
-                                            class="flag-icon"
-                                            :class="{
-                                                active:
-                                                    language.label ===
-                                                    currentLanguageLabel,
-                                            }"
-                                            size="30"
-                                        />
-                                    </div>
-
-                                    <p>{{ language.label }}</p>
-                                </div>
-                            </div>
-                        </PopupPanel>
                     </div>
                 </div>
             </div>
@@ -233,7 +216,31 @@ onMounted(async () => {
                             <p>{{ t("desktop.discordRpc") }}</p>
                         </div>
 
-                        <Switch v-model="rpcEnabled" />
+                        <Switch :is-active="rpcEnabled" />
+                    </div>
+
+                    <div class="small-separator"></div>
+
+                    <div
+                        v-if="!isElectron"
+                        class="option setting stacked"
+                        @click="toggleAutoStartNav"
+                    >
+                        <div class="option-title">
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:zap" class="icon" />
+                            </div>
+
+                            <div class="option-text-wrapper">
+                                <span>Auto-Start Navigation</span>
+
+                                <p class="option-description">
+                                    Launch Map On Start
+                                </p>
+                            </div>
+                        </div>
+
+                        <Switch :is-active="autoStartEnabled" />
                     </div>
 
                     <div class="small-separator"></div>
@@ -248,6 +255,7 @@ onMounted(async () => {
                         </div>
 
                         <button
+                            v-press
                             @click.prevent="resetSettings"
                             class="nav-btn dark settings-btn"
                         >
@@ -258,13 +266,67 @@ onMounted(async () => {
             </div>
         </div>
 
-        <PopupPanel v-if="isDlcPanelOpened" @close="toggleDlcPanel">
-            <template #category-title>Map Expansions</template>
-            <template #category-description
-                >Select the map DLCs you own</template
-            >
+        <Transition
+            mode="out-in"
+            @enter="(el, done) => handlePanelEnter(el, done, 'languages')"
+            @leave="anim.panelLeave"
+        >
+            <Teleport to=".ui-safe-container">
+                <PopupPanel
+                    v-if="isLanguagePanelOpened"
+                    @close="toggleLanguagePanel"
+                >
+                    <template #category-title>Language</template>
+                    <template #category-description
+                        >Choose your preferred language</template
+                    >
 
-            <ManageDlcsWindow />
-        </PopupPanel>
+                    <div class="languages">
+                        <div
+                            v-for="language in languageItems"
+                            class="language"
+                            :class="{
+                                active: language.label === currentLanguageLabel,
+                            }"
+                            @click="setLocale(language.value)"
+                        >
+                            <div class="flag">
+                                <Icon
+                                    :name="language.icon"
+                                    class="flag-icon"
+                                    :class="{
+                                        active:
+                                            language.label ===
+                                            currentLanguageLabel,
+                                    }"
+                                    size="30"
+                                />
+                            </div>
+
+                            <p>{{ language.label }}</p>
+                        </div>
+                    </div>
+                </PopupPanel>
+            </Teleport>
+        </Transition>
+
+        <Transition
+            mode="out-in"
+            @enter="
+                (el, done) => handlePanelEnter(el, done, 'manage-dlcs-window')
+            "
+            @leave="anim.panelLeave"
+        >
+            <Teleport to=".ui-safe-container">
+                <PopupPanel v-if="isDlcPanelOpened" @close="toggleDlcPanel">
+                    <template #category-title>Map Expansions</template>
+                    <template #category-description
+                        >Select the map DLCs you own</template
+                    >
+
+                    <ManageDlcsWindow />
+                </PopupPanel>
+            </Teleport>
+        </Transition>
     </div>
 </template>

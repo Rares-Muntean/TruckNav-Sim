@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { generateTruckIcon } from "~/assets/utils/map/markers";
+import { anim } from "~/assets/utils/animations/anim";
 
 const {
     settings,
@@ -60,6 +61,15 @@ watch(
         immediate: true,
     },
 );
+
+function handlePanelEnter(el: Element, done: () => void, query: string) {
+    anim.panelEnter(el, done);
+
+    const list = el.querySelector(`.${query}`) as HTMLElement;
+    if (list) {
+        anim.staggerListX(list, 0.04);
+    }
+}
 </script>
 
 <template>
@@ -83,7 +93,7 @@ watch(
                             <p>{{ t("settings.guidedNavigation") }}</p>
                         </div>
 
-                        <Switch v-model="hasGuidedNavigation" />
+                        <Switch :is-active="hasGuidedNavigation" />
                     </div>
 
                     <div class="small-separator"></div>
@@ -245,7 +255,7 @@ watch(
                                 <p>{{ t("settings.turnArrows") }}</p>
                             </div>
 
-                            <Switch v-model="hasDrawTurnNavigation" />
+                            <Switch :is-active="hasDrawTurnNavigation" />
                         </div>
 
                         <div
@@ -281,15 +291,29 @@ watch(
                     </div>
                 </div>
             </div>
-
-            <PopupPanel v-if="isDriveInfoOpened" @close="toggleDriveInfoPanel">
-                <template #category-title>DRIVING HUD</template>
-                <template #category-description
-                    >Toggle on-screen driving HUD</template
-                >
-
-                <ManageDriveInfoPanel />
-            </PopupPanel>
         </div>
+
+        <Transition
+            mode="out-in"
+            @enter="
+                (el, done) =>
+                    handlePanelEnter(el, done, 'manage-drive-info-wrapper')
+            "
+            @leave="anim.panelLeave"
+        >
+            <Teleport to=".ui-safe-container">
+                <PopupPanel
+                    v-if="isDriveInfoOpened"
+                    @close="toggleDriveInfoPanel"
+                >
+                    <template #category-title>DRIVING HUD</template>
+                    <template #category-description
+                        >Toggle on-screen driving HUD</template
+                    >
+
+                    <ManageDriveInfoPanel />
+                </PopupPanel>
+            </Teleport>
+        </Transition>
     </div>
 </template>

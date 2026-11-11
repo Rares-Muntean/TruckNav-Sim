@@ -98,7 +98,7 @@
 
     .start-btn {
         flex: 1;
-        width: 100%;
+        min-width: 0;
         padding: 4px 12px;
         position: relative;
         overflow: hidden;
@@ -174,15 +174,18 @@
     gap: 0.6rem;
 }
 
+.content-timeline {
+    height: 17rem;
+}
+
 .stops-timeline {
     display: flex;
     flex-direction: column;
 
-    height: 13rem;
-
+    transform: translateZ(0);
     overflow-y: auto;
 
-    @include no-scrollbar;
+    @include scrollbar-wrapper-design;
 
     gap: 0.4rem;
 }
@@ -259,6 +262,11 @@
     padding-bottom: 2rem;
     padding-left: var(--safe-side-left) !important;
     padding-right: var(--safe-side-right) !important;
+
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    touch-action: none;
 
     background-color: $primaryColor;
     border-top-left-radius: 10px;

@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { SafeArea, SystemBarsType } from "@capacitor-community/safe-area";
+import { anim } from "~/assets/utils/animations/anim";
 
 const { isElectron, isMobile } = usePlatform();
 const { settings } = useSettings();
+const { settings: desktopSettings } = useDesktopSettings();
 
 const currentView = ref<string>("");
 
@@ -11,9 +13,20 @@ onMounted(() => {
     window.addEventListener("resize", updateSystemBars);
 
     if (isElectron.value) {
-        currentView.value = "desktopHome";
+        if (
+            desktopSettings.value.autoStartNavigation &&
+            settings.value.selectedGame
+        ) {
+            currentView.value = "map";
+        } else {
+            currentView.value = "desktopHome";
+        }
     } else {
-        currentView.value = "gameManager";
+        if (settings.value.autoStartNav && settings.value.selectedGame) {
+            currentView.value = "map";
+        } else {
+            currentView.value = "gameManager";
+        }
     }
 });
 
@@ -63,22 +76,22 @@ const goHome = () => {
 </script>
 
 <template>
-    <template v-if="isElectron">
+    <AnimTransition type="page">
         <DesktopIndex
-            v-show="currentView === 'desktopHome'"
+            v-if="isElectron && currentView === 'desktopHome'"
             @connected="launchGameManager"
         />
-    </template>
 
-    <GameManager
-        v-show="currentView === 'gameManager'"
-        @go-back="goToDesktopIndex"
-        @connected="launchMap"
-    />
+        <GameManager
+            v-else-if="currentView === 'gameManager'"
+            @go-back="goToDesktopIndex"
+            @connected="launchMap"
+        />
 
-    <LazyMap
-        v-if="currentView === 'map'"
-        @go-home="goHome"
-        :key="settings.selectedGame ?? 'none'"
-    />
+        <LazyMap
+            v-else-if="currentView === 'map'"
+            @go-home="goHome"
+            :key="settings.selectedGame ?? 'none'"
+        />
+    </AnimTransition>
 </template>

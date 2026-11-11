@@ -4,11 +4,12 @@ import { EASE } from "~/types/easings";
 
 const props = withDefaults(
     defineProps<{
+        show?: boolean;
         progress: number;
         barHeight?: number;
         color?: string;
     }>(),
-    { barHeight: 6, color: "var(--theme-color)" },
+    { show: true, barHeight: 6, color: "var(--theme-color)" },
 );
 
 const fillRef = ref<HTMLElement | null>(null);
@@ -38,13 +39,19 @@ watch(
 </script>
 
 <template>
-    <div class="progress-bar-bg" :style="{ height: barHeight + 'px' }">
+    <AnimTransition type="fade">
         <div
-            class="progress-bar-fill"
-            :style="{ backgroundColor: color }"
-            ref="fillRef"
-        ></div>
-    </div>
+            v-if="show"
+            class="progress-bar-bg"
+            :style="{ height: barHeight + 'px' }"
+        >
+            <div
+                class="progress-bar-fill"
+                :style="{ backgroundColor: color }"
+                ref="fillRef"
+            ></div>
+        </div>
+    </AnimTransition>
 </template>
 
 <style

@@ -49,6 +49,8 @@ export interface AppSettingsState {
     locale: LocaleCode;
     routeTimeMode: RouteTimeMode;
     uiScale: number;
+
+    autoStartNav: boolean;
 }
 
 const DEFAULT_PROFILE: GameProfile = {
@@ -94,6 +96,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     locale: "en",
     routeTimeMode: "game",
     uiScale: 100,
+    autoStartNav: false,
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -262,6 +265,7 @@ export const useSettings = () => {
             DEFAULT_SETTINGS.compactTripFontSize;
         settings.value.routeTimeMode = DEFAULT_SETTINGS.routeTimeMode;
         settings.value.uiScale = DEFAULT_SETTINGS.uiScale;
+        settings.value.autoStartNav = DEFAULT_SETTINGS.autoStartNav;
 
         settings.value.activeUiComponents = [
             ...DEFAULT_SETTINGS.activeUiComponents,

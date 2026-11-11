@@ -60,14 +60,16 @@ function toggleCardview() {
                     @pan-end="handleDragEnd"
                     class="trip-info"
                 >
-                    <JobCard
-                        :route-distance-converted="routeDistanceConverted"
-                        v-if="activeTab === 'currentJob' && hasActiveJob"
-                    />
+                    <AnimTransition type="fade">
+                        <JobCard
+                            :route-distance-converted="routeDistanceConverted"
+                            v-if="activeTab === 'currentJob' && hasActiveJob"
+                        />
 
-                    <FreeroamCard v-else-if="activeTab === 'currentJob'" />
+                        <FreeroamCard v-else-if="activeTab === 'currentJob'" />
 
-                    <DamageCard v-if="activeTab === 'vehicleWear'" />
+                        <DamageCard v-if="activeTab === 'vehicleWear'" />
+                    </AnimTransition>
 
                     <div class="carousel-dots">
                         <div

@@ -68,6 +68,7 @@ const jobState = reactive<JobState>({
     destinationCityName: "",
     sourceCityName: "",
     sourceCompanyName: "",
+    specialJob: false,
 
     cargo: { mass: 0, name: "", cargoDamage: 0 },
 });
@@ -110,7 +111,7 @@ export function useEtsTelemetry() {
     const isCapacitor = Capacitor.isNativePlatform();
 
     let speedSamples: number[] = [];
-    const maxSamples = 120;
+    const maxSamples = 600;
 
     function startTelemetry(onUpdate?: (data: TelemetryUpdate) => void) {
         if (socket) return;
@@ -248,6 +249,7 @@ export function useEtsTelemetry() {
             sourceCityName,
             sourceCompanyName,
             initialDeliveryMinutes,
+            specialJob,
         } = getJobState(data, settings.value.selectedGame);
 
         Object.assign(jobState, {
@@ -263,6 +265,7 @@ export function useEtsTelemetry() {
             destinationCityName: destinationCityName,
             sourceCityName: sourceCityName,
             sourceCompanyName: sourceCompanyName,
+            specialJob: specialJob,
         });
 
         sendDiscordRpcState({

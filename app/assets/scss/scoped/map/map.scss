@@ -72,13 +72,11 @@
     position: absolute;
     top: 1.8rem;
     left: 0rem;
-
     width: 65%;
 
-    display: flex;
-    flex-direction: column;
-
-    gap: 0.8rem;
+    > * {
+        margin-bottom: 0.8rem;
+    }
 }
 
 .add-stop-hud-btn {
@@ -104,18 +102,13 @@
 
 .speed-limit-wrapper {
     position: absolute;
-    bottom: calc(var(--bottom-pill-tabs-height) + 1rem);
+    bottom: calc(var(--bottom-pill-tabs-height) + 0.8rem);
 
     width: fit-content;
 
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-
-    @media (orientation: landscape), (min-width: 768px) {
-        bottom: calc(var(--bottom-pill-tabs-height) + 0.8rem);
-        margin: 0;
-    }
 }
 
 .compact-trip {
@@ -144,6 +137,11 @@
 .icon {
     width: var(--hud-btn-size);
     height: var(--hud-btn-size);
+}
+
+.notif-icon {
+    width: 2rem;
+    height: 2rem;
 }
 
 .drive-hud-panel {

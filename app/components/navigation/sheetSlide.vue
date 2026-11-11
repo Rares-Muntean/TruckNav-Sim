@@ -2,14 +2,13 @@
 import type { PanInfo } from "motion";
 import { animate } from "motion";
 import { motion, useDragControls } from "motion-v";
+import { anim } from "~/assets/utils/animations/anim";
 import type { LocationData } from "~/composables/CityData";
 
 const props = withDefaults(
     defineProps<{
         isSheetHidden: boolean;
-        truckSpeed: number;
         hasActiveJob: boolean;
-        speedLimit: number;
         destinationName: LocationData | undefined;
         stopsNames: LocationData[];
         routeEtaHours: string;
@@ -39,10 +38,12 @@ const emit = defineEmits<{
 
 const controls = useDragControls();
 const progressBarRef = ref<HTMLElement | null>(null);
+const stopsTimelineRef = ref<HTMLElement | null>(null);
 const countdown = ref(0);
 
 let progressAnim: ReturnType<typeof animate> | null = null;
 let countdownTimer: ReturnType<typeof setInterval> | null = null;
+let hasTriggeredStart = false;
 
 const MEDIA_QUERY = "(orientation: landscape), (min-width: 768px)";
 const isSidePanel = ref(false);
@@ -59,30 +60,51 @@ const cancelAutoStart = () => {
     countdown.value = 0;
 };
 
+const triggerNavigationStart = () => {
+    if (hasTriggeredStart) return;
+    hasTriggeredStart = true;
+    cancelAutoStart();
+    props.onStartNavigation();
+};
+
+function startCountdownAnim() {
+    if (!progressBarRef.value) return;
+
+    progressAnim = animate(
+        progressBarRef.value,
+        { scaleX: [1, 0] },
+        { duration: 9, ease: "linear" },
+    );
+
+    progressAnim.finished
+        .then(() => {
+            triggerNavigationStart();
+        })
+        .catch(() => {});
+}
+
 const startCountdown = () => {
     cancelAutoStart();
+    hasTriggeredStart = false;
     countdown.value = 9;
 
     countdownTimer = setInterval(() => {
         countdown.value = countdown.value - 1;
         if (countdown.value === 0) {
-            cancelAutoStart();
+            triggerNavigationStart();
         }
     }, 1000);
 
-    if (progressBarRef.value) {
-        progressAnim = animate(
-            progressBarRef.value,
-            { scaleX: [1, 0] },
-            { duration: 9, ease: "linear" },
-        );
+    nextTick(() => {
+        startCountdownAnim();
+    });
+};
 
-        progressAnim.finished
-            .then(() => {
-                cancelAutoStart();
-                props.onStartNavigation();
-            })
-            .catch(() => {});
+const checkAndStartCountdown = () => {
+    if (props.isRouteActive && !props.isNavigating && !props.isSheetHidden) {
+        startCountdown();
+    } else {
+        cancelAutoStart();
     }
 };
 
@@ -95,11 +117,44 @@ onMounted(() => {
     };
     mediaQueryList.addEventListener("change", handler);
 
+    checkAndStartCountdown();
+
     onUnmounted(() => {
         cancelAutoStart();
         mediaQueryList.removeEventListener("change", handler);
     });
 });
+
+watch(
+    [
+        () => props.isRouteActive,
+        () => props.destinationName,
+        () => props.stopsNames,
+    ],
+    () => {
+        if (props.isRouteActive && !props.isNavigating) {
+            startCountdown();
+        } else {
+            cancelAutoStart();
+        }
+    },
+    { immediate: true },
+);
+
+watch(
+    () => props.isSheetHidden,
+    async (hidden) => {
+        if (hidden) {
+            cancelAutoStart();
+        } else {
+            await nextTick();
+            const targetEl =
+                (stopsTimelineRef.value as any)?.$el ?? stopsTimelineRef.value;
+            if (targetEl) anim.staggerListX(targetEl, 0.03, 0.2);
+        }
+    },
+    { immediate: true },
+);
 
 watch(
     () => props.isNavigating,
@@ -108,23 +163,13 @@ watch(
     },
 );
 
-watch(
-    () => props.isRouteActive,
-    (active) => {
-        if (active && !props.isNavigating) {
-            startCountdown();
-        } else {
-            cancelAutoStart();
-        }
-    },
-);
-
-watch(
-    () => props.isSheetHidden,
-    (hidden) => {
-        if (hidden) cancelAutoStart();
-    },
-);
+watch(stopsTimelineRef, (newVal) => {
+    if (newVal && !props.isSheetHidden) {
+        const targetEl =
+            (stopsTimelineRef.value as any)?.$el ?? stopsTimelineRef.value;
+        if (targetEl) anim.staggerListX(targetEl, 0.03, 0.2);
+    }
+});
 
 const onToggleSheetHidden = () => {
     emit("update:isSheetHidden", !props.isSheetHidden);
@@ -225,6 +270,7 @@ const handleStartOrResume = () => {
 
                     <div>
                         <button
+                            v-press
                             @click="emit('update:isSheetHidden', true)"
                             class="nav-btn dark icon-close"
                         >
@@ -237,54 +283,66 @@ const handleStartOrResume = () => {
             <div class="small-separator"></div>
 
             <div class="sheet-content">
-                <div class="category-wrapper">
+                <div class="category-wrapper content-timeline">
                     <p class="category-title small">STOPS TIMELINE</p>
 
-                    <div class="stops-timeline" @pointerdown.stop>
-                        <template
+                    <AnimTransition type="view">
+                        <AnimTransitionGroup
+                            type="turnCard"
                             v-if="stopsNames.length > 0"
-                            v-for="(data, index) in stopsNames"
+                            ref="stopsTimelineRef"
+                            class="stops-timeline"
+                            @pointerdown.stop
                         >
-                            <div class="location-data">
-                                <div class="icon-city-wrapper">
-                                    <div class="icon-wrapper">
-                                        <Icon
-                                            v-if="index === 0"
-                                            name="lucide:warehouse"
-                                            class="icon"
-                                        />
+                            <div
+                                v-for="(data, index) in stopsNames"
+                                :key="
+                                    data.city + '-' + data.country + '-' + index
+                                "
+                                class="timeline-stop-item"
+                            >
+                                <div class="location-data">
+                                    <div class="icon-city-wrapper">
+                                        <div class="icon-wrapper">
+                                            <AnimTransition type="ticker">
+                                                <Icon
+                                                    v-if="index === 0"
+                                                    name="lucide:warehouse"
+                                                    class="icon"
+                                                />
+                                                <Icon
+                                                    v-else-if="
+                                                        index ===
+                                                        stopsNames.length - 1
+                                                    "
+                                                    name="lucide:flag-triangle-right"
+                                                    class="icon"
+                                                />
+                                                <Icon
+                                                    v-else
+                                                    name="lucide:circle-small"
+                                                    class="icon"
+                                                />
+                                            </AnimTransition>
+                                        </div>
 
-                                        <Icon
-                                            v-else-if="
-                                                index === stopsNames.length - 1
-                                            "
-                                            name="lucide:flag-triangle-right"
-                                            class="icon"
-                                        />
-
-                                        <Icon
-                                            v-else
-                                            name="lucide:circle-small"
-                                            class="icon"
-                                        />
-                                    </div>
-
-                                    <div class="city-country">
-                                        <span>{{ data.city }}</span>
-                                        <div class="data-pill">
-                                            <span>{{ data.country }}</span>
+                                        <div class="city-country">
+                                            <span>{{ data.city }}</span>
+                                            <div class="data-pill">
+                                                <span>{{ data.country }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div
-                                v-if="index < stopsNames.length - 1"
-                                class="separator-wrapper"
-                            >
-                                <div class="timeline-separator" />
+                                <div
+                                    v-if="index < stopsNames.length - 1"
+                                    class="separator-wrapper"
+                                >
+                                    <div class="timeline-separator" />
+                                </div>
                             </div>
-                        </template>
+                        </AnimTransitionGroup>
 
                         <template v-else>
                             <div class="middle-wrapper">
@@ -311,7 +369,7 @@ const handleStartOrResume = () => {
                                 </div>
                             </div>
                         </template>
-                    </div>
+                    </AnimTransition>
                 </div>
 
                 <div class="buttons-wrapper">
@@ -330,6 +388,7 @@ const handleStartOrResume = () => {
 
                         <button
                             @pointerdown.stop
+                            v-press
                             class="nav-btn dark full-width"
                             v-on:click="handleAddStopClick"
                         >
@@ -341,21 +400,30 @@ const handleStartOrResume = () => {
                         </button>
                     </div>
 
-                    <div class="action-buttons" @pointerdown.stop>
+                    <TransitionGroup
+                        name="btn-slide"
+                        tag="div"
+                        class="action-buttons"
+                        @pointerdown.stop
+                    >
                         <button
-                            v-show="isNavigating"
+                            v-if="isNavigating"
                             class="nav-btn red square"
+                            key="cancel"
                             @click.prevent="onStopNavigation"
+                            v-press
                         >
                             <Icon name="lucide:x" size="22" class="icon" />
                         </button>
 
                         <button
+                            key="start"
                             class="start-btn nav-btn"
+                            v-press
                             @click.prevent="handleStartOrResume"
                         >
                             <div
-                                v-show="countdown > 0 && !isNavigating"
+                                v-if="countdown > 0 && !isNavigating"
                                 ref="progressBarRef"
                                 class="btn-progress"
                             />
@@ -379,12 +447,14 @@ const handleStartOrResume = () => {
 
                         <button
                             class="nav-btn dark icon-close"
-                            v-show="countdown > 0"
+                            v-if="countdown > 0"
+                            key="close"
+                            v-press
                             @click="cancelAutoStart"
                         >
                             <Icon name="lucide:x" size="26" class="icon" />
                         </button>
-                    </div>
+                    </TransitionGroup>
                 </div>
             </div>
         </div>

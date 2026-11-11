@@ -7,6 +7,12 @@
 
     background-color: $primaryLightButtonColor;
     border-radius: 50px;
+
+    transition: 0.25s background-color $css-transition-bezier;
+
+    &.is-active {
+        background-color: var(--theme-color);
+    }
 }
 
 .circle {

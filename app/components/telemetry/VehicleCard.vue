@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {
     formatNumber,
+    formatRemainingTime,
     getPercentage,
     getStatusLevel,
 } from "~/assets/utils/telemetry/helpers";
@@ -17,10 +18,16 @@ const {
     truckName,
     fuelRange,
     avgConsumption,
+    averageSpeed,
 } = useEtsTelemetry();
 
 const { kmToUserUnits, distanceUnit, formatConsumption, consumptionUnit } =
     useUnitConversion();
+const { mapScaleConfig } = useCityData();
+const { settings } = useSettings();
+
+const currentFuelStatShowing = ref<"range" | "time">("range");
+let timer: ReturnType<typeof setInterval> | null = null;
 
 const odometerConverted = computed(() => kmToUserUnits(odometer.value));
 const fuelRangeConverted = computed(() => kmToUserUnits(fuelRange.value));
@@ -36,6 +43,44 @@ const fuelPercentage = computed(() =>
 const fuelStatusColor = computed(() =>
     getStatusLevel("fuel", fuelPercentage.value),
 );
+
+const timeToEmptyFuel = computed(() => {
+    if (!fuelRange.value || fuelRange.value <= 0) {
+        return null;
+    }
+
+    const speed = Math.max(60, averageSpeed.value);
+    const gameMinutes = Math.round((fuelRange.value / speed) * 60);
+
+    if (settings.value.routeTimeMode == "real") {
+        const highwayScale = mapScaleConfig.value.ruralScale;
+
+        const realMinutes = Math.max(0, Math.round(gameMinutes / highwayScale));
+        return formatRemainingTime(realMinutes);
+    }
+
+    return formatRemainingTime(gameMinutes);
+});
+
+function toggleCurrentFuelStat() {
+    if (currentFuelStatShowing.value === "range") {
+        currentFuelStatShowing.value = "time";
+    } else {
+        currentFuelStatShowing.value = "range";
+    }
+}
+
+onMounted(() => {
+    nextTick(() => {
+        timer = setInterval(() => {
+            toggleCurrentFuelStat();
+        }, 8000);
+    });
+});
+
+onUnmounted(() => {
+    if (timer) clearInterval(timer);
+});
 </script>
 
 <template>
@@ -82,9 +127,29 @@ const fuelStatusColor = computed(() =>
             </div>
 
             <div class="remains-avg-wrapper">
-                <div class="fuel-unit-group">
+                <div
+                    v-if="currentFuelStatShowing === 'range'"
+                    class="fuel-unit-group"
+                >
                     <span>{{ formatNumber(fuelRangeConverted) }}</span>
                     <span class="unit">{{ distanceUnit }}</span>
+                </div>
+
+                <div
+                    v-else-if="
+                        timeToEmptyFuel && currentFuelStatShowing === 'time'
+                    "
+                    class="remaining-fuel-time"
+                >
+                    <div class="remaining-time-wrapper">
+                        <span>{{ timeToEmptyFuel.hours }}</span>
+                        <span class="unit white">h</span>
+                    </div>
+
+                    <div class="remaining-time-wrapper">
+                        <span>{{ timeToEmptyFuel.mins }}</span>
+                        <span class="unit white">m</span>
+                    </div>
                 </div>
 
                 <span class="dot"></span>

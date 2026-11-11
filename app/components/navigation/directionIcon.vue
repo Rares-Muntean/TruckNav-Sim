@@ -115,7 +115,11 @@ const props = defineProps<{
         </svg>
 
         <span
-            v-if="props.type === 'roundabout' && exitCount"
+            v-if="
+                props.type === 'roundabout' &&
+                exitCount !== undefined &&
+                exitCount !== null
+            "
             class="exit-number"
         >
             {{ exitCount }}

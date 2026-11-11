@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { generateTruckIcon } from "~/assets/utils/map/markers";
+import { anim } from "~/assets/utils/animations/anim";
 
 const { activeSettings, updateProfile } = useSettings();
 const { t } = useTranslations();
@@ -65,6 +66,15 @@ watch(
         immediate: true,
     },
 );
+
+const handlePanelEnter = (el: Element, done: () => void, query: string) => {
+    anim.panelEnter(el, done);
+
+    const list = el.querySelector(`.${query}`) as HTMLElement;
+    if (list) {
+        anim.staggerListX(list, 0.04);
+    }
+};
 </script>
 
 <template>
@@ -195,7 +205,7 @@ watch(
                             <p>{{ t("settings.outerRim") }}</p>
                         </div>
 
-                        <Switch v-model="activeSettings.outerRimEnabled" />
+                        <Switch :is-active="activeSettings.outerRimEnabled" />
                     </div>
 
                     <div class="small-separator"></div>
@@ -225,7 +235,7 @@ watch(
                             <p>{{ t("settings.glowEffect") }}</p>
                         </div>
 
-                        <Switch v-model="activeSettings.glowEnabled" />
+                        <Switch :is-active="activeSettings.glowEnabled" />
                     </div>
 
                     <PreviewSetting :height="40">
@@ -295,49 +305,55 @@ watch(
                                 class="chevron translate-y"
                             />
                         </div>
-
-                        <PopupPanel
-                            v-if="isFontSelectOpened"
-                            @close="toggleFontSelectPanel"
-                        >
-                            <template #category-title>Typography</template>
-                            <template #category-description
-                                >Choose a font that matches your style</template
-                            >
-
-                            <div class="fonts-content">
-                                <div class="fonts">
-                                    <div
-                                        v-for="font in fontItems"
-                                        class="font"
-                                        :class="{
-                                            active:
-                                                activeSettings.fontFamily ===
-                                                font,
-                                        }"
-                                        @click="updateFont(font)"
-                                    >
-                                        <div
-                                            class="font-showcase"
-                                            :style="{ fontFamily: font }"
-                                        >
-                                            <p class="font-title">
-                                                {{ font }}
-                                            </p>
-
-                                            <div class="font-lorem">
-                                                <p class="lorem-title">
-                                                    Rest stop in 45 km
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </PopupPanel>
                     </div>
                 </div>
             </div>
         </div>
+
+        <Transition
+            mode="out-in"
+            @enter="(el, done) => handlePanelEnter(el, done, 'fonts')"
+            @leave="anim.panelLeave"
+        >
+            <Teleport to=".ui-safe-container">
+                <PopupPanel
+                    v-if="isFontSelectOpened"
+                    @close="toggleFontSelectPanel"
+                >
+                    <template #category-title>Typography</template>
+                    <template #category-description
+                        >Choose a font that matches your style</template
+                    >
+
+                    <div class="fonts-content">
+                        <div class="fonts">
+                            <div
+                                v-for="font in fontItems"
+                                class="font"
+                                :class="{
+                                    active: activeSettings.fontFamily === font,
+                                }"
+                                @click="updateFont(font)"
+                            >
+                                <div
+                                    class="font-showcase"
+                                    :style="{ fontFamily: font }"
+                                >
+                                    <p class="font-title">
+                                        {{ font }}
+                                    </p>
+
+                                    <div class="font-lorem">
+                                        <p class="lorem-title">
+                                            Rest stop in 45 km
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </PopupPanel>
+            </Teleport>
+        </Transition>
     </div>
 </template>

@@ -9,10 +9,10 @@
 }
 
 .notification-wrapper {
-    width: 21rem;
+    position: relative;
+    min-width: 20rem;
 
     border: 1px solid $primaryAccentColor;
-    box-shadow: $el-box-shadow-design;
     border-radius: $default-border-radius;
 
     backdrop-filter: $backdrop-filter;
@@ -32,6 +32,19 @@
     justify-content: space-between;
     align-items: center;
     gap: 0.8rem;
+}
+
+.timer-progress {
+    position: absolute;
+
+    width: 100%;
+    background-color: var(--theme-color);
+    height: 2px;
+
+    display: flex;
+    bottom: 0;
+    left: 0;
+    border-radius: $default-border-radius;
 }
 
 .notification-icon {

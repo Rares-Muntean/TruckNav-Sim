@@ -12,7 +12,7 @@ const selectCard = (game: "ats" | "ets2" | null) => {
         <GameSelectButton
             game-name="ats"
             :select-card="selectCard"
-            :class="{ 'is-selected': settings.selectedGame === 'ats' }"
+            :is-selected="settings.selectedGame === 'ats'"
             :width="width"
         >
             <template #icon>
@@ -23,7 +23,7 @@ const selectCard = (game: "ats" | "ets2" | null) => {
         <GameSelectButton
             :select-card="selectCard"
             game-name="ets2"
-            :class="{ 'is-selected': settings.selectedGame === 'ets2' }"
+            :is-selected="settings.selectedGame === 'ets2'"
             :width="width"
         >
             <template #icon>
