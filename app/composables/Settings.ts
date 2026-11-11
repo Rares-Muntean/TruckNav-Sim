@@ -67,7 +67,7 @@ const DEFAULT_PROFILE: GameProfile = {
     glowEnabled: false,
     outerRimEnabled: true,
     units: "metric",
-    ownedDlcs: Array.from({ length: 10 }, (_, i) => i + 1),
+    ownedDlcs: Array.from({ length: 11 }, (_, i) => i + 1),
     lastJob: { initialMinutes: 0, key: "", lastRoute: [] },
     hasTurnNavigation: true,
     drawTurnNavigation: false,

@@ -71,4 +71,11 @@ export const ets2Expansions: Record<
         releaseDate: "Nov 27, 2025",
         icon: "flag:no-4x3",
     },
+
+    11: {
+        name: "Iceland",
+        imagePath: "",
+        releaseDate: "Nov 11, 2026",
+        icon: "flag:is-4x3",
+    },
 };
