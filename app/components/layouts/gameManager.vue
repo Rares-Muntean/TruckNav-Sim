@@ -34,6 +34,8 @@ let trackResizeObserver: ResizeObserver | null = null;
 
 const downloadedMods = ref<Record<string, boolean>>({});
 
+const modSizes = ref<Record<string, string>>({});
+
 const availableMods = computed(() => {
     if (!selectedGame.value) return [];
 
@@ -129,6 +131,7 @@ onMounted(async () => {
     }
 
     checkModStatuses();
+    await fetchModSizes();
 });
 
 watch(isAppReady, (ready) => {
@@ -141,6 +144,7 @@ watch(selectedGame, async (newGame) => {
     if (newGame) {
         isBaseDownloaded.value = await isMapDownloaded(newGame);
         await checkModStatuses();
+        await fetchModSizes();
     }
 });
 
@@ -227,6 +231,27 @@ function handlePanelEnter(el: Element, done: () => void) {
     const list = el.querySelector(".mod-list-container") as HTMLElement;
     if (list) {
         anim.staggerListX(list, 0.04);
+    }
+}
+
+async function fetchModSizes() {
+    for (const mod of availableMods.value) {
+        if (modSizes.value[mod.id]) continue;
+
+        try {
+            const res = await fetch(mod.url, { method: "HEAD" });
+            const bytes = res.headers.get("content-length");
+
+            if (bytes) {
+                const mb = (Number(bytes) / (1024 * 1024)).toFixed(1);
+                modSizes.value[mod.id] = mb;
+            }
+        } catch (e) {
+            console.warn(
+                `[Mod Size] Could not fetch size for ${mod.name} - ${mod.id}:`,
+                e,
+            );
+        }
     }
 }
 
@@ -610,7 +635,9 @@ const isModActive = (modId: string) => {
                                         v-else
                                     >
                                         <div class="item-size">
-                                            <span>40</span>
+                                            <span>{{
+                                                modSizes[mod.id] || "-"
+                                            }}</span>
                                             <span class="unit">MB</span>
                                         </div>
                                     </div>
