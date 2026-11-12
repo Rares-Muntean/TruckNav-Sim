@@ -18,28 +18,24 @@
     <img width="300" alt="image" src="https://github.com/user-attachments/assets/a977ea5f-af6f-49e2-adc4-78c8afef9879" />
 </div>
 
-# Current Status: Work in Progress / Demo
+# Current Status: Work in Progress
 
-Please consider this project a **Demo** or **Alpha**.
+Please consider this project a Work in Progress.
 
 While the core navigation works, the project is far from perfect. Creating the routing graph required a massive amount of work in **QGIS** and scripting, fixing road segments, roundabouts, and intersections to ensure the GPS knows where it can and cannot go.
 
-- **ATS / ETS2 Version**: Up to **1.61** ✅
+- **ATS / ETS2 Version**: Up to **1.62** ✅
 - **Supported DLCs**: All official map DLCs ✅
-- **Map Mods**: **ProMods** (ETS2 & Canada) ✅
+- **Map Mods**: Multiple Map Mods✅
 
 # Known Issues & Limitations
 ### ⚠️ Common Quirks
 *   **Company Areas:** GPS routing might fail if you are deep inside a company yard. Try moving your truck slightly toward the exit before setting the destination if errors are happening.
 *   **Map Gaps:** The graph I currently use can produce some errors (disconnected roads, illegal U-turns) but should ~99% of the time show the correct route.
 
-### 📈 Performance & Compatibility
-> [!NOTE]
->*  **Performance:** Optimization is ongoing. On older tablets or phones, the map rendering may feel laggy. 
->*  **Map Support:** Currently supports base _**ETS2/ATS + all DLCs** (**up to v1.58**)_. ProMods and other map mods are **NOT** yet supported.
-
 > [!CAUTION]
 > **Real Company Name Mods:** Not supported anymore with the latest version.
+
 # Installation via Desktop (.exe) & Android (.apk)
 
 1. Download the latest setup file from the
@@ -139,7 +135,7 @@ If you test the application and encounter strange behavior, you can help improve
 ### Where to Send Reports
 Send your findings to **ONE** of the options below:
 
-* raresmnt@yahoo.com
+* graflabs.help@outlook.com
 * Discord Server -> #🪲-bugs
 * GitHub -> Issues
 
