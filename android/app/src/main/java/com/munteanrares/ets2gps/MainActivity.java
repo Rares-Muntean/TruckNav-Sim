@@ -20,11 +20,6 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
-        WebView webView = this.getBridge().getWebView();
-        if (webView != null) {
-            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }
-
         File appStorageDir = getFilesDir();
         tileServer = LocalTileServer.startServer(appStorageDir);
 

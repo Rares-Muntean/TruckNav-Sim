@@ -19,7 +19,9 @@ export async function initializeMap(
     const maplibregl = (await import("maplibre-gl")).default;
     const { Protocol, PMTiles } = await import("pmtiles");
 
-    const protocol = new Protocol();
+    const protocol = new Protocol({
+        metadata: true,
+    });
     maplibregl.addProtocol("pmtiles", protocol.tile);
 
     async function loadPmtiles(fileName: string, key: string) {
@@ -86,16 +88,6 @@ export async function initializeMap(
                         activeSettings.value.backgroundColor ?? "#24467b",
                 },
             },
-            {
-                id: "lines",
-                type: "line",
-                source: `${settings.value.selectedGame}`,
-                "source-layer": `${settings.value.selectedGame}`,
-                paint: {
-                    "line-color": "#3d546e",
-                    "line-width": 2,
-                },
-            },
         ],
     };
 
@@ -150,32 +142,36 @@ export async function initializeMap(
             container,
             style,
             center: getEtsCenter(),
-            zoom: 6,
-            minZoom: 5,
+            zoom: 7,
+            minZoom: 6.2,
             maxZoom: 13,
             maxPitch: 60,
-            fadeDuration: 0,
+            fadeDuration: 250,
             attributionControl: false,
             collectResourceTiming: false,
             maxBounds: getEtsBounds(),
 
-            pixelRatio: Math.min(window.devicePixelRatio, 1.6),
+            pixelRatio: Math.min(window.devicePixelRatio, 1.4),
+
+            maxTileCacheSize: 250,
         },
 
         ats: {
             container,
             style,
             center: [0, 0],
-            zoom: 6,
-            minZoom: 5,
+            zoom: 7,
+            minZoom: 6.2,
             maxZoom: 13,
             maxPitch: 60,
-            fadeDuration: 0,
+            fadeDuration: 250,
             attributionControl: false,
             collectResourceTiming: false,
             maxBounds: isMods ? modsAtsBounds : baseAtsBounds,
 
-            pixelRatio: Math.min(window.devicePixelRatio, 1.6),
+            pixelRatio: Math.min(window.devicePixelRatio, 1.4),
+
+            maxTileCacheSize: 250,
         },
     };
 
@@ -194,8 +190,6 @@ export async function initializeMap(
         // @ts-ignore
         if (e.tile) console.error("  Failing Tile:", e.tile);
     });
-
-    //// =================> LATER ATS UPDATE <=================
 
     map.on("load", async () => {
         map.addSource("all-data", {
@@ -289,33 +283,30 @@ export async function initializeMap(
         });
 
         // POLYGONS FOR PARKING ETC
-        map.addLayer(
-            {
-                id: "maparea-zones",
-                type: "fill",
-                source: "all-data",
-                "source-layer": "mapareas",
-                paint: {
-                    "fill-color": [
-                        "match",
-                        ["get", "color"],
-                        0,
-                        "#3d546e",
-                        1,
-                        "#4a5f7a",
-                        2,
-                        "#556b7f",
-                        3,
-                        "#6b7f93",
-                        4,
-                        "#7d93a7",
-                        "#3d546e",
-                    ],
-                    "fill-opacity": 0.5,
-                },
+        map.addLayer({
+            id: "maparea-zones",
+            type: "fill",
+            source: "all-data",
+            "source-layer": "mapareas",
+            paint: {
+                "fill-color": [
+                    "match",
+                    ["get", "color"],
+                    0,
+                    "#3d546e",
+                    1,
+                    "#4a5f7a",
+                    2,
+                    "#556b7f",
+                    3,
+                    "#6b7f93",
+                    4,
+                    "#7d93a7",
+                    "#3d546e",
+                ],
+                "fill-opacity": 0.5,
             },
-            "lines",
-        );
+        });
 
         // PREFABS FOR SERVICE AREAS     ETC
         const color0 = blendWithBg(
@@ -370,24 +361,21 @@ export async function initializeMap(
             paint: {
                 "text-color": "#ffffff",
             },
-            minzoom: 8.2,
+            minzoom: 9,
         });
 
         // DISPLAYING STATE DELIMITATIONS
-        map.addLayer(
-            {
-                id: "state-borders",
-                type: "line",
-                source: "all-data",
-                "source-layer": "states",
-                paint: {
-                    "line-color": "#3d546e",
-                    "line-width": 2,
-                    "line-opacity": 0.4,
-                },
+        map.addLayer({
+            id: "state-borders",
+            type: "line",
+            source: "all-data",
+            "source-layer": "states",
+            paint: {
+                "line-color": "#3d546e",
+                "line-width": 2,
+                "line-opacity": 0.4,
             },
-            "lines",
-        );
+        });
 
         // ALL SPRITE SHEETS
         map.addLayer({
@@ -431,7 +419,7 @@ export async function initializeMap(
             source: "all-data",
             "source-layer": "spritelocations",
             filter: ["==", ["get", "poiType"], "road"],
-            minzoom: 8,
+            minzoom: 10.2,
             layout: {
                 "icon-image": ["get", "sprite"],
                 "icon-size": [

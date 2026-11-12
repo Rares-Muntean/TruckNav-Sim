@@ -20,7 +20,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
     let currentTruckHeading: number = 0;
 
     let animationFrameId: number | null = null;
-    let isEasing = false;
     let easeTimeout: ReturnType<typeof setTimeout> | null = null;
 
     let easingUntil = 0;
@@ -93,6 +92,32 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         return cachedPadding;
     };
 
+    const updateMarkerTransform = () => {
+        if (!markerEl || !currentTruckCoords || !map.value) return;
+
+        const isTargetAtOrigin =
+            targetCoords && targetCoords[0] === 0 && targetCoords[1] === 0;
+
+        if (isTargetAtOrigin) {
+            if (markerEl.style.display !== "none")
+                markerEl.style.display = "none";
+            return;
+        }
+
+        if (markerEl.style.display !== "block") {
+            markerEl.style.display = "block";
+        }
+
+        const pos = map.value.project(currentTruckCoords);
+        const pitch = map.value.getPitch();
+        const bearing = map.value.getBearing();
+
+        const screenRot = currentTruckHeading - bearing;
+        const effectivePitch = pitch * 0.83;
+
+        markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${effectivePitch}deg) rotateZ(${screenRot}deg)`;
+    };
+
     const renderLoop = (timestamp: number) => {
         const now = performance.now();
 
@@ -124,29 +149,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                     bearing: isHeadingActive.value ? currentTruckHeading : 0,
                     padding: getPadding(),
                 });
-            }
-
-            if (markerEl) {
-                if (isTargetAtOrigin) {
-                    if (markerEl.style.display !== "none")
-                        markerEl.style.display = "none";
-                } else {
-                    if (markerEl.style.display !== "block")
-                        markerEl.style.display = "block";
-
-                    const pos = map.value.project(currentTruckCoords);
-                    const pitch = map.value.getPitch();
-                    const bearing = map.value.getBearing();
-
-                    const screenRot = currentTruckHeading - bearing;
-                    const effectivePitch = pitch * 0.83;
-
-                    markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${effectivePitch}deg) rotateZ(${screenRot}deg)`;
-                }
-            }
-        } else {
-            if (markerEl) {
-                markerEl.style.display = "none";
             }
         }
 
@@ -182,36 +184,39 @@ export const useMapCamera = (map: Ref<Map | null>) => {
 
         map.value.on("resize", updateCachedPadding);
 
-        const handleUserMapTouch = (e: any) => {
-            const isCurrentlyEasing = performance.now() < easingUntil;
-            if (!e.originalEvent || isCurrentlyEasing) return;
+        map.value.on("render", updateMarkerTransform);
+
+        const onUserInteractionStart = (e: any) => {
+            if (!e.originalEvent) return;
 
             isCameraLocked.value = false;
+            easingUntil = 0;
 
+            if (autoLockTimer) {
+                clearTimeout(autoLockTimer);
+                autoLockTimer = null;
+            }
+        };
+
+        const onUserInteractionEnd = () => {
             if (autoLockTimer) clearTimeout(autoLockTimer);
 
             if (isHeadingActive.value || isNorthActive.value) {
                 autoLockTimer = setTimeout(() => {
+                    autoLockTimer = null;
                     resumeCameraLock();
                 }, 2300);
             }
         };
 
-        const breakLockEvents = [
-            "mousedown",
-            "touchstart",
-            "wheel",
-            "dragstart",
-        ];
-        breakLockEvents.forEach((event) => {
-            map.value!.on(event, handleUserMapTouch);
-        });
+        map.value.on("mousedown", onUserInteractionStart);
+        map.value.on("touchstart", onUserInteractionStart);
+        map.value.on("dragstart", onUserInteractionStart);
+        map.value.on("wheel", onUserInteractionStart);
 
-        map.value.on("move", (e) => {
-            if (e.originalEvent && !isCameraLocked.value) {
-                handleUserMapTouch(e);
-            }
-        });
+        map.value.on("mouseup", onUserInteractionEnd);
+        map.value.on("touchend", onUserInteractionEnd);
+        map.value.on("dragend", onUserInteractionEnd);
     };
 
     const easeCameraTo = (options: any) => {
@@ -402,6 +407,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
 
         if (map.value) {
             map.value.off("resize", updateCachedPadding);
+            map.value.off("render", updateMarkerTransform);
         }
 
         if (markerEl) {
