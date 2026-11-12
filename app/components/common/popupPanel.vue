@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const emit = defineEmits(["close"]);
+const { t } = useTranslations();
 </script>
 
 <template>
@@ -17,11 +18,15 @@ const emit = defineEmits(["close"]);
 
                     <div class="category-header">
                         <div class="category-title w-description">
-                            <slot name="category-title">Title</slot>
+                            <slot name="category-title">{{
+                                t("placeholder.title")
+                            }}</slot>
                         </div>
 
                         <div class="category-description">
-                            <slot name="category-description">Description</slot>
+                            <slot name="category-description">{{
+                                t("placeholder.description")
+                            }}</slot>
                         </div>
                     </div>
                 </div>

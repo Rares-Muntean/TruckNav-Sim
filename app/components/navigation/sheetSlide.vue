@@ -263,7 +263,9 @@ const handleStartOrResume = () => {
                             </div>
 
                             <template v-else>
-                                <span class="free-roam">Free Roam</span>
+                                <span class="free-roam">{{
+                                    t("common.freeRoam")
+                                }}</span>
                             </template>
                         </div>
                     </div>
@@ -284,7 +286,9 @@ const handleStartOrResume = () => {
 
             <div class="sheet-content">
                 <div class="category-wrapper content-timeline">
-                    <p class="category-title small">STOPS TIMELINE</p>
+                    <p class="category-title small">
+                        {{ t("common.stopsTimeline") }}
+                    </p>
 
                     <AnimTransition type="view">
                         <AnimTransitionGroup
@@ -356,15 +360,17 @@ const handleStartOrResume = () => {
 
                                 <div class="bottom-text">
                                     <div class="header-wrapper">
-                                        <span class="header"
-                                            >Open Road Ahead</span
-                                        >
+                                        <span class="header">{{
+                                            t("documentation.openRoad")
+                                        }}</span>
                                     </div>
 
                                     <span class="sub-header">
-                                        No active delivery. Pick up a contract
-                                        from the freight market or enjoy the
-                                        drive.
+                                        {{
+                                            t(
+                                                "documentation.openRoadDescription",
+                                            )
+                                        }}.
                                     </span>
                                 </div>
                             </div>
@@ -383,7 +389,7 @@ const handleStartOrResume = () => {
                             v-on:click="handleResetToJob"
                         >
                             <Icon name="lucide:refresh-ccw" class="icon" />
-                            <span>Job</span>
+                            <span>{{ t("buttons.job") }}</span>
                         </button>
 
                         <button

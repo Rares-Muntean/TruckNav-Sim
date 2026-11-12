@@ -121,7 +121,9 @@ function handlePanelEnter(el: Element, done: () => void, query: string) {
             </div>
 
             <div class="category-wrapper">
-                <p class="category-title small">Hud & Sizing</p>
+                <p class="category-title small">
+                    {{ t("settings.hudSizing") }}
+                </p>
 
                 <div class="items-wrapper">
                     <div class="items-wrapper-stacked">
@@ -306,10 +308,12 @@ function handlePanelEnter(el: Element, done: () => void, query: string) {
                     v-if="isDriveInfoOpened"
                     @close="toggleDriveInfoPanel"
                 >
-                    <template #category-title>DRIVING HUD</template>
-                    <template #category-description
-                        >Toggle on-screen driving HUD</template
-                    >
+                    <template #category-title>{{
+                        t("settings.drivingHud")
+                    }}</template>
+                    <template #category-description>{{
+                        t("settings.drivingHudDescription")
+                    }}</template>
 
                     <ManageDriveInfoPanel />
                 </PopupPanel>

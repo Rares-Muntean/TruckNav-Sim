@@ -25,6 +25,7 @@ const { kmToUserUnits, distanceUnit, formatConsumption, consumptionUnit } =
     useUnitConversion();
 const { mapScaleConfig } = useCityData();
 const { settings } = useSettings();
+const { t } = useTranslations();
 
 const currentFuelStatShowing = ref<"range" | "time">("range");
 let timer: ReturnType<typeof setInterval> | null = null;
@@ -86,7 +87,7 @@ onUnmounted(() => {
 <template>
     <div class="card" :class="variant">
         <div class="card-title-wrapper">
-            <p class="card-title">Vehicle</p>
+            <p class="card-title">{{ t("trip.vehicle") }}</p>
             <Icon name="lucide:truck" class="card-icon" />
         </div>
 
@@ -116,7 +117,7 @@ onUnmounted(() => {
                     />
 
                     <div class="fuel-percentage-wrapper">
-                        <span>Fuel</span>
+                        <span>{{ t("trip.fuel") }}</span>
 
                         <div class="fuel-percentage">
                             <span>({{ fuelPercentage }}</span>

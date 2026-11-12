@@ -11,7 +11,7 @@ const props = defineProps<{
 
 const { settings } = useSettings();
 const { mapScaleConfig } = useCityData();
-
+const { t } = useTranslations();
 const {
     income,
     remainingTime,
@@ -47,7 +47,7 @@ const remainingTimeObj = computed(() =>
 <template>
     <div class="card delivery-info">
         <div class="card-title-wrapper">
-            <p class="card-title">Current Job</p>
+            <p class="card-title">{{ t("trip.currentJob") }}</p>
             <Icon name="lucide:box" class="card-icon" />
         </div>
 
@@ -80,12 +80,12 @@ const remainingTimeObj = computed(() =>
 
             <div class="cargo-display">
                 <div class="cargo-group left">
-                    <span class="cargo-title">Cargo</span>
+                    <span class="cargo-title">{{ t("trip.cargo") }}</span>
                     <span class="cargo-value">{{ cargo.name }}</span>
                 </div>
 
                 <div class="cargo-group right">
-                    <span class="cargo-title">Weight</span>
+                    <span class="cargo-title">{{ t("trip.weight") }}</span>
                     <div class="weight-wrapper">
                         <span class="cargo-value">{{
                             formatNumber(cargoWeightConverted)
@@ -98,7 +98,7 @@ const remainingTimeObj = computed(() =>
 
             <div class="cargo-display">
                 <div class="cargo-group left">
-                    <span class="cargo-title">Remains</span>
+                    <span class="cargo-title">{{ t("trip.remains") }}</span>
                     <div class="remains-wrapper">
                         <div class="time">
                             <span class="cargo-value">{{
@@ -117,7 +117,7 @@ const remainingTimeObj = computed(() =>
                 </div>
 
                 <div class="cargo-group right">
-                    <span class="cargo-title">Wear</span>
+                    <span class="cargo-title">{{ t("trip.wear") }}</span>
                     <div class="weight-wrapper">
                         <span class="cargo-value">{{ cargo.cargoDamage }}</span>
                         <span class="unit">%</span>
@@ -128,7 +128,7 @@ const remainingTimeObj = computed(() =>
             <div class="job-payout-banner">
                 <div class="payout-label">
                     <Icon name="lucide:banknote" class="payout-icon" />
-                    <span>Payout</span>
+                    <span>{{ t("trip.payout") }}</span>
                 </div>
 
                 <span class="payout-amount"

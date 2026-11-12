@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { getStatusLevel } from "~/assets/utils/telemetry/helpers";
 
-const {} = useUnitConversion();
+const { t } = useTranslations();
 
 const { engine, transmission, cabin, chassis, wheels } = useEtsTelemetry();
 </script>
@@ -9,7 +9,7 @@ const { engine, transmission, cabin, chassis, wheels } = useEtsTelemetry();
 <template>
     <div class="card delivery-info">
         <div class="card-title-wrapper">
-            <p class="card-title">Vehicle Damage</p>
+            <p class="card-title">{{ t("trip.vehicleDamage") }}</p>
             <Icon name="lucide:hammer" class="card-icon" />
         </div>
 

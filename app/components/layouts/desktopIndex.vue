@@ -198,7 +198,9 @@ const toggleRemoteGpsWindow = () => {
                     </div>
 
                     <div class="toggle-button">
-                        <span class="toggle-title">Auto-Start Navigation</span>
+                        <span class="toggle-title">{{
+                            t("settings.autoStartNav")
+                        }}</span>
                         <SegmentedControl
                             left-option="On"
                             right-option="Off"

@@ -7,6 +7,8 @@ function handleTabClick(tab: "drive" | "trip" | "settings") {
     emit("tabClicked", tab);
     model.value = tab;
 }
+
+const { t } = useTranslations();
 </script>
 
 <template>
@@ -17,7 +19,7 @@ function handleTabClick(tab: "drive" | "trip" | "settings") {
             @click="handleTabClick('drive')"
         >
             <Icon name="lucide:map" class="icon" />
-            <span class="tab-title">Drive</span>
+            <span class="tab-title">{{ t("common.drive") }}</span>
         </div>
 
         <div
@@ -26,7 +28,7 @@ function handleTabClick(tab: "drive" | "trip" | "settings") {
             @click="handleTabClick('trip')"
         >
             <Icon name="lucide:gauge" class="icon" />
-            <span class="tab-title">Trip</span>
+            <span class="tab-title">{{ t("common.trip") }}</span>
         </div>
 
         <div
@@ -35,7 +37,7 @@ function handleTabClick(tab: "drive" | "trip" | "settings") {
             @click="handleTabClick('settings')"
         >
             <Icon name="lucide:settings-2" class="icon" />
-            <span class="tab-title">Settings</span>
+            <span class="tab-title">{{ t("settings.title") }}</span>
         </div>
     </div>
 </template>

@@ -81,7 +81,9 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
     <div>
         <div class="menu-list">
             <div class="category-wrapper">
-                <p class="category-title small">COLORS & MAP</p>
+                <p class="category-title small">
+                    {{ t("settings.colorsMap") }}
+                </p>
 
                 <div class="items-wrapper-stacked">
                     <ColorOption
@@ -154,7 +156,9 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
             </div>
 
             <div class="category-wrapper">
-                <p class="category-title small">Truck Marker</p>
+                <p class="category-title small">
+                    {{ t("settings.truckMarkerSize") }}
+                </p>
 
                 <div class="items-wrapper-stacked">
                     <ColorOption
@@ -252,7 +256,9 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
             </div>
 
             <div class="category-wrapper">
-                <p class="category-title small">Typography</p>
+                <p class="category-title small">
+                    {{ t("settings.typography") }}
+                </p>
 
                 <div class="items-wrapper-stacked">
                     <div
@@ -320,10 +326,12 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                     v-if="isFontSelectOpened"
                     @close="toggleFontSelectPanel"
                 >
-                    <template #category-title>Typography</template>
-                    <template #category-description
-                        >Choose a font that matches your style</template
-                    >
+                    <template #category-title>{{
+                        t("settings.typography")
+                    }}</template>
+                    <template #category-description>{{
+                        t("typographyPanel.description")
+                    }}</template>
 
                     <div class="fonts-content">
                         <div class="fonts">
@@ -345,7 +353,7 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
 
                                     <div class="font-lorem">
                                         <p class="lorem-title">
-                                            Rest stop in 45 km
+                                            {{ t("placeholder.restStop") }}
                                         </p>
                                     </div>
                                 </div>

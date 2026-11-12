@@ -30,39 +30,54 @@ const selectedExpansion = computed(() => {
 
 const languageItems = computed(() => [
     {
-        label: t("languages.english"),
+        label: "English",
         value: "en" as LocaleCode,
         icon: "flag:us-4x3",
     },
     {
-        label: t("languages.german"),
+        label: "German",
         value: "de" as LocaleCode,
         icon: "flag:de-4x3",
     },
     {
-        label: t("languages.dutch"),
+        label: "Dutch",
         value: "nl" as LocaleCode,
         icon: "flag:nl-4x3",
     },
     {
-        label: t("languages.czech"),
+        label: "Czech",
         value: "cs" as LocaleCode,
         icon: "flag:cz-4x3",
     },
     {
-        label: t("languages.slovak"),
+        label: "Slovak",
         value: "sk" as LocaleCode,
         icon: "flag:sk-4x3",
     },
     {
-        label: t("languages.romanian"),
+        label: "Romanian",
         value: "ro" as LocaleCode,
         icon: "flag:ro-4x3",
     },
     {
-        label: t("languages.korean"),
+        label: "Korean",
         value: "ko" as LocaleCode,
         icon: "flag:kr-4x3",
+    },
+    {
+        label: "French",
+        value: "fr" as LocaleCode,
+        icon: "flag:fr-4x3",
+    },
+    {
+        label: "Russian",
+        value: "ru" as LocaleCode,
+        icon: "flag:ru-4x3",
+    },
+    {
+        label: "Chinese",
+        value: "zh" as LocaleCode,
+        icon: "flag:cn-4x3",
     },
 ]);
 
@@ -232,10 +247,10 @@ onMounted(async () => {
                             </div>
 
                             <div class="option-text-wrapper">
-                                <span>Auto-Start Navigation</span>
+                                <span>{{ t("settings.autoStartNav") }}</span>
 
                                 <p class="option-description">
-                                    Launch Map On Start
+                                    {{ t("settings.autoStartNavDescription") }}
                                 </p>
                             </div>
                         </div>
@@ -276,10 +291,12 @@ onMounted(async () => {
                     v-if="isLanguagePanelOpened"
                     @close="toggleLanguagePanel"
                 >
-                    <template #category-title>Language</template>
-                    <template #category-description
-                        >Choose your preferred language</template
-                    >
+                    <template #category-title>{{
+                        t("settings.language")
+                    }}</template>
+                    <template #category-description>{{
+                        t("settings.languageDescription")
+                    }}</template>
 
                     <div class="languages">
                         <div
@@ -319,10 +336,12 @@ onMounted(async () => {
         >
             <Teleport to=".ui-safe-container">
                 <PopupPanel v-if="isDlcPanelOpened" @close="toggleDlcPanel">
-                    <template #category-title>Map Expansions</template>
-                    <template #category-description
-                        >Select the map DLCs you own</template
-                    >
+                    <template #category-title>{{
+                        t("settings.mapExpansions")
+                    }}</template>
+                    <template #category-description>{{
+                        t("settings.mapExpansionsDescription")
+                    }}</template>
 
                     <ManageDlcsWindow />
                 </PopupPanel>

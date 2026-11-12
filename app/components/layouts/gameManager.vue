@@ -483,9 +483,9 @@ const isModActive = (modId: string) => {
 
                             <div class="bottom-text">
                                 <div class="header-wrapper">
-                                    <span class="header"
-                                        >Base Map Required</span
-                                    >
+                                    <span class="header">{{
+                                        t("documentation.baseMapRequired")
+                                    }}</span>
                                     <InfoBox
                                         position="left"
                                         type="note"
@@ -502,8 +502,7 @@ const isModActive = (modId: string) => {
                                 </div>
 
                                 <span class="sub-header">
-                                    Download the map data to enable live GPS
-                                    navigation.
+                                    {{ t("documentation.downloadMapData") }}.
                                 </span>
                             </div>
                         </div>
@@ -522,7 +521,7 @@ const isModActive = (modId: string) => {
                     v-press
                 >
                     <Icon name="lucide:map-pinned" size="20" />
-                    <span>Start Navigation</span>
+                    <span>{{ t("buttons.startNav") }}</span>
                 </button>
 
                 <button
@@ -562,12 +561,12 @@ const isModActive = (modId: string) => {
                 v-if="isModPanelOpen"
                 @close="toggleModPanel"
             >
-                <template #category-title>Map Mods</template>
-                <template #category-description
-                    >Select your active map mod</template
-                >
+                <template #category-title>{{ t("modPanel.title") }}</template>
+                <template #category-description>{{
+                    t("modPanel.description")
+                }}</template>
 
-                <template #title>Select Map Mod</template>
+                <template #title>{{ t("modPanel.selectMapMod") }}</template>
 
                 <div class="mods-content">
                     <p class="category-title">

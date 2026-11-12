@@ -11,6 +11,7 @@ const speedPercentage = computed(() => {
 });
 
 const { kmToUserUnits, speedUnit } = useUnitConversion();
+const { t } = useTranslations();
 
 const truckSpeedConverted = computed(() => kmToUserUnits(truckSpeed.value));
 
@@ -27,7 +28,7 @@ const speedStatusColor = computed(() =>
 <template>
     <div class="card">
         <div class="card-title-wrapper">
-            <p class="card-title">Speed</p>
+            <p class="card-title">{{ t("trip.speed") }}</p>
             <Icon name="lucide:gauge" class="card-icon" />
         </div>
 
@@ -51,7 +52,7 @@ const speedStatusColor = computed(() =>
                 class="dot"
                 :style="{ backgroundColor: speedStatusColor }"
             ></div>
-            <span>Safe Speed</span>
+            <span>{{ t("trip.safeSpeed") }}</span>
         </div>
     </div>
 </template>

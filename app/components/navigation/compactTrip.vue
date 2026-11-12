@@ -15,6 +15,7 @@ const props = withDefaults(
 );
 
 const { specialJob } = useEtsTelemetry();
+const { t } = useTranslations();
 
 const MEDIA_QUERY = "(orientation: landscape), (min-width: 768px)";
 const isSidePanel = ref(false);
@@ -64,7 +65,7 @@ onMounted(() => {
             </template>
 
             <template v-else>
-                <span class="free-roam">Free Roam</span>
+                <span class="free-roam">{{ t("common.freeRoam") }}</span>
             </template>
         </AnimTransition>
 

@@ -5,7 +5,17 @@ export type TextTheme = "light" | "dark";
 export type RouteTimeMode = "game" | "real";
 export type UiComponent = "speed" | "speedLimit" | "details-cards";
 export type ActiveComponents = UiComponent[];
-export type LocaleCode = "en" | "de" | "nl" | "cs" | "sk" | "ko" | "ro";
+export type LocaleCode =
+    | "en"
+    | "de"
+    | "nl"
+    | "cs"
+    | "sk"
+    | "ko"
+    | "ro"
+    | "fr"
+    | "ru"
+    | "zh";
 
 export interface SavedJob {
     key: string;

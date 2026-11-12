@@ -1,4 +1,8 @@
 {
+    "buttons": {
+        "startNav": "Start Navigation",
+        "job": "Job"
+    },
     "common": {
         "active": "Active",
         "chooseDlcs": "Choose DLCs",
@@ -12,7 +16,9 @@
         "disconnected": "Offline",
         "distance": "Distance",
         "downloadBaseMap": "Download Base Map",
+        "drive": "Drive",
         "estimatedTime": "Estimated Time",
+        "freeRoam": "Free Roam",
         "gameOffline": "Game Offline",
         "hide": "Hide",
         "liveRoute": "Live Route",
@@ -32,6 +38,8 @@
         "session": "Session",
         "startNavigation": "Start",
         "stop": "Stop",
+        "stopsTimeline": "Stops Timeline",
+        "trip": "Trip",
         "trucknav": "TruckNav",
         "trucknavMoto": "Your Trucking Companion"
     },
@@ -58,6 +66,12 @@
         "truckingCompanion": "Your Trucking Companion",
         "troubleshoot": "If you're using a cracked version or a repack, the plugin may show as 'Missing' even after setup"
     },
+    "documentation": {
+        "baseMapRequired": "Base Map Required",
+        "downloadMapData": "Download the map datat to enable live GPS navigation",
+        "openRoad": "Open Road Ahead",
+        "openRoadDescription": "No active delivery. Pick up a contract from the freight market or enjoy the drive"
+    },
     "input": {
         "bridgeNotReachable": "Unreachable",
         "description": "Find this IP in the PC Companion",
@@ -75,24 +89,46 @@
     "mobile": {
         "pairWithComputer": "Connect to PC"
     },
+    "modPanel": {
+        "title": "Map Mods",
+        "description": "Select your active map mod",
+        "selectMapMod": "Select Map Mod"
+    },
     "notifications": {
         "locatingRoute": "Locating Route",
         "noRouteAvailable": "No Route Available",
-        "routeFound": "Route Found"
+        "routeFound": "Route Found",
+        "lowFuel": "Low Fuel",
+        "lowRest": "Low Rest",
+        "lowFuelRest": "Low Fuel & Rest",
+        "lowFuelJob": "Low Fuel & Urgent Job",
+        "lowRestJob": "Rest & Urgent Job",
+        "deliveryLate": "Delivery Rate",
+        "deliveryUrgent": "Delivery Urgent"
+    },
+    "placeholder": {
+        "title": "Title",
+        "description": "Description",
+        "restStop": "Rest stop in 45 km"
     },
     "settings": {
         "appFont": "App Font",
         "appearance": "Appearance",
         "arrow": "Arrow",
+        "autoStartNav": "Auto-Start Navigation",
+        "autoStartNavDescription": "Launch Map On Start",
         "background": "Background",
         "backToMainMenu": "Main Menu",
         "disc": "Disc",
         "land": "Land",
         "roads": "Roads",
         "chooseLanguage": "Choose Language",
+        "colorsMap": "Colors & Map",
         "compactTripSize": "Compact Trip",
         "description": "TruckNav Preferences",
         "drivingInfo": "Driving Info",
+        "drivingHud": "Driving Hud",
+        "drivingHudDescription": "Toggle on-screen driving HUD",
         "general": "General",
         "glowColor": "Glow Color",
         "glowEffect": "Glow Effect",
@@ -104,11 +140,15 @@
         "rimColor": "Rim Color",
         "outerRim": "Outer Rim",
         "hudButtonSize": "Hud Button",
+        "hudSizing": "Hud & Sizing",
         "imperial": "Imperial",
         "language": "Language",
+        "languageDescription": "Choose your preferred language",
         "preferencesSystem": "Preferences & System",
         "dark": "Dark",
         "light": "Light",
+        "mapExpansions": "Map Expansions",
+        "mapExpansionsDescription": "Select the map DLCs you own",
         "metric": "Metric",
         "navigation": "Navigation",
         "off": "Off",
@@ -128,6 +168,7 @@
         "timeHud": "Time & HUD",
         "truckMarkerSize": "Truck Marker",
         "turnArrows": "Turn Arrows",
+        "typography": "Typography",
         "units": "Units"
     },
     "languages": {
@@ -138,6 +179,26 @@
         "slovak": "Slovak",
         "romanian": "Romanian",
         "korean": "Korean"
+    },
+    "trip": {
+        "vehicleDamage": "Vehicle Damage",
+        "currentJob:": "Current Job",
+        "cargo": "Cargo",
+        "weight": "Weight",
+        "remains": "Remains",
+        "wear": "Wear",
+        "payout": "Payout",
+        "rest": "Rest",
+        "rested": "Rested",
+        "needRest": "Need Resting",
+        "speed": "Speed",
+        "safeSpeed": "Safe Speed",
+        "overLimit": "Over Limit",
+        "vehicle": "Vehicle",
+        "fuel": "Fuel"
+    },
+    "typographyPanel": {
+        "description": "Choose a font that matches your style"
     },
     "uiComponents": {
         "fuelDescription": "Shows your remaining fuel level and it pulses when running low.",

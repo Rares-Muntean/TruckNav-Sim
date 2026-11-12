@@ -7,6 +7,7 @@ import {
 const { restStopMinutes } = useEtsTelemetry();
 
 const { settings } = useSettings();
+const { t } = useTranslations();
 
 const props = defineProps<{
     variant?: "drive-view";
@@ -27,7 +28,7 @@ const restStatusColor = computed(() =>
 <template>
     <div class="card" :class="variant">
         <div class="card-title-wrapper">
-            <p class="card-title">Rest</p>
+            <p class="card-title">{{ t("trip.rest") }}</p>
             <Icon name="lucide:bed" class="card-icon" />
         </div>
 
@@ -64,7 +65,7 @@ const restStatusColor = computed(() =>
                 class="dot"
                 :style="{ backgroundColor: restStatusColor }"
             ></div>
-            <span>Rested</span>
+            <span>{{ t("trip.rested") }}</span>
         </div>
     </div>
 </template>

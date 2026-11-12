@@ -1,9 +1,11 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const { t } = useTranslations();
+</script>
 
 <template>
     <div class="card delivery-info">
         <div class="card-title-wrapper">
-            <p class="card-title">Freeroam</p>
+            <p class="card-title">{{ t("common.freeRoam") }}</p>
             <Icon name="lucide:route" class="card-icon" />
         </div>
 
@@ -14,12 +16,13 @@
 
             <div class="bottom-text">
                 <div class="header-wrapper">
-                    <span class="header">Open Road Ahead</span>
+                    <span class="header">{{
+                        t("documentation.openRoad")
+                    }}</span>
                 </div>
 
                 <span class="sub-header">
-                    No active delivery. Pick up a contract from the freight
-                    market or enjoy the drive.
+                    {{ t("documentation.openRoadDescription") }}.
                 </span>
             </div>
         </div>

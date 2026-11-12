@@ -616,25 +616,36 @@ const lowNotification = computed(() => {
     }
 
     if (isFuelLow && isRestLow) {
-        return { text: "Low Fuel & Rest", icon: "lucide:alert-triangle" };
+        return {
+            text: t("notifications.lowFuelRest"),
+            icon: "lucide:alert-triangle",
+        };
     }
     if (isFuelLow && isJobUrgent) {
-        return { text: "Low Fuel & Urgent Job", icon: "lucide:alert-triangle" };
+        return {
+            text: t("notifications.lowFuelJob"),
+            icon: "lucide:alert-triangle",
+        };
     }
     if (isRestLow && isJobUrgent) {
-        return { text: "Rest & Urgent Job", icon: "lucide:alert-triangle" };
+        return {
+            text: t("notifications.lowRestJob"),
+            icon: "lucide:alert-triangle",
+        };
     }
 
     if (isFuelLow) {
-        return { text: "Low Fuel", icon: "lucide:fuel" };
+        return { text: t("notifications.lowFuel"), icon: "lucide:fuel" };
     }
     if (isRestLow) {
-        return { text: "Rest Required", icon: "lucide:bed" };
+        return { text: t("notifications.lowRest"), icon: "lucide:bed" };
     }
     if (isJobUrgent) {
         return {
             text:
-                remainingTime.value <= 0 ? "Delivery Late" : "Delivery Urgent",
+                remainingTime.value <= 0
+                    ? t("notifications.deliveryLate")
+                    : t("notifications.deliveryUrgent"),
             icon: "lucide:clock-alert",
         };
     }
