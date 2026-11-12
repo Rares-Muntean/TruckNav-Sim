@@ -23,6 +23,19 @@ const speedStatusColor = computed(() =>
         truckSpeedConverted.value,
     ),
 );
+
+const speedLimitConverted = computed(() => kmToUserUnits(speedLimit.value));
+
+const speedLabel = computed(() => {
+    if (
+        speedLimitConverted.value > 0 &&
+        truckSpeedConverted.value > speedLimitConverted.value
+    ) {
+        return t("trip.overLimit");
+    }
+
+    return t("trip.safeSpeed");
+});
 </script>
 
 <template>
@@ -52,7 +65,7 @@ const speedStatusColor = computed(() =>
                 class="dot"
                 :style="{ backgroundColor: speedStatusColor }"
             ></div>
-            <span>{{ t("trip.safeSpeed") }}</span>
+            <span>{{ speedLabel }}</span>
         </div>
     </div>
 </template>

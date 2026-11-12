@@ -23,6 +23,10 @@ const restPercentage = computed(() => {
 const restStatusColor = computed(() =>
     getStatusLevel("rest", restPercentage.value),
 );
+
+const restLabel = computed(() => {
+    return restPercentage.value <= 25 ? t("trip.needRest") : t("trip.rested");
+});
 </script>
 
 <template>
@@ -65,7 +69,7 @@ const restStatusColor = computed(() =>
                 class="dot"
                 :style="{ backgroundColor: restStatusColor }"
             ></div>
-            <span>{{ t("trip.rested") }}</span>
+            <span>{{ restLabel }}</span>
         </div>
     </div>
 </template>

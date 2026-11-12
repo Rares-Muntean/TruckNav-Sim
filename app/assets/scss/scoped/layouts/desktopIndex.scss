@@ -13,13 +13,13 @@
 .top-tagline {
     padding: 8px 16px;
 
-    height: 4rem;
+    height: 40px;
 
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    gap: 8px;
 
-    font-size: 1.6rem;
+    font-size: 16px;
     font-weight: 600;
 
     .icon {
@@ -33,7 +33,7 @@
     align-self: center;
     min-width: 85%;
 
-    margin-top: 3.2rem;
+    margin-top: 32px;
 
     .title-wrapper {
         display: flex;
@@ -47,11 +47,11 @@
             transition: 0.2s;
         }
 
-        gap: 1rem;
+        gap: 10px;
     }
 
     .title {
-        font-size: 2.4rem;
+        font-size: 24px;
         letter-spacing: 0.2px;
     }
 
@@ -59,27 +59,27 @@
         margin-top: 2px;
         opacity: 0.6;
 
-        font-size: 1.3rem;
+        font-size: 13px;
         font-weight: 600;
     }
 
     .steps {
-        margin-top: 2rem;
+        margin-top: 20px;
 
         background-color: $primaryColor;
         border-radius: 6px;
         padding: 24px 24px 16px 24px;
 
-        font-size: 1.6rem;
+        font-size: 16px;
         font-weight: 600;
 
         ol {
             list-style-type: decimal;
-            margin-left: 1.8rem;
+            margin-left: 18px;
         }
 
         li {
-            margin-bottom: 0.4rem;
+            margin-bottom: 4px;
         }
 
         li:last-child {
@@ -87,37 +87,37 @@
         }
 
         .ip-type-wrapper {
-            margin-top: 2.6rem;
+            margin-top: 26px;
 
             display: flex;
-            gap: 1.8rem;
+            gap: 18px;
         }
 
         .ip-type {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 8px;
 
             .icon {
-                margin-top: 0.3rem;
+                margin-top: 3px;
             }
         }
     }
 
     .settings {
-        margin-top: 0.8rem;
+        margin-top: 8px;
         display: flex;
-        gap: 1.8rem;
+        gap: 18px;
     }
 
     .toggle-title {
-        font-size: 1.4rem;
+        font-size: 14px;
     }
 
     .toggle-button {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 6px;
     }
 }
 
@@ -137,29 +137,29 @@
     align-items: end;
     justify-content: space-between;
 
-    margin: 0 3.2rem;
-    margin-top: 3.2rem;
+    margin: 0 32px;
+    margin-top: 32px;
 }
 
 .bottom-info {
     display: flex;
     justify-content: space-between;
-    margin-top: 0.8rem;
-    gap: 2.4rem;
+    margin-top: 8px;
+    gap: 24px;
     padding: 0px 14px;
 }
 
 .status-div {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 8px;
 }
 
 .status-indicator {
-    font-size: 1.6rem;
+    font-size: 16px;
     display: flex;
     align-items: center;
-    gap: 0.6rem;
+    gap: 6px;
     padding: 8px 0px 8px 6px;
     border-left: 3px solid;
     border-radius: 3px;
@@ -178,7 +178,7 @@
 
 .status {
     display: flex;
-    font-size: 1.6rem;
+    font-size: 16px;
 
     .connected {
         color: $green-color;
@@ -190,16 +190,16 @@
 }
 
 .setup-games-sdk {
-    font-size: 1.4rem;
+    font-size: 14px;
     display: flex;
     align-items: center;
 
-    gap: 1.6rem;
+    gap: 16px;
 
     .sdk-plugin-title {
-        font-size: 1.6rem;
+        font-size: 16px;
         font-weight: 600;
-        margin-bottom: 0.6rem;
+        margin-bottom: 6px;
     }
 
     .separator {
@@ -208,18 +208,18 @@
         background-color: $primaryAccentColor;
 
         border-radius: 4px;
-        margin-bottom: 0.6rem;
+        margin-bottom: 6px;
     }
 
     .games-status {
         display: flex;
-        gap: 1.6rem;
+        gap: 16px;
     }
 
     .game-status {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
+        gap: 6px;
         font-weight: 600;
 
         .folder-btn {
@@ -236,7 +236,7 @@
             display: flex;
             align-items: center;
 
-            gap: 0.2rem;
+            gap: 2px;
         }
 
         .game-name {
@@ -246,10 +246,10 @@
         .label {
             display: flex;
             justify-content: space-between;
-            gap: 0.8rem;
+            gap: 8px;
             border-radius: 4px;
             padding: 1px 6px;
-            font-size: 1.4rem;
+            font-size: 14px;
             font-weight: 600;
 
             background-color: $primaryColor;
@@ -297,22 +297,22 @@
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
-    padding: 1.5rem;
+    padding: 15px;
 }
 
 .connection-type {
     display: flex;
-    gap: 0.8rem;
+    gap: 8px;
 }
 
 .btn {
     background-color: var(--theme-color);
     display: flex;
-    gap: 0.6rem;
+    gap: 6px;
 
     font-family: inherit;
     font-weight: 600;
-    font-size: 1.6rem;
+    font-size: 16px;
     color: var(--main-text-color);
 
     height: fit-content;
