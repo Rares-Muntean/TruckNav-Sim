@@ -4,7 +4,7 @@ import {
     setupElectronDeepLinking,
 } from "@capacitor-community/electron";
 import type { MenuItemConstructorOptions } from "electron";
-import { app, dialog, ipcMain, MenuItem, shell } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, MenuItem, shell } from "electron";
 import electronIsDev from "electron-is-dev";
 import unhandled from "electron-unhandled";
 import express from "express";
@@ -105,6 +105,31 @@ if (electronIsDev) {
 }
 
 app.on("browser-window-created", (_, window) => {
+    window.webContents.on("before-input-event", (event, input) => {
+        if (input.key === "F11") {
+            const isFs = window.isFullScreen();
+
+            if (isFs) {
+                window.setFullScreen(false);
+                window.maximize();
+                window.setResizable(true);
+                event.preventDefault();
+            } else {
+                window.setResizable(true);
+                window.setFullScreen(true);
+            }
+
+            event.preventDefault();
+        }
+
+        if (input.key === "Escape" && window.isFullScreen()) {
+            window.setFullScreen(false);
+            window.maximize();
+            window.setResizable(true);
+            event.preventDefault();
+        }
+    });
+
     const originalShow = window.show.bind(window);
     window.show = () => {
         if (forceKeepHidden) return;
@@ -689,19 +714,25 @@ ipcMain.on("open-external", (_event, url) => {
 
 ipcMain.on(
     "set-window-size",
-    (_event, { width, height, resizable, maximize }) => {
+    (_event, { width, height, resizable, maximize, fullscreen }) => {
         const win = myCapacitorApp.getMainWindow();
 
         if (win) {
-            if (!maximize) {
-                win.unmaximize();
+            if (fullscreen) {
                 win.setResizable(true);
-                win.setSize(width, height);
-                win.setResizable(resizable);
-                win.center();
+                win.setFullScreen(true);
             } else {
-                win.setResizable(true);
-                win.maximize();
+                win.setFullScreen(false);
+                if (!maximize) {
+                    win.unmaximize();
+                    win.setResizable(true);
+                    win.setSize(width, height);
+                    win.setResizable(resizable);
+                    win.center();
+                } else {
+                    win.setResizable(true);
+                    win.maximize();
+                }
             }
         }
     },

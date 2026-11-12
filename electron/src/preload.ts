@@ -19,12 +19,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
         height: number,
         resizable: boolean,
         maximize: boolean,
+        fullscreen?: boolean,
     ) =>
         ipcRenderer.send("set-window-size", {
             width,
             height,
             resizable,
             maximize,
+            fullscreen,
         }),
 
     manualStartServer: () => ipcRenderer.send("manual-start-server"),

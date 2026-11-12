@@ -65,6 +65,8 @@ const {
     remainingTime,
 } = useEtsTelemetry();
 
+const { settings: desktopSettings } = useDesktopSettings();
+
 // Map Areas Data
 const { loadLocationData, findDestinationCoords, mapScaleConfig } =
     useCityData();
@@ -374,7 +376,19 @@ onMounted(async () => {
     await loadLocationData();
     if (!mapEl.value) return;
     if (isElectron.value) {
-        (window as any).electronAPI.setWindowSize(950, 700, true, true);
+        const isAutoStart = desktopSettings.value.autoStartNavigation;
+
+        if (isAutoStart) {
+            (window as any).electronAPI.setWindowSize(
+                950,
+                700,
+                true,
+                true,
+                true,
+            );
+        } else {
+            (window as any).electronAPI.setWindowSize(950, 700, true, true);
+        }
     }
 
     try {
