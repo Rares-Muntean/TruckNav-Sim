@@ -18,6 +18,17 @@ const {
 const isDlcPanelOpened = ref(false);
 const isLanguagePanelOpened = ref(false);
 
+const activeTab = inject<Ref<"drive" | "trip" | "settings">>("activeTab");
+
+if (activeTab) {
+    watch(activeTab, (newV) => {
+        if (newV !== "settings") {
+            isDlcPanelOpened.value = false;
+            isLanguagePanelOpened.value = false;
+        }
+    });
+}
+
 const isMetric = computed(() => activeSettings.value.units === "metric");
 const rpcEnabled = computed(() => desktopSettings.value.rpcEnabled);
 const autoStartEnabled = computed(() => settings.value.autoStartNav);

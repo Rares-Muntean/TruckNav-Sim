@@ -8,6 +8,15 @@ const { t } = useTranslations();
 const isFontSelectOpened = ref(false);
 const truckImgSrc = ref("");
 
+const activeTab = inject<Ref<"drive" | "trip" | "settings">>("activeTab");
+if (activeTab) {
+    watch(activeTab, (newV) => {
+        if (newV !== "settings") {
+            isFontSelectOpened.value = false;
+        }
+    });
+}
+
 const isTextThemeLight = computed(
     () => activeSettings.value.textColor === "light",
 );

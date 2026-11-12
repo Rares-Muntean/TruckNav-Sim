@@ -29,6 +29,8 @@ const isAddingStopMode = ref(false);
 const isSheetHidden = ref(true);
 const activeTab = ref<"drive" | "trip" | "settings">("drive");
 
+provide("activeTab", activeTab);
+
 const tabs = ["fuel-rest", "destination", "cargo"] as const;
 const activeCardsTab = ref<"fuel-rest" | "destination" | "cargo">("fuel-rest");
 

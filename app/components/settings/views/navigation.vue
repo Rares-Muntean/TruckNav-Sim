@@ -24,6 +24,15 @@ const truckImgSrc = ref("");
 
 const isDriveInfoOpened = ref(false);
 
+const activeTab = inject<Ref<"drive" | "trip" | "settings">>("activeTab");
+if (activeTab) {
+    watch(activeTab, (newV) => {
+        if (newV !== "settings") {
+            isDriveInfoOpened.value = false;
+        }
+    });
+}
+
 function toggleGuidedNavigation() {
     updateProfile("hasTurnNavigation", !hasGuidedNavigation.value);
 }
