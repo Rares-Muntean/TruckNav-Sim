@@ -36,6 +36,13 @@ const downloadedMods = ref<Record<string, boolean>>({});
 
 const modSizes = ref<Record<string, string>>({});
 
+function getModUrls(fileName: string) {
+    return [
+        `https://trucknavapp.com/${fileName}`,
+        `https://github.com/Rares-Muntean/TruckNav-Maps/releases/download/map-assets/${fileName}`,
+    ];
+}
+
 const availableMods = computed(() => {
     if (!selectedGame.value) return [];
 
@@ -43,43 +50,43 @@ const availableMods = computed(() => {
         id: "none",
         name: `Vanilla`,
         description: "Base Game Map",
-        url: `https://trucknavapp.com/${selectedGame.value}.zip`,
+        urls: getModUrls(`${selectedGame.value}.zip`),
     };
 
     const mods: Record<
         string,
-        { id: string; name: string; description: string; url: string }[]
+        { id: string; name: string; description: string; urls: string[] }[]
     > = {
         ets2: [
             {
                 id: "promods-europe",
                 name: "ProMods Europe",
                 description: "Europe & Iceland Overhaul",
-                url: "https://trucknavapp.com/promods-europe.zip",
+                urls: getModUrls("promods-europe.zip"),
             },
             {
                 id: "grand-utopia",
                 name: "Grand Utopia",
-                url: "https://trucknavapp.com/grand-utopia.zip",
                 description: "1:1 Fictional Island Map",
+                urls: getModUrls("grand-utopia.zip"),
             },
             {
                 id: "ro-extended",
                 name: "Ro-Extended",
                 description: "Eastern Europe & Black Sea",
-                url: "https://trucknavapp.com/ro-extended.zip",
+                urls: getModUrls("ro-extended.zip"),
             },
             {
                 id: "rusmap",
                 name: "RusMap",
                 description: "Russia & Belarus Expansion",
-                url: "https://trucknavapp.com/rusmap.zip",
+                urls: getModUrls("rusmap.zip"),
             },
             {
                 id: "more-european-cities",
                 name: "More European Cities",
                 description: "Extra Cities & Delivery Hubs",
-                url: "https://trucknavapp.com/more-european-cities.zip",
+                urls: getModUrls("more-european-cities.zip"),
             },
         ],
         ats: [
@@ -87,37 +94,37 @@ const availableMods = computed(() => {
                 id: "ats-expansion",
                 name: "ATS Expansion",
                 description: "Rural Towns & Farm Routes",
-                url: "https://trucknavapp.com/ats-expansion.zip",
+                urls: getModUrls("ats-expansion.zip"),
             },
             {
                 id: "coast-to-coast",
                 name: "Coast To Coast",
                 description: "Full Continental US Map",
-                url: "https://trucknavapp.com/coast-to-coast.zip",
+                urls: getModUrls("coast-to-coast.zip"),
             },
             {
                 id: "promods-canada",
                 name: "ProMods Canada",
                 description: "British Columbia, Canada",
-                url: "https://trucknavapp.com/promods-canada.zip",
+                urls: getModUrls("promods-canada.zip"),
             },
             {
                 id: "reforma",
                 name: "Reforma",
                 description: "Mexico & Baja Overhaul",
-                url: "https://trucknavapp.com/reforma.zip",
+                urls: getModUrls("reforma.zip"),
             },
             {
                 id: "reforma-esterlon",
                 name: "Reforma Esterlon",
                 description: "Fictional Island Country",
-                url: "https://trucknavapp.com/reforma-esterlon.zip",
+                urls: getModUrls("reforma-esterlon.zip"),
             },
             {
                 id: "reforma-sierra-nevada",
                 name: "Reforma Sierra Nevada",
                 description: "California Mountain Passes",
-                url: "https://trucknavapp.com/reforma-sierra-nevada.zip",
+                urls: getModUrls("reforma-sierra-nevada.zip"),
             },
         ],
     };
@@ -237,9 +244,10 @@ function handlePanelEnter(el: Element, done: () => void) {
 async function fetchModSizes() {
     for (const mod of availableMods.value) {
         if (modSizes.value[mod.id]) continue;
+        if (!mod.urls[0]) continue;
 
         try {
-            const res = await fetch(mod.url, { method: "HEAD" });
+            const res = await fetch(mod.urls[0], { method: "HEAD" });
             const bytes = res.headers.get("content-length");
 
             if (bytes) {
@@ -267,7 +275,7 @@ async function checkModStatuses() {
     }
 }
 
-async function startDownload(mapId: string, zipUrl: string) {
+async function startDownload(mapId: string, zipUrls: string[]) {
     if (isDownloading.value) return;
 
     isDownloading.value = true;
@@ -277,7 +285,7 @@ async function startDownload(mapId: string, zipUrl: string) {
     const actualId = mapId === "none" ? selectedGame.value : mapId;
     if (!actualId) return;
 
-    const success = await downloadMapData(mapId, zipUrl, (percent) => {
+    const success = await downloadMapData(mapId, zipUrls, (percent) => {
         downloadProgress.value = percent;
     });
 
@@ -344,11 +352,11 @@ const handleConnect = () => {
     emit("connected");
 };
 
-function selectMod(modId: string | "none", modUrl: string) {
+function selectMod(modId: string | "none", modUrls: string[]) {
     if (downloadedMods.value[modId]) {
         updateProfile("activeMod", modId);
     } else if (!downloadedMods.value[modId] && !isDownloading.value) {
-        startDownload(modId, modUrl);
+        startDownload(modId, modUrls);
     }
 }
 
@@ -555,7 +563,7 @@ const isModActive = (modId: string) => {
                     @click.prevent="
                         startDownload(
                             selectedGame,
-                            `https://trucknavapp.com/${selectedGame}.zip`,
+                            getModUrls(`${selectedGame}.zip`),
                         )
                     "
                     class="btn nav-btn full-width bottom-download-button"
@@ -603,7 +611,7 @@ const isModActive = (modId: string) => {
                             :key="mod.id"
                             class="mod-item"
                             :class="{ active: isModActive(mod.id) }"
-                            @click="selectMod(mod.id, mod.url)"
+                            @click="selectMod(mod.id, mod.urls)"
                             v-press
                         >
                             <div class="mod-info">
@@ -663,7 +671,7 @@ const isModActive = (modId: string) => {
                                         key="download"
                                         class="nav-btn dark icon map-mod-icon"
                                         @click.stop="
-                                            startDownload(mod.id, mod.url)
+                                            startDownload(mod.id, mod.urls)
                                         "
                                         v-press
                                     >

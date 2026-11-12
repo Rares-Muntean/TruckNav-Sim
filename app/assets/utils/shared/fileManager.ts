@@ -17,23 +17,50 @@ async function getBaseUrl() {
     return "";
 }
 
+export async function downloadMapData(
+    mapName: string,
+    urls: string[],
+    onProgress?: (percent: number) => void,
+): Promise<boolean> {
+    const urlList = urls;
+
+    try {
+        for (let i = 0; i < urlList.length; i++) {
+            const currentUrl = urlList[i];
+            if (!currentUrl) continue;
+
+            const success = await attemptDownload(
+                mapName,
+                currentUrl,
+                onProgress,
+            );
+            if (success) {
+                return true;
+            }
+
+            console.warn(
+                `Mirror failed: ${currentUrl}. Trying next fallback...`,
+            );
+        }
+    } catch (e) {
+        console.error("[MAP DOWNLOAD ERROR]: All download mirrors failed: ", e);
+        return false;
+    }
+
+    return false;
+}
+
 /**
  * Downloads and extracts data into Directory.Data/maps
  * @param mapName: Name of the map directory (e.g ets2, ats)
  * @param zipUrl: URL of the zip archive to download
  * @param onProgress: Optional callback that receives download progress as a percentage
  */
-export async function downloadMapData(
+export async function attemptDownload(
     mapName: string,
     zipUrl: string,
     onProgress?: (percent: number) => void,
 ) {
-    console.log(`[DEBUG] downloadMapData started for map: ${mapName}`);
-    console.log(`[DEBUG] URL: ${zipUrl}`);
-    console.log(
-        `[DEBUG] Platform: Electron? ${isElectron.value}, Web? ${isWeb.value}`,
-    );
-
     if (isElectron.value) {
         if (onProgress) {
             (window as any).electronAPI.onMapProgress((pct: number) => {
@@ -47,20 +74,21 @@ export async function downloadMapData(
     if (isWeb.value || process.dev) {
         try {
             const base = await getBaseUrl();
-            console.log(`[DEBUG] Running on Web. Base URL is ${base}`);
             const progressInterval = setInterval(async () => {
                 const res = await axios.get(`${base}/api/download-progress`);
                 if (onProgress) onProgress(res.data.progress);
             }, 500);
 
-            await axios.post(`${base}/api/download-map`, {
+            const res = await axios.post(`${base}/api/download-map`, {
                 mapId: mapName,
                 url: zipUrl,
             });
-
             clearInterval(progressInterval);
-            if (onProgress) onProgress(100);
-            return true;
+            if (res.data?.success) {
+                if (onProgress) onProgress(100);
+                return true;
+            }
+            return false;
         } catch (webErr: any) {
             console.error("[DEBUG] Web download failed:", webErr);
             return false;
@@ -71,14 +99,12 @@ export async function downloadMapData(
     const extractPath = `maps/${mapName}`;
 
     try {
-        console.log(`[DEBUG] Ensuring parent directory 'maps' exists...`);
         try {
             await Filesystem.mkdir({
                 path: "maps",
                 directory: Directory.Data,
                 recursive: true,
             });
-            console.log(`[DEBUG] Directory 'maps' verified/created.`);
         } catch (dirError) {
             console.log(`[DEBUG] Note on maps dir:`, dirError);
         }
@@ -87,13 +113,11 @@ export async function downloadMapData(
             path: zipPath,
             directory: Directory.Data,
         });
-        console.log(`[DEBUG] Target ZIP URI: ${zipUri.uri}`);
 
         const extractUri = await Filesystem.getUri({
             path: extractPath,
             directory: Directory.Data,
         });
-        console.log(`[DEBUG] Target Extract URI: ${extractUri.uri}`);
 
         FileTransfer.addListener("progress", (progress) => {
             const total = progress.contentLength || 0;
@@ -104,14 +128,10 @@ export async function downloadMapData(
             } else {
                 percent = -1;
             }
-            console.log(
-                `[DEBUG] Download progress: ${progress.bytes} / ${total} (${percent}%)`,
-            );
 
             if (onProgress) onProgress(percent);
         });
 
-        console.log(`[DEBUG] Initiating FileTransfer.downloadFile...`);
         await FileTransfer.downloadFile({
             url: zipUrl,
             path: zipUri.uri,
@@ -122,35 +142,31 @@ export async function downloadMapData(
                 "Accept-Encoding": "identity",
             },
         });
-        console.log(`[DEBUG] FileTransfer download complete.`);
 
         // Extracting
         const nativeZipPath = zipUri.uri.replace("file://", "");
         const nativeExtractPath = extractUri.uri.replace("file://", "");
 
-        console.log(`[DEBUG] Initiating unzip process...`);
-        console.log(`[DEBUG] Source ZIP: ${nativeZipPath}`);
-        console.log(`[DEBUG] Destination: ${nativeExtractPath}`);
-
         if (Capacitor.getPlatform() === "electron") {
-            // Electron logic
         } else {
             await CapacitorZip.unzip({
                 source: nativeZipPath,
                 destination: nativeExtractPath,
             });
         }
-        console.log(`[DEBUG] Unzip complete.`);
 
-        console.log(`[DEBUG] Deleting downloaded zip archive...`);
         await Filesystem.deleteFile({
             path: zipPath,
             directory: Directory.Data,
         });
-        console.log(`[DEBUG] ZIP archive deleted.`);
 
         return true;
     } catch (e: any) {
+        await Filesystem.deleteFile({
+            path: zipPath,
+            directory: Directory.Data,
+        }).catch(() => {});
+
         console.error(
             "[DEBUG] FATAL ERROR during mobile download/extract: ",
             e,
