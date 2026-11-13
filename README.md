@@ -14,8 +14,9 @@
     </a>
     <br />
     <br />
-    <img width="300" alt="image" src="https://github.com/user-attachments/assets/6860e478-3c32-4143-97c4-fca8876ce90f" />
-    <img width="300" alt="image" src="https://github.com/user-attachments/assets/a977ea5f-af6f-49e2-adc4-78c8afef9879" />
+    <img width="300" alt="image" src="https://github.com/user-attachments/assets/1a361b5d-deff-40c8-a00e-e32d54eafe6d" />
+    <img width="300" alt="image" src="https://github.com/user-attachments/assets/bad7ee59-ab49-4e4e-b88c-2429a09b19e6"![Uploading WhatsApp Image 2026-11-13 at 13.07.47.jpeg…]()
+ />
 </div>
 
 # Current Status: Work in Progress
@@ -121,7 +122,7 @@ If you are a Linux user and need a solution immediately, please use the communit
 3.  **Routing:** A custom graph built from game files allows the app to calculate the shortest path to your destination.
 
 <div align="center">
-    <img width="895" height="400" alt="close-up-gps" src="https://github.com/user-attachments/assets/4c593709-6f91-4109-9685-bc292ead920e" />
+    <img width="895" height="400" alt="close-up-gps" src="https://github.com/user-attachments/assets/8a6cfb9f-2ee0-467a-a349-8502e22eba25" />
 </div>
 
 # How You Can Help Improve the Map
