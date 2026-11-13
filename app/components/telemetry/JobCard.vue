@@ -47,7 +47,7 @@ const remainingTimeObj = computed(() =>
 <template>
     <div class="card delivery-info">
         <div class="card-title-wrapper">
-            <p class="card-title">{{ t("trip.currentJob") }}</p>
+            <p class="card-title">{{ t("trip.currentJob:") }}</p>
             <Icon name="lucide:box" class="card-icon" />
         </div>
 
