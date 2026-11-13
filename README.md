@@ -14,8 +14,8 @@
     </a>
     <br />
     <br />
-    <img width="300" alt="image" src="https://github.com/user-attachments/assets/6860e478-3c32-4143-97c4-fca8876ce90f" />
-    <img width="300" alt="image" src="https://github.com/user-attachments/assets/a977ea5f-af6f-49e2-adc4-78c8afef9879" />
+    <img width="300" alt="image" src="https://github.com/user-attachments/assets/bc11d479-157b-44f0-88ce-a78cd431b4ac" />
+    <img width="300" alt="image" src="https://github.com/user-attachments/assets/155b1b19-0a91-42d0-bb28-e5546f03052c" />
 </div>
 
 # Current Status: Work in Progress
@@ -121,7 +121,8 @@ If you are a Linux user and need a solution immediately, please use the communit
 3.  **Routing:** A custom graph built from game files allows the app to calculate the shortest path to your destination.
 
 <div align="center">
-    <img width="895" height="400" alt="close-up-gps" src="https://github.com/user-attachments/assets/4c593709-6f91-4109-9685-bc292ead920e" />
+    <img width="895" height="400" alt="close-up-gps" src="https://github.com/user-attachments/assets/a4245875-2ad1-4065-82fb-174d35c547cf"/>
+   
 </div>
 
 # How You Can Help Improve the Map
