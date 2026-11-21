@@ -53,13 +53,11 @@ function fastDistKm(
     lng2: number,
     lat2: number,
 ): number {
-    const ky = 111.0;
-    const kx = 111.0 * 0.65;
-
-    const dy = (lat1 - lat2) * ky;
-    const dx = (lng1 - lng2) * kx;
-
-    return Math.sqrt(dx * dx + dy * dy);
+    const R_KM = 300.0;
+    const dx = (((lng1 - lng2) * Math.PI) / 180) * R_KM;
+    const y1 = Math.log(Math.tan(Math.PI / 4 + (lat1 * Math.PI) / 360)) * R_KM;
+    const y2 = Math.log(Math.tan(Math.PI / 4 + (lat2 * Math.PI) / 360)) * R_KM;
+    return Math.hypot(dx, y1 - y2);
 }
 
 const U_TURN_PENALTY = 100_000_000;
@@ -95,7 +93,7 @@ function calculateTurnPenalty(
             return angleDiff > 1.0 ? 50 : 0;
         }
 
-        if (angleDiff > 2.8) return U_TURN_PENALTY;
+        if (angleDiff > 2.35) return U_TURN_PENALTY;
         if (angleDiff > 1.5) return 10_000;
         if (angleDiff > 1.0) return 1000;
         if (angleDiff > 0.4) return 500;
@@ -200,16 +198,21 @@ export const calculateRoute = (
     const startLat = flatCoords[start * 2 + 1]!;
 
     const distKm = fastDistKm(startLng, startLat, destLng, destLat);
-    const maxIterations = 70000 + distKm * 5000;
+    const maxIterations = Math.max(200000, 70000 + distKm * 100000);
 
-    const HEURISTIC_SCALE = 1.0;
+    const R = 300000;
+    const DEG_TO_M = 5235.98775598;
+    const destMercY =
+        Math.log(Math.tan(Math.PI / 4 + (destLat * Math.PI) / 360)) * R;
 
     const getHeuristic = (id: number) => {
         const nLng = flatCoords[id * 2]!;
         const nLat = flatCoords[id * 2 + 1]!;
-        const dx = nLng - destLng;
-        const dy = nLat - destLat;
-        return Math.sqrt(dx * dx + dy * dy) * 100 * HEURISTIC_SCALE;
+        const dx = (nLng - destLng) * DEG_TO_M;
+        const nMercY =
+            Math.log(Math.tan(Math.PI / 4 + (nLat * Math.PI) / 360)) * R;
+        const dy = nMercY - destMercY;
+        return Math.hypot(dx, dy);
     };
 
     cache_costs[START_EDGE_ID] = 0;

@@ -22,27 +22,22 @@ interface Feature {
     };
 }
 
-function haversineDistance(p1: [number, number], p2: [number, number]): number {
-    const R = 6371000; // Earth's radius in meters
-    const dLat = ((p2[1] - p1[1]) * Math.PI) / 180;
-    const dLon = ((p2[0] - p1[0]) * Math.PI) / 180;
-    const lat1 = (p1[1] * Math.PI) / 180;
-    const lat2 = (p2[1] * Math.PI) / 180;
+const R = 300000;
 
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.sin(dLon / 2) *
-            Math.sin(dLon / 2) *
-            Math.cos(lat1) *
-            Math.cos(lat2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
+function mercatorGameDistance(
+    p1: [number, number],
+    p2: [number, number],
+): number {
+    const dx = (((p2[0] - p1[0]) * Math.PI) / 180) * R;
+    const y1 = Math.log(Math.tan(Math.PI / 4 + (p1[1] * Math.PI) / 360)) * R;
+    const y2 = Math.log(Math.tan(Math.PI / 4 + (p2[1] * Math.PI) / 360)) * R;
+    return Math.hypot(dx, y2 - y1);
 }
 
 function calculatePolylineDistance(coords: [number, number][]): number {
     let total = 0;
     for (let i = 0; i < coords.length - 1; i++) {
-        total += haversineDistance(coords[i]!, coords[i + 1]!);
+        total += mercatorGameDistance(coords[i]!, coords[i + 1]!);
     }
     return total;
 }
@@ -129,9 +124,6 @@ async function packData(
         if (prefabVisuals.has(visualKey)) {
             coords = prefabVisuals.get(visualKey)!;
             fromPrefab = true;
-        } else if (prefabVisuals.has(visualKeyRev)) {
-            coords = [...prefabVisuals.get(visualKeyRev)!].reverse();
-            fromPrefab = true;
         } else {
             coords = feature.geometry.coordinates;
             fromPrefab = false;
@@ -146,8 +138,17 @@ async function packData(
             geomPointer += 2;
         }
 
-        const hOut = props.hOut || 0.0;
-        const hIn = props.hIn || 0.0;
+        const hOut =
+            pointCount >= 2
+                ? calculateHeading(coords[0]!, coords[1]!)
+                : props.hOut || 0.0;
+        const hIn =
+            pointCount >= 2
+                ? calculateHeading(
+                      coords[pointCount - 2]!,
+                      coords[pointCount - 1]!,
+                  )
+                : props.hIn || 0.0;
 
         const isFerryRaw = props.isFerry;
         const isFerry =

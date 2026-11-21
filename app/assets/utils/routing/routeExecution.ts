@@ -325,8 +325,8 @@ export function finalizeAndSendRouteResult(params: FinalizeRouteParams) {
         nodeCoordsMap,
     } = params;
 
-    const simplified = simplifyPath(rawCoordinates, 0.00003);
-    const finalSmoothedPath = smoothPath(simplified, 4);
+    const simplified = simplifyPath(rawCoordinates, 0.000001);
+    const finalSmoothedPath = smoothPath(simplified, 2);
 
     const statsCache = buildRouteStatsCache(
         finalSmoothedPath,
