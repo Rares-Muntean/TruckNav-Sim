@@ -88,6 +88,12 @@ const availableMods = computed(() => {
                 description: "Extra Cities & Delivery Hubs",
                 urls: getModUrls("more-european-cities.zip"),
             },
+            {
+                id: "euroadnet",
+                name: "EuRoadNet",
+                description: "EuRoadNet",
+                urls: getModUrls("euroadnet.zip"),
+            },
         ],
         ats: [
             {
