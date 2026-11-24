@@ -3,7 +3,6 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "preinstall": "npx npm-force-resolutions",
         "build": "nuxt build",
         "dev": "nuxt dev",
         "generate": "nuxt generate",
@@ -62,15 +61,9 @@
         "@types/rbush": "^4.0.0",
         "@types/ws": "^8.18.1",
         "electron": "^39.2.7",
-        "npm-force-resolutions": "^0.0.10",
         "patch-package": "^8.0.1",
         "sass-embedded": "^1.99.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3"
-    },
-    "resolutions": {
-        "glob": "11.0.5",
-        "tar": "7.5.8",
-        "pmtiles": "4.3.0"
     }
 }
