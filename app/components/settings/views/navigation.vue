@@ -60,7 +60,7 @@ async function updatePreviewIcon() {
     const img = await generateTruckIcon(
         activeSettings.value.arrowColor,
         activeSettings.value.discColor,
-        activeSettings.value.rimColor,
+        activeSettings.value.discEnabled,
     );
     truckImgSrc.value = img.src;
 }
@@ -71,6 +71,7 @@ watch(
         () => activeSettings.value.discColor,
         () => activeSettings.value.rimColor,
         () => activeSettings.value.outerRimEnabled,
+        () => activeSettings.value.discEnabled,
     ],
     updatePreviewIcon,
     {

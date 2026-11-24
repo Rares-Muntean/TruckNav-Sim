@@ -228,11 +228,11 @@ watch(
     [
         () => activeSettings.value?.arrowColor,
         () => activeSettings.value?.discColor,
-        () => activeSettings.value?.rimColor,
+        () => activeSettings.value?.discEnabled,
         () => activeSettings.value?.outerRimEnabled,
     ],
-    async ([arrowColor, discColor, rimColor]) => {
-        const img = await generateTruckIcon(arrowColor, discColor, rimColor);
+    async ([arrowColor, discColor, discEnabled]) => {
+        const img = await generateTruckIcon(arrowColor, discColor, discEnabled);
         truckImgSrc.value = img.src;
     },
     { immediate: true },

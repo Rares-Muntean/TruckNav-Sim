@@ -47,7 +47,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
             markerEl.style.pointerEvents = "none";
             markerEl.style.zIndex = "10";
             markerEl.style.willChange = "transform";
-            markerEl.style.boxShadow = "0px 1px 8px rgba(0, 0, 0, 0.15)";
 
             markerEl.style.display = "none";
 

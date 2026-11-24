@@ -102,10 +102,12 @@ input {
 .truck-nav-marker {
     position: relative;
     border-radius: 50%;
-    box-shadow: 0px 0px var(--marker-glow-opacity) -4px color-mix(in srgb, var(
-                    --marker-glow-color
-                )
-                65%, transparent);
+    box-shadow: 0px 0px var(--marker-glow-opacity, 0px) -4px color-mix(in srgb, var(
+                        --marker-glow-color,
+                        transparent
+                    )
+                    65%, transparent),
+        var(--marker-disc-shadow, 0px 1px 8px rgba(0, 0, 0, 0.15));
 
     &::after {
         content: "";

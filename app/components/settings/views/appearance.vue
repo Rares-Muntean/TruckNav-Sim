@@ -51,6 +51,10 @@ function toggleOuterRim() {
     updateProfile("outerRimEnabled", !activeSettings.value.outerRimEnabled);
 }
 
+function toggleDisc() {
+    updateProfile("discEnabled", !activeSettings.value.discEnabled);
+}
+
 function toggleGlowEffect() {
     updateProfile("glowEnabled", !activeSettings.value.glowEnabled);
 }
@@ -59,7 +63,7 @@ async function updatePreviewIcon() {
     const img = await generateTruckIcon(
         activeSettings.value.arrowColor,
         activeSettings.value.discColor,
-        activeSettings.value.rimColor,
+        activeSettings.value.discEnabled,
     );
     truckImgSrc.value = img.src;
 }
@@ -69,6 +73,7 @@ watch(
         () => activeSettings.value.arrowColor,
         () => activeSettings.value.discColor,
         () => activeSettings.value.rimColor,
+        () => activeSettings.value.discEnabled,
     ],
     updatePreviewIcon,
     {
@@ -210,6 +215,20 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                             </div>
                         </template>
                     </ColorOption>
+
+                    <div class="small-separator"></div>
+
+                    <div class="option setting stacked" @click="toggleDisc">
+                        <div class="option-title">
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:circle-check" class="icon" />
+                            </div>
+
+                            <p>{{ t("settings.outerRim") }}</p>
+                        </div>
+
+                        <Switch :is-active="activeSettings.discEnabled" />
+                    </div>
 
                     <div class="small-separator"></div>
 

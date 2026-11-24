@@ -32,6 +32,7 @@ export interface GameProfile {
     roadColor: string;
     arrowColor: string;
     discColor: string;
+    discEnabled: boolean;
     rimColor: string;
     glowColor: string;
     glowEnabled: boolean;
@@ -74,6 +75,7 @@ const DEFAULT_PROFILE: GameProfile = {
     landColor: "#232323",
     arrowColor: "#0ea674",
     discColor: "#1f1f1f",
+    discEnabled: true,
     rimColor: "#ffffff",
     glowColor: "#0ea674",
     glowEnabled: false,
@@ -186,6 +188,13 @@ export const useSettings = () => {
         document.documentElement.style.setProperty(
             "--marker-glow-opacity",
             activeSettings.value.glowEnabled ? "15px" : "0",
+        );
+
+        document.documentElement.style.setProperty(
+            "--marker-disc-shadow",
+            activeSettings.value.discEnabled
+                ? "0px 1px 8px rgba(0, 0, 0, 0.15)"
+                : "0 0 transparent",
         );
     };
 

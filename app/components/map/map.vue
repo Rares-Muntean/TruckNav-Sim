@@ -251,14 +251,14 @@ watch(
     [
         () => activeSettings.value.arrowColor,
         () => activeSettings.value.discColor,
-        () => activeSettings.value.rimColor,
+        () => activeSettings.value.discEnabled,
         () => activeSettings.value.outerRimEnabled,
     ],
-    async ([arrowColor, discColor, rimColor]) => {
+    async ([arrowColor, discColor, discEnabled]) => {
         const newTruckImg = await generateTruckIcon(
             arrowColor,
             discColor,
-            rimColor,
+            discEnabled,
         );
         updateMarkerImage(newTruckImg.src);
     },
@@ -437,7 +437,7 @@ onMounted(async () => {
         const initialTruckImg = await generateTruckIcon(
             activeSettings.value.arrowColor,
             activeSettings.value.discColor,
-            activeSettings.value.rimColor,
+            activeSettings.value.discEnabled,
         );
         map.value.on("load", async () => {
             initMarker(initialTruckImg.src, settings.value.truckMarkerSize);
