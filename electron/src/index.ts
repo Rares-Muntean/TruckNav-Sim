@@ -4,7 +4,15 @@ import {
     setupElectronDeepLinking,
 } from "@capacitor-community/electron";
 import type { MenuItemConstructorOptions } from "electron";
-import { app, BrowserWindow, dialog, ipcMain, MenuItem, shell } from "electron";
+import {
+    app,
+    BrowserWindow,
+    dialog,
+    ipcMain,
+    MenuItem,
+    powerSaveBlocker,
+    shell,
+} from "electron";
 import electronIsDev from "electron-is-dev";
 import unhandled from "electron-unhandled";
 import express from "express";
@@ -153,15 +161,11 @@ app.on("browser-window-created", (_, window) => {
         window.webContents.setBackgroundThrottling(false);
     });
 
-    window.on("hide", () => {
-        window.webContents.setBackgroundThrottling(true);
-    });
+    window.webContents.setBackgroundThrottling(false);
 
-    if (forceKeepHidden) {
-        window.webContents.once("dom-ready", () => {
-            window.webContents.setBackgroundThrottling(true);
-        });
-    }
+    window.webContents.on("did-finish-load", () => {
+        window.webContents.setBackgroundThrottling(false);
+    });
 
     (window as any).on("minimize", (event: any) => {
         if (event && event.preventDefault) {
@@ -189,6 +193,7 @@ if (!gotTheLock) {
     (async () => {
         try {
             await app.whenReady();
+            powerSaveBlocker.start("prevent-app-suspension");
 
             startTelemetryServer();
             startWebServer();

@@ -118,12 +118,17 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         markerEl.style.transform = `translate(-50%, -50%) translate(${pos.x}px, ${pos.y}px) rotateX(${effectivePitch}deg) rotateZ(${screenRot}deg)`;
     };
 
-    const renderLoop = (timestamp: number) => {
+    let lastJumpLng = NaN;
+    let lastJumpLat = NaN;
+    let lastJumpBearing = NaN;
+    let lastJumpNavigating = false;
+
+    const renderLoop = () => {
         const now = performance.now();
 
         if (map.value && targetCoords && previousCoords && currentTruckCoords) {
             const elapsed = now - lastTargetUpdateTime;
-            let progress = Math.min(elapsed / 120, 1);
+            const progress = Math.min(elapsed / 120, 1);
 
             currentTruckCoords[0] =
                 previousCoords[0] +
@@ -136,7 +141,6 @@ export const useMapCamera = (map: Ref<Map | null>) => {
 
             const isTargetAtOrigin =
                 targetCoords[0] === 0 && targetCoords[1] === 0;
-
             const isCurrentlyEasing = now < easingUntil;
 
             if (
@@ -144,14 +148,31 @@ export const useMapCamera = (map: Ref<Map | null>) => {
                 !isCurrentlyEasing &&
                 !isTargetAtOrigin
             ) {
-                map.value.jumpTo({
-                    center: [currentTruckCoords[0], currentTruckCoords[1]],
-                    bearing: isHeadingActive.value ? currentTruckHeading : 0,
-                    padding: getPadding(),
-                });
+                const nextBearing = isHeadingActive.value
+                    ? currentTruckHeading
+                    : 0;
+                const changed =
+                    currentTruckCoords[0] !== lastJumpLng ||
+                    currentTruckCoords[1] !== lastJumpLat ||
+                    nextBearing !== lastJumpBearing ||
+                    isNavigating.value !== lastJumpNavigating;
+
+                if (changed) {
+                    lastJumpLng = currentTruckCoords[0];
+                    lastJumpLat = currentTruckCoords[1];
+                    lastJumpBearing = nextBearing;
+                    lastJumpNavigating = isNavigating.value;
+
+                    map.value.jumpTo({
+                        center: [currentTruckCoords[0], currentTruckCoords[1]],
+                        bearing: nextBearing,
+                        padding: getPadding(),
+                    });
+                }
             }
         }
 
+        updateMarkerTransform();
         animationFrameId = requestAnimationFrame(renderLoop);
     };
 
@@ -184,7 +205,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
 
         map.value.on("resize", updateCachedPadding);
 
-        map.value.on("render", updateMarkerTransform);
+        map.value.on("move", updateMarkerTransform);
 
         const onUserInteractionStart = (e: any) => {
             if (!e.originalEvent) return;
@@ -212,7 +233,10 @@ export const useMapCamera = (map: Ref<Map | null>) => {
         map.value.on("mousedown", onUserInteractionStart);
         map.value.on("touchstart", onUserInteractionStart);
         map.value.on("dragstart", onUserInteractionStart);
-        map.value.on("wheel", onUserInteractionStart);
+        map.value.on("wheel", (e) => {
+            onUserInteractionStart(e);
+            onUserInteractionEnd();
+        });
 
         map.value.on("mouseup", onUserInteractionEnd);
         map.value.on("touchend", onUserInteractionEnd);
@@ -407,7 +431,7 @@ export const useMapCamera = (map: Ref<Map | null>) => {
 
         if (map.value) {
             map.value.off("resize", updateCachedPadding);
-            map.value.off("render", updateMarkerTransform);
+            map.value.off("move", updateMarkerTransform);
         }
 
         if (markerEl) {

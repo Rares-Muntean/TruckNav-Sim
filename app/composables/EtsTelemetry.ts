@@ -78,6 +78,7 @@ let headingOffset = 0;
 
 let socket: WebSocket | null = null;
 
+let lastRpcSignature = "";
 function sendDiscordRpcState(payload: {
     game: string;
     connected: boolean;
@@ -93,10 +94,19 @@ function sendDiscordRpcState(payload: {
     const electronApi = (window as any).electronAPI;
     if (!electronApi?.updateDiscordRpc) return;
 
+    const signature = `${payload.game}|${payload.connected}|
+    ${payload.hasActiveJob}|${payload.sourceCity ?? ""}|
+    ${payload.destinationCity ?? ""}|${payload.cargoName ?? ""}
+    |${payload.truckBrand ?? ""}|${payload.truckName ?? ""}`;
+
+    if (signature === lastRpcSignature) return;
+    lastRpcSignature = signature;
+
     electronApi.updateDiscordRpc(payload);
 }
 
 function clearDiscordRpcState() {
+    lastRpcSignature = "";
     if (typeof window === "undefined") return;
 
     const electronApi = (window as any).electronAPI;
