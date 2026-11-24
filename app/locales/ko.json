@@ -136,6 +136,7 @@
         "estimatedTime": "예상 소요 시간",
         "gameTime": "게임 시간",
         "guidedNavigation": "경로 음성/방향 안내",
+        "voiceNavigation": "음성 내비게이션",
         "realTime": "실제 시간",
         "rimColor": "테두리 색상",
         "outerRim": "외부 테두리",

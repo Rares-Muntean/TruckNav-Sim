@@ -47,7 +47,13 @@ export function useVoiceNavigation(options: {
                 return;
             }
 
-            const volume = 1; // settings option
+            if (
+                !activeSettings.value.hasVoiceNavigation ||
+                !activeSettings.value.hasTurnNavigation
+            )
+                return;
+
+            const volume = 1;
             const base = "/voices/woman/en"; // settings option
 
             if (

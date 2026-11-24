@@ -40,6 +40,7 @@ export interface GameProfile {
     ownedDlcs: number[];
     lastJob: SavedJob;
     hasTurnNavigation: boolean;
+    hasVoiceNavigation: boolean;
     drawTurnNavigation: boolean;
     fontFamily: string;
     activeMod: string | "none";
@@ -80,6 +81,7 @@ const DEFAULT_PROFILE: GameProfile = {
     ownedDlcs: Array.from({ length: 11 }, (_, i) => i + 1),
     lastJob: { initialMinutes: 0, key: "", lastRoute: [] },
     hasTurnNavigation: true,
+    hasVoiceNavigation: false,
     drawTurnNavigation: false,
     fontFamily: "Jakarta",
     activeMod: "none",

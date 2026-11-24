@@ -15,6 +15,9 @@ const { t } = useTranslations();
 const hasGuidedNavigation = computed(
     () => activeSettings.value.hasTurnNavigation === true,
 );
+const hasVoiceNavigation = computed(
+    () => activeSettings.value.hasVoiceNavigation === true,
+);
 const hasDrawTurnNavigation = computed(
     () => activeSettings.value.drawTurnNavigation === true,
 );
@@ -35,6 +38,10 @@ if (activeTab) {
 
 function toggleGuidedNavigation() {
     updateProfile("hasTurnNavigation", !hasGuidedNavigation.value);
+}
+
+function toggleVoiceNavigation() {
+    updateProfile("hasVoiceNavigation", !hasVoiceNavigation.value);
 }
 
 function toggleDrawTurnNavigation() {
@@ -103,6 +110,23 @@ function handlePanelEnter(el: Element, done: () => void, query: string) {
                         </div>
 
                         <Switch :is-active="hasGuidedNavigation" />
+                    </div>
+
+                    <div class="small-separator"></div>
+
+                    <div
+                        class="option setting stacked"
+                        @click="toggleVoiceNavigation"
+                    >
+                        <div class="option-title">
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:navigation-2" class="icon" />
+                            </div>
+
+                            <p>{{ t("settings.voiceNavigation") }}</p>
+                        </div>
+
+                        <Switch :is-active="hasVoiceNavigation" />
                     </div>
 
                     <div class="small-separator"></div>
