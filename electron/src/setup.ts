@@ -159,6 +159,7 @@ export class ElectronCapacitorApp {
                 nodeIntegration: true,
                 contextIsolation: true,
                 preload: preloadPath,
+                backgroundThrottling: false,
             },
         });
 

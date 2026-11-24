@@ -26,11 +26,12 @@ export async function initializeMap(
 
     async function loadPmtiles(fileName: string, key: string) {
         const folder = getActiveMapFolder(settings.value);
+        let pmtilesInstance: InstanceType<typeof PMTiles>;
 
         if (isMobile.value) {
             try {
                 const localServerUrl = `http://localhost:8765/maps/${folder}/map-data/tiles/${fileName}.mp3`;
-                const pmtilesInstance = new PMTiles(localServerUrl);
+                pmtilesInstance = new PMTiles(localServerUrl);
                 pmtilesInstance.source.getKey = () => key;
 
                 const testCheck = await fetch(localServerUrl, {
@@ -39,7 +40,18 @@ export async function initializeMap(
                 if (!testCheck.ok) throw new Error("Local server failed");
 
                 protocol.add(pmtilesInstance);
-                return;
+
+                const meta: any = await pmtilesInstance
+                    .getMetadata()
+                    .catch(() => null);
+
+                const layers = meta?.vector_layers;
+
+                if (Array.isArray(layers) && layers.length > 0) {
+                    return new Set(layers.map((layer: any) => layer.id));
+                } else {
+                    return null;
+                }
             } catch {
                 console.warn("[PMTiles] Local server failed. Fallback to blob");
             }
@@ -51,15 +63,29 @@ export async function initializeMap(
         );
         const response = await fetch(url);
         const blob = await response.blob();
-        const pmtilesInstance = new PMTiles(new BlobSource(blob, key));
+        pmtilesInstance = new PMTiles(new BlobSource(blob, key));
         protocol.add(pmtilesInstance);
         console.log(`[PMTiles] Running on Blob fallback: ${fileName}`);
+
+        const meta: any = await pmtilesInstance.getMetadata().catch(() => null);
+
+        const layers = meta?.vector_layers;
+
+        if (Array.isArray(layers) && layers.length > 0) {
+            return new Set(layers.map((layer: any) => layer.id));
+        } else {
+            return null;
+        }
     }
 
-    await Promise.all([
+    const tileLayers = await Promise.all([
         loadPmtiles("roads", "roads"),
         loadPmtiles("map-data-combined", "all-data"),
     ]);
+    const allDataLayers = tileLayers[1];
+
+    const hasAllDataLayer = (layerId: string) =>
+        allDataLayers === null || allDataLayers.has(layerId);
 
     const style: StyleSpecification = {
         version: 8,
@@ -283,99 +309,107 @@ export async function initializeMap(
         });
 
         // POLYGONS FOR PARKING ETC
-        map.addLayer({
-            id: "maparea-zones",
-            type: "fill",
-            source: "all-data",
-            "source-layer": "mapareas",
-            paint: {
-                "fill-color": [
-                    "match",
-                    ["get", "color"],
-                    0,
-                    "#3d546e",
-                    1,
-                    "#4a5f7a",
-                    2,
-                    "#556b7f",
-                    3,
-                    "#6b7f93",
-                    4,
-                    "#7d93a7",
-                    "#3d546e",
-                ],
-                "fill-opacity": 0.5,
-            },
-        });
-
-        // PREFABS FOR SERVICE AREAS     ETC
-        const color0 = blendWithBg(
-            lightenColor(activeSettings.value.themeColor, 0.3),
-            0.6,
-        );
-        const color1 = blendWithBg(
-            lightenColor(activeSettings.value.themeColor, 0),
-            0.6,
-        );
-        map.addLayer(
-            {
-                id: "prefab-zones",
+        if (hasAllDataLayer("mapareas")) {
+            map.addLayer({
+                id: "maparea-zones",
                 type: "fill",
                 source: "all-data",
-                "source-layer": "prefabs",
+                "source-layer": "mapareas",
                 paint: {
                     "fill-color": [
                         "match",
                         ["get", "color"],
                         0,
-                        color0,
+                        "#3d546e",
                         1,
-                        color0,
+                        "#4a5f7a",
                         2,
-                        color1,
+                        "#556b7f",
                         3,
-                        color0,
+                        "#6b7f93",
+                        4,
+                        "#7d93a7",
                         "#3d546e",
                     ],
+                    "fill-opacity": 0.5,
                 },
-                minzoom: 8,
-            },
-            "roads",
-        );
+            });
+        }
+
+        // PREFABS FOR SERVICE AREAS     ETC
+        if (hasAllDataLayer("prefabs")) {
+            const color0 = blendWithBg(
+                lightenColor(activeSettings.value.themeColor, 0.3),
+                0.6,
+            );
+            const color1 = blendWithBg(
+                lightenColor(activeSettings.value.themeColor, 0),
+                0.6,
+            );
+            map.addLayer(
+                {
+                    id: "prefab-zones",
+                    type: "fill",
+                    source: "all-data",
+                    "source-layer": "prefabs",
+                    paint: {
+                        "fill-color": [
+                            "match",
+                            ["get", "color"],
+                            0,
+                            color0,
+                            1,
+                            color0,
+                            2,
+                            color1,
+                            3,
+                            color0,
+                            "#3d546e",
+                        ],
+                    },
+                    minzoom: 8,
+                },
+                "roads",
+            );
+        }
 
         // DISPLAYING VILLAGE NAMES
-        map.addLayer({
-            id: "village-labels",
-            type: "symbol",
-            source: "all-data",
-            "source-layer": "ets2villages",
-            layout: {
-                "text-field": ["get", "name"],
-                "text-font": [activeSettings.value.fontFamily || "Jakarta"],
-                "text-size": 13,
-                "text-anchor": "center",
-                "text-offset": [0, 0],
-                "text-allow-overlap": false,
-                "text-ignore-placement": false,
-            },
-            paint: {
-                "text-color": "#ffffff",
-            },
-            minzoom: 9,
-        });
+        if (hasAllDataLayer("ets2villages")) {
+            map.addLayer({
+                id: "village-labels",
+                type: "symbol",
+                source: "all-data",
+                "source-layer": "ets2villages",
+                layout: {
+                    "text-field": ["get", "name"],
+                    "text-font": [activeSettings.value.fontFamily || "Jakarta"],
+                    "text-size": 13,
+                    "text-anchor": "center",
+                    "text-offset": [0, 0],
+                    "text-allow-overlap": false,
+                    "text-ignore-placement": false,
+                },
+                paint: {
+                    "text-color": "#ffffff",
+                },
+                minzoom: 9,
+            });
+        }
 
         // DISPLAYING STATE DELIMITATIONS
-        map.addLayer({
-            id: "state-borders",
-            type: "line",
-            source: "all-data",
-            "source-layer": "states",
-            paint: {
-                "line-color": "#3d546e",
-                "line-width": 2,
-                "line-opacity": 0.4,
-            },
-        });
+        if (hasAllDataLayer("states")) {
+            map.addLayer({
+                id: "state-borders",
+                type: "line",
+                source: "all-data",
+                "source-layer": "states",
+                paint: {
+                    "line-color": "#3d546e",
+                    "line-width": 2,
+                    "line-opacity": 0.4,
+                },
+            });
+        }
 
         // ALL SPRITE SHEETS
         map.addLayer({

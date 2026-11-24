@@ -50,6 +50,11 @@ let isQuittingForRpcCleanup = false;
 // Graceful handling of unhandled errors.
 unhandled();
 
+app.commandLine.appendSwitch("disable-renderer-backgrounding");
+app.commandLine.appendSwitch("disable-background-timer-throttling");
+app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
+app.commandLine.appendSwitch("disable-features", "CalculateNativeWinOcclusion");
+
 // Define our menu templates (these are optional)
 const trayMenuTemplate: (MenuItemConstructorOptions | MenuItem)[] = [
     new MenuItem({
@@ -143,6 +148,20 @@ app.on("browser-window-created", (_, window) => {
             window.hide();
         }
     });
+
+    window.on("show", () => {
+        window.webContents.setBackgroundThrottling(false);
+    });
+
+    window.on("hide", () => {
+        window.webContents.setBackgroundThrottling(true);
+    });
+
+    if (forceKeepHidden) {
+        window.webContents.once("dom-ready", () => {
+            window.webContents.setBackgroundThrottling(true);
+        });
+    }
 
     (window as any).on("minimize", (event: any) => {
         if (event && event.preventDefault) {
