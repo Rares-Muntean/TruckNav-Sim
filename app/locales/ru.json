@@ -136,6 +136,7 @@
         "estimatedTime": "Расчетное время",
         "gameTime": "Игровое",
         "guidedNavigation": "Ведение по маршруту",
+        "mapFontScale": "Масштаб шрифта карты",
         "voiceNavigation": "Голосовая навигация",
         "realTime": "Реальное",
         "rimColor": "Цвет обода",

@@ -218,6 +218,8 @@ export async function initializeMap(
     });
 
     map.on("load", async () => {
+        const fontOffset = settings.value.mapElFontScale;
+
         map.addSource("all-data", {
             type: "vector",
             url: "pmtiles://all-data",
@@ -383,7 +385,7 @@ export async function initializeMap(
                 layout: {
                     "text-field": ["get", "name"],
                     "text-font": [activeSettings.value.fontFamily || "Jakarta"],
-                    "text-size": 13,
+                    "text-size": 13 + fontOffset,
                     "text-anchor": "center",
                     "text-offset": [0, 0],
                     "text-allow-overlap": false,
@@ -480,7 +482,7 @@ export async function initializeMap(
             layout: {
                 "text-field": ["get", "name"],
                 "text-font": [activeSettings.value.fontFamily || "Jakarta"],
-                "text-size": 15,
+                "text-size": 15 + fontOffset,
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],
                 "text-allow-overlap": false,
@@ -505,7 +507,7 @@ export async function initializeMap(
             "source-layer": "cities",
             layout: {
                 "text-field": ["get", "name"],
-                "text-size": 18,
+                "text-size": 18 + fontOffset,
                 "text-font": [activeSettings.value.fontFamily || "Jakarta"],
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],
@@ -529,7 +531,7 @@ export async function initializeMap(
             "source-layer": "countrynames",
             layout: {
                 "text-field": ["get", "name"],
-                "text-size": 20,
+                "text-size": 20 + fontOffset,
                 "text-font": [activeSettings.value.fontFamily || "Jakarta"],
                 "text-anchor": "bottom",
                 "text-offset": [0, -0.3],

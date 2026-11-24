@@ -44,6 +44,7 @@ function updateSize(mode: "+" | "-") {
 }
 
 function startHold(mode: "+" | "-") {
+    stopHold();
     updateSize(mode);
 
     holdTimer = setTimeout(() => {
@@ -54,9 +55,19 @@ function startHold(mode: "+" | "-") {
 }
 
 function stopHold() {
-    if (holdTimer) clearTimeout(holdTimer);
-    if (repeatInterval) clearInterval(repeatInterval);
+    if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+    }
+    if (repeatInterval) {
+        clearInterval(repeatInterval);
+        repeatInterval = null;
+    }
 }
+
+onUnmounted(() => {
+    stopHold();
+});
 </script>
 
 <template>
@@ -68,12 +79,12 @@ function stopHold() {
         <div class="increase-option">
             <button
                 class="nav-btn increase-btn"
-                @click.prevent="updateSize('-')"
                 @mousedown="startHold('-')"
                 @mouseup="stopHold"
                 @mouseleave="stopHold"
                 @touchstart.prevent="startHold('-')"
                 @touchend="stopHold"
+                @touchcancel="stopHold"
             >
                 <Icon name="lucide:minus" />
             </button>
@@ -89,12 +100,12 @@ function stopHold() {
 
             <button
                 class="nav-btn increase-btn"
-                @click.prevent="updateSize('+')"
                 @mousedown="startHold('+')"
                 @mouseup="stopHold"
                 @mouseleave="stopHold"
                 @touchstart.prevent="startHold('+')"
                 @touchend="stopHold"
+                @touchcancel="stopHold"
             >
                 <Icon name="lucide:plus" />
             </button>

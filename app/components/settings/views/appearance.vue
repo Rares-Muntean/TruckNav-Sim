@@ -161,6 +161,23 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                     <PreviewSetting :height="150">
                         <MapColorPreview />
                     </PreviewSetting>
+
+                    <div class="small-separator"></div>
+
+                    <IncreaseOption
+                        :option-title="t('settings.mapFontScale')"
+                        setting-name="mapElFontScale"
+                        :max-value="15"
+                        :min-value="-10"
+                        :amount="1"
+                        unit=""
+                    >
+                        <template #icon>
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:letter-text" class="icon" />
+                            </div>
+                        </template>
+                    </IncreaseOption>
                 </div>
             </div>
 

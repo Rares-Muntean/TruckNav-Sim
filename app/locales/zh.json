@@ -136,6 +136,7 @@
         "estimatedTime": "预计时间",
         "gameTime": "游戏时间",
         "guidedNavigation": "引导导航",
+        "mapFontScale": "地图字体缩放",
         "voiceNavigation": "语音导航",
         "realTime": "现实时间",
         "rimColor": "外圈颜色",

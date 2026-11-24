@@ -136,6 +136,7 @@
         "estimatedTime": "Temps estimé",
         "gameTime": "Jeu",
         "guidedNavigation": "Navigation guidée",
+        "mapFontScale": "Échelle de police de la carte",
         "voiceNavigation": "Navigation vocale",
         "realTime": "Temps réel",
         "rimColor": "Couleur du contour",

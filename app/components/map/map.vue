@@ -276,6 +276,30 @@ watch(
     },
 );
 
+const MAP_LABEL_BASE_SIZES: Record<string, number> = {
+    "village-labels": 13,
+    "city-labels": 15,
+    "capital-major-labels": 18,
+    "country-labels": 20,
+};
+
+watch(
+    () => settings.value.mapElFontScale,
+    (fontScale) => {
+        if (!map.value) return;
+
+        Object.entries(MAP_LABEL_BASE_SIZES).forEach(([layerId, baseSize]) => {
+            if (map.value?.getLayer(layerId)) {
+                map.value.setLayoutProperty(
+                    layerId,
+                    "text-size",
+                    baseSize + fontScale,
+                );
+            }
+        });
+    },
+);
+
 watch(
     () => activeSettings.value.backgroundColor,
     async (newColor) => {

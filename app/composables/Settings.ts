@@ -60,6 +60,7 @@ export interface AppSettingsState {
     locale: LocaleCode;
     routeTimeMode: RouteTimeMode;
     uiScale: number;
+    mapElFontScale: number;
 
     autoStartNav: boolean;
 }
@@ -109,6 +110,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     routeTimeMode: "game",
     uiScale: 100,
     autoStartNav: false,
+    mapElFontScale: 0,
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -272,6 +274,7 @@ export const useSettings = () => {
         freshProfile.lastJob = currentJob;
 
         settings.value.hudBtnSize = DEFAULT_SETTINGS.hudBtnSize;
+        settings.value.mapElFontScale = DEFAULT_SETTINGS.mapElFontScale;
         settings.value.truckMarkerSize = DEFAULT_SETTINGS.truckMarkerSize;
         settings.value.compactTripFontSize =
             DEFAULT_SETTINGS.compactTripFontSize;

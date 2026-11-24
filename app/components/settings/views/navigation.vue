@@ -120,7 +120,7 @@ function handlePanelEnter(el: Element, done: () => void, query: string) {
                     >
                         <div class="option-title">
                             <div class="icon-wrapper">
-                                <Icon name="lucide:navigation-2" class="icon" />
+                                <Icon name="lucide:audio-lines" class="icon" />
                             </div>
 
                             <p>{{ t("settings.voiceNavigation") }}</p>
