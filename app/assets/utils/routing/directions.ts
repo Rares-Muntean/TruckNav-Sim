@@ -13,6 +13,8 @@ export interface DirectionStep {
         | "roundabout"
         | "destination"
         | "exit-highway";
+
+    voiceKey?: string;
     text: string;
     distance: number;
     coords: [number, number];
@@ -38,6 +40,7 @@ export function generateDirectionsList(
         id: 0,
         type: "depart",
         text: "Head on Route",
+        voiceKey: "start_route",
         distance: 0,
         coords: nodeCoords.get(nodeSequence[0]!) || [0, 0],
     });
@@ -60,45 +63,53 @@ export function generateDirectionsList(
         if (maneuver > 0 && maneuver !== 4) {
             let turnType: DirectionStep["type"] = "straight";
             let turnText = "";
+            let voiceKey = "";
             let exitCount = sequenceExits[i]!;
 
             switch (maneuver) {
                 case 1:
                     turnType = "left";
                     turnText = "Turn left";
+                    voiceKey = "turn_left";
                     break;
                 case 2:
                     turnType = "right";
                     turnText = "Turn right";
+                    voiceKey = "turn_right";
                     break;
                 case 3: {
                     turnType = "roundabout";
-                    if (exitCount && exitCount > 0) {
+                    if (exitCount && exitCount > 0 && exitCount <= 6) {
                         const suffix =
                             exitCount === 1
                                 ? "st"
                                 : exitCount === 2
-                                  ? "nd"
-                                  : exitCount === 3
-                                    ? "rd"
-                                    : "th";
+                                ? "nd"
+                                : exitCount === 3
+                                ? "rd"
+                                : "th";
                         turnText = `${exitCount}${suffix} exit`;
+                        voiceKey = `roundabout_exit_${exitCount}`;
                     } else {
                         turnText = `exit at the roundabout`;
+                        voiceKey = "roundabout_exit";
                     }
                     break;
                 }
                 case 5:
                     turnType = "exit-highway";
                     turnText = "Take the exit";
+                    voiceKey = "exit_highway";
                     break;
                 case 6:
                     turnType = "slight-left";
                     turnText = "Keep left";
+                    voiceKey = "keep_left";
                     break;
                 case 7:
                     turnType = "slight-right";
                     turnText = "Keep right";
+                    voiceKey = "keep_right";
                     break;
             }
 
@@ -108,6 +119,7 @@ export function generateDirectionsList(
                     id: curr!,
                     type: turnType,
                     text: turnText,
+                    voiceKey: voiceKey,
                     distance: 0,
                     cumulativeKm: nodeKms[i],
                     exitCumulativeKm: nodeKms[i + 1],
@@ -127,6 +139,8 @@ export function generateDirectionsList(
         id: nodeSequence[nodeSequence.length - 1]!,
         type: "destination",
         text: "Arrived",
+        voiceKey: "arrived",
+        cumulativeKm: totalKm,
         distance: 0,
         coords: nodeCoords.get(nodeSequence[nodeSequence.length - 1]!) || [
             0, 0,

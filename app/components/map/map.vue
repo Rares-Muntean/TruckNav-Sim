@@ -16,6 +16,7 @@ import {
     getRestPercentage,
 } from "~/assets/utils/telemetry/helpers";
 import { anim } from "~/assets/utils/animations/anim";
+import { useVoiceNavigation } from "~/composables/VoiceNavigation";
 
 const emit = defineEmits(["goHome"]);
 
@@ -134,6 +135,19 @@ const hasInitialFocused = ref(false);
 const routeDistanceConverted = computed(() =>
     kmToUserUnits(routeDistance.value),
 );
+
+const isVoiceNavActive = computed(
+    () =>
+        isNavigating.value &&
+        isRouteActive.value &&
+        activeSettings.value.hasTurnNavigation,
+);
+
+useVoiceNavigation({
+    upcomingTurns: fullRouteDirections,
+    distanceToNextTurn: nextTurnDistance,
+    isActive: isVoiceNavActive,
+});
 
 const isTruckSpawned = computed(() => {
     return (

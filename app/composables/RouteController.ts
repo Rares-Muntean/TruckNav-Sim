@@ -1067,7 +1067,23 @@ export const useRouteController = (
         const totalGameHours = cache[lastIdx + 1] ?? 0;
         const totalRealHours = cache[lastIdx + 2] ?? 0;
 
-        const currentKm = cache[currentIdx] ?? 0;
+        const segA = path[bestIndex]!;
+        const segB = path[bestIndex + 1]!;
+        const segLenSq = getSquaredDist(segA, segB);
+        let segT = 0;
+        if (segLenSq > 0) {
+            segT =
+                ((truckCoords[0] - segA[0]) * (segB[0] - segA[0]) +
+                    (truckCoords[1] - segA[1]) * (segB[1] - segA[1])) /
+                segLenSq;
+            segT = Math.max(0, Math.min(1, segT));
+        }
+
+        const nextIdx = (bestIndex + 1) * 3;
+        const currentKm =
+            (cache[currentIdx] ?? 0) +
+            ((cache[nextIdx] ?? 0) - (cache[currentIdx] ?? 0)) * segT;
+
         const currentGameHours = cache[currentIdx + 1] ?? 0;
         const currentRealHours = cache[currentIdx + 2] ?? 0;
 
@@ -1101,6 +1117,18 @@ export const useRouteController = (
 
                 if (distToExit < threshold) {
                     fullRouteDirections.value.shift();
+
+                    if (fullRouteDirections.value.length > 1) {
+                        const newTurn = fullRouteDirections.value[1];
+                        if (newTurn && newTurn.cumulativeKm !== undefined) {
+                            nextTurnDistance.value = Math.max(
+                                0,
+                                +(newTurn.cumulativeKm - currentKm).toFixed(1),
+                            );
+                        }
+                    } else {
+                        nextTurnDistance.value = 0;
+                    }
 
                     if (
                         currentRoutePath.value &&
