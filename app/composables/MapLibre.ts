@@ -251,18 +251,20 @@ export async function initializeMap(
         });
 
         // DISPLAYING COUNTRY DELIMITATIONS
-        map.addLayer({
-            id: "country-borders",
-            type: "fill",
-            source: "all-data",
-            "source-layer": "countries",
-            paint: {
-                "fill-color": activeSettings.value?.landColor
-                    ? darkenColor(activeSettings.value.landColor, 0.4)
-                    : "#3d546e",
-                "fill-opacity": 0.4,
-            },
-        });
+        if (hasAllDataLayer("countries")) {
+            map.addLayer({
+                id: "country-borders",
+                type: "fill",
+                source: "all-data",
+                "source-layer": "countries",
+                paint: {
+                    "fill-color": activeSettings.value?.landColor
+                        ? darkenColor(activeSettings.value.landColor, 0.4)
+                        : "#3d546e",
+                    "fill-opacity": 0.4,
+                },
+            });
+        }
 
         ////
         //// LAYERS FOR DISPLAYING
@@ -461,6 +463,42 @@ export async function initializeMap(
                 "symbol-placement": "point",
             },
         });
+
+        // 3D BUILDING FOOTPRINTS
+        if (hasAllDataLayer("footprints")) {
+            const landCol = activeSettings.value?.landColor;
+            const buildingColor = lightenColor(landCol, 0.07);
+
+            map.addLayer(
+                {
+                    id: "footprints-3d",
+                    type: "fill-extrusion",
+                    source: "all-data",
+                    "source-layer": "footprints",
+                    minzoom: 10,
+                    paint: {
+                        "fill-extrusion-color": buildingColor,
+                        "fill-extrusion-height": [
+                            "*",
+                            18,
+                            ["coalesce", ["get", "height"], 6],
+                        ],
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-vertical-gradient": true,
+                        "fill-extrusion-opacity": [
+                            "interpolate",
+                            ["linear"],
+                            ["zoom"],
+                            10,
+                            0,
+                            11,
+                            0.65,
+                        ],
+                    },
+                },
+                "all-sprites",
+            );
+        }
 
         // ROAD POI TYPE
         map.addLayer({
