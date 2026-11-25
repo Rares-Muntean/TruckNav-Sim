@@ -129,6 +129,11 @@ export async function initializeMap(
         [23, 25],
     ];
 
+    const grandUtopiaBounds: [number[], number[]] = [
+        [-56, -15],
+        [-22, 24],
+    ];
+
     const baseAtsBounds: [number[], number[]] = [
         [-30, -23],
         [23, 25],
@@ -139,18 +144,27 @@ export async function initializeMap(
         [23, 25],
     ];
 
-    const grandUtopiaBounds: [number[], number[]] = [
-        [-56, -15],
-        [-22, 24],
+    const atsNaMegaComboBounds: [number[], number[]] = [
+        [-30, -23],
+        [40, 40],
     ];
 
     const getEtsBounds = () => {
         if (activeSettings.value.activeMod === "grand-utopia")
             return grandUtopiaBounds;
 
-        if (activeSettings.value.activeMod !== "none") return modsEtsBounds;
+        if (isMods) return modsEtsBounds;
 
         return baseEtsBounds;
+    };
+
+    const getAtsBounds = () => {
+        if (activeSettings.value.activeMod === "ats-na-mega-combo")
+            return atsNaMegaComboBounds;
+
+        if (isMods) return modsAtsBounds;
+
+        return baseAtsBounds;
     };
 
     const baseEtsCenter = [0, 0];
@@ -193,7 +207,7 @@ export async function initializeMap(
             fadeDuration: 250,
             attributionControl: false,
             collectResourceTiming: false,
-            maxBounds: isMods ? modsAtsBounds : baseAtsBounds,
+            maxBounds: getAtsBounds(),
 
             pixelRatio: Math.min(window.devicePixelRatio, 1.4),
 

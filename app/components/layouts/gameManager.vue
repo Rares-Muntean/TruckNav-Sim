@@ -97,6 +97,20 @@ const availableMods = computed(() => {
         ],
         ats: [
             {
+                id: "ats-na-mega-combo",
+                name: "ATS North America Combo",
+                description:
+                    "C2C + DNA + Western Canada + Reforma + ATS Expansion + ProMods Canada",
+                urls: getModUrls("ats-na-mega-combo.zip"),
+            },
+            {
+                id: "ats-west-combo",
+                name: "ATS West Combo",
+                description:
+                    "Reforma + Better Arizona + ATS Expansion + ProMods Canada",
+                urls: getModUrls("ats-west-combo.zip"),
+            },
+            {
                 id: "ats-expansion",
                 name: "ATS Expansion",
                 description: "Rural Towns & Farm Routes",
@@ -441,10 +455,16 @@ const isModActive = (modId: string) => {
                                         >
                                             <Icon name="lucide:map" size="22" />
                                             <div class="active-mod">
-                                                <span>
+                                                <span class="active-mod-name">
                                                     {{ activeModName }}</span
                                                 >
-                                                <span>{{ activeGame }}</span>
+                                                <span
+                                                    v-if="
+                                                        activeModName ===
+                                                        'Vanilla'
+                                                    "
+                                                    >{{ activeGame }}</span
+                                                >
                                             </div>
                                             <div></div>
                                         </button>
