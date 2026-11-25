@@ -59,6 +59,12 @@ const availableMods = computed(() => {
     > = {
         ets2: [
             {
+                id: "ets2-core-combo",
+                name: "Core Combo",
+                description: "Europe & Iceland Overhaul",
+                urls: getModUrls("ets2-core-combo.zip"),
+            },
+            {
                 id: "promods-europe",
                 name: "ProMods Europe",
                 description: "Europe & Iceland Overhaul",
@@ -98,14 +104,14 @@ const availableMods = computed(() => {
         ats: [
             {
                 id: "ats-na-mega-combo",
-                name: "ATS North America Combo",
+                name: "North America Combo",
                 description:
                     "C2C + DNA + Western Canada + Reforma + ATS Expansion + ProMods Canada",
                 urls: getModUrls("ats-na-mega-combo.zip"),
             },
             {
                 id: "ats-west-combo",
-                name: "ATS West Combo",
+                name: "West Combo",
                 description:
                     "Reforma + Better Arizona + ATS Expansion + ProMods Canada",
                 urls: getModUrls("ats-west-combo.zip"),
