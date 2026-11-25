@@ -301,6 +301,21 @@ watch(
 );
 
 watch(
+    () => settings.value.showBuildings,
+    (showBuildings) => {
+        if (!map.value) return;
+
+        if (map.value.getLayer("footprints-3d")) {
+            map.value.setLayoutProperty(
+                "footprints-3d",
+                "visibility",
+                showBuildings ? "visible" : "none",
+            );
+        }
+    },
+);
+
+watch(
     () => activeSettings.value.backgroundColor,
     async (newColor) => {
         if (!map.value) return;
@@ -337,6 +352,14 @@ watch(
                 "water-outline",
                 "line-color",
                 darkenColor(newColor, 0.4),
+            );
+        }
+
+        if (map.value.getLayer("footprints-3d")) {
+            map.value.setPaintProperty(
+                "footprints-3d",
+                "fill-extrusion-color",
+                lightenColor(newColor, 0.07),
             );
         }
     },

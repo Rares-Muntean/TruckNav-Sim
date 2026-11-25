@@ -476,6 +476,11 @@ export async function initializeMap(
                     source: "all-data",
                     "source-layer": "footprints",
                     minzoom: 10,
+                    layout: {
+                        visibility: settings.value.showBuildings
+                            ? "visible"
+                            : "none",
+                    },
                     paint: {
                         "fill-extrusion-color": buildingColor,
                         "fill-extrusion-height": [

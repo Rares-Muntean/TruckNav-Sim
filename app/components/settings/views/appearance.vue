@@ -2,7 +2,7 @@
 import { generateTruckIcon } from "~/assets/utils/map/markers";
 import { anim } from "~/assets/utils/animations/anim";
 
-const { activeSettings, updateProfile } = useSettings();
+const { settings, activeSettings, updateGlobal, updateProfile } = useSettings();
 const { t } = useTranslations();
 
 const isFontSelectOpened = ref(false);
@@ -53,6 +53,10 @@ function toggleOuterRim() {
 
 function toggleDisc() {
     updateProfile("discEnabled", !activeSettings.value.discEnabled);
+}
+
+function toggleShowBuildings() {
+    updateGlobal("showBuildings", !settings.value.showBuildings);
 }
 
 function toggleGlowEffect() {
@@ -183,6 +187,24 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                             </div>
                         </template>
                     </IncreaseOption>
+
+                    <div
+                        class="option setting stacked"
+                        @click="toggleShowBuildings"
+                    >
+                        <div class="option-title">
+                            <div class="icon-wrapper">
+                                <Icon
+                                    name="lucide:building-complex"
+                                    class="icon"
+                                />
+                            </div>
+
+                            <p>{{ t("settings.showBuildings") }}</p>
+                        </div>
+
+                        <Switch :is-active="settings.showBuildings" />
+                    </div>
                 </div>
             </div>
 

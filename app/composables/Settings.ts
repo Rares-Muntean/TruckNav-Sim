@@ -62,7 +62,7 @@ export interface AppSettingsState {
     routeTimeMode: RouteTimeMode;
     uiScale: number;
     mapElFontScale: number;
-
+    showBuildings: boolean;
     autoStartNav: boolean;
 }
 
@@ -113,6 +113,7 @@ const DEFAULT_SETTINGS: AppSettingsState = {
     uiScale: 100,
     autoStartNav: false,
     mapElFontScale: 0,
+    showBuildings: true,
 };
 
 const STORAGE_KEY = "truck-nav-settings";
@@ -284,6 +285,7 @@ export const useSettings = () => {
 
         settings.value.hudBtnSize = DEFAULT_SETTINGS.hudBtnSize;
         settings.value.mapElFontScale = DEFAULT_SETTINGS.mapElFontScale;
+        settings.value.showBuildings = DEFAULT_SETTINGS.showBuildings;
         settings.value.truckMarkerSize = DEFAULT_SETTINGS.truckMarkerSize;
         settings.value.compactTripFontSize =
             DEFAULT_SETTINGS.compactTripFontSize;
