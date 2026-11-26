@@ -253,7 +253,7 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                                 <Icon name="lucide:circle-check" class="icon" />
                             </div>
 
-                            <p>{{ t("settings.outerRim") }}</p>
+                            <p>{{ t("settings.showDisc") }}</p>
                         </div>
 
                         <Switch :is-active="activeSettings.discEnabled" />
@@ -294,7 +294,10 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                     >
                         <template #icon>
                             <div class="icon-wrapper">
-                                <Icon name="lucide:circle" class="icon" />
+                                <Icon
+                                    name="lucide:pencil-sparkles"
+                                    class="icon"
+                                />
                             </div>
                         </template>
                     </ColorOption>
@@ -307,7 +310,7 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                     >
                         <div class="option-title">
                             <div class="icon-wrapper">
-                                <Icon name="lucide:circle-check" class="icon" />
+                                <Icon name="lucide:sparkles" class="icon" />
                             </div>
 
                             <p>{{ t("settings.glowEffect") }}</p>
