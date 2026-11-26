@@ -652,33 +652,68 @@ ipcMain.handle("check-plugin-statuses", async () => {
 });
 
 ipcMain.handle("select-game-folder", async (event, gameName: string) => {
-    const result = await dialog.showOpenDialog({
-        title: `Select the root folder for ${gameName}.exe`,
-        properties: ["openDirectory"],
+    const isAts = gameName.toUpperCase() === "ATS";
+    const gameFolder = isAts
+        ? "American Truck Simulator"
+        : "Euro Truck Simulator 2";
+
+    const steamRoot = await getSteamPath();
+    const guessPlugins = path.join(
+        steamRoot,
+        "steamapps",
+        "common",
+        gameFolder,
+        "bin",
+        "win_x64",
+        "plugins",
+    );
+    const guessBin = path.dirname(guessPlugins);
+
+    let defaultPath = "scs-telemetry.dll";
+    if (existsSync(guessPlugins)) {
+        defaultPath = path.join(guessPlugins, "scs-telemetry.dll");
+    } else if (existsSync(guessBin)) {
+        defaultPath = path.join(guessBin, "scs-telemetry.dll");
+    }
+
+    const result = await dialog.showSaveDialog({
+        title: `Install scs-telemetry.dll (${gameFolder}\\bin\\win_x64\\plugins)`,
+        defaultPath,
         buttonLabel: "Install Plugin",
+        filters: [
+            { name: "Plugin DLL & Game EXE", extensions: ["dll", "exe"] },
+            { name: "All Files", extensions: ["*"] },
+        ],
     });
 
-    if (result.canceled) {
+    if (result.canceled || !result.filePath) {
         return { success: false, message: "Cancelled" };
     }
 
-    const selectedPath = result.filePaths[0];
-    const pluginPath = path.join(selectedPath, "plugins");
+    let targetDir = path.dirname(result.filePath);
+
+    if (existsSync(path.join(targetDir, "bin", "win_x64"))) {
+        targetDir = path.join(targetDir, "bin", "win_x64", "plugins");
+    } else if (existsSync(path.join(targetDir, "win_x64"))) {
+        targetDir = path.join(targetDir, "win_x64", "plugins");
+    } else if (path.basename(targetDir).toLowerCase() !== "plugins") {
+        targetDir = path.join(targetDir, "plugins");
+    }
 
     try {
-        if (!existsSync(pluginPath)) {
-            mkdirSync(pluginPath, { recursive: true });
+        if (!existsSync(targetDir)) {
+            mkdirSync(targetDir, { recursive: true });
         }
 
         const dllSource = app.isPackaged
             ? path.join(process.resourcesPath, "bin", "scs-telemetry.dll")
             : path.join(app.getAppPath(), "bin", "scs-telemetry.dll");
 
-        const dllDestination = path.join(pluginPath, "scs-telemetry.dll");
+        const dllDestination = path.join(targetDir, "scs-telemetry.dll");
 
         copyFileSync(dllSource, dllDestination);
 
-        return { success: true, path: selectedPath };
+        return { success: true, path: targetDir };
     } catch (err: any) {
         return { success: false, message: err.message };
     }
