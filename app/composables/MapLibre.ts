@@ -266,33 +266,6 @@ export async function initializeMap(
             });
         }
 
-        ////
-        //// LAYERS FOR DISPLAYING
-        //// FROM SOURCES
-        ////
-        // OUTLINE
-        map.addLayer({
-            id: "water-outline",
-            type: "line",
-            source: "all-data",
-            "source-layer": "water",
-            paint: {
-                "line-color": activeSettings.value?.landColor
-                    ? darkenColor(activeSettings.value.landColor, 0.15)
-                    : "#1e3a5f",
-                "line-width": [
-                    "interpolate",
-                    ["linear"],
-                    ["zoom"],
-                    5,
-                    2.5,
-                    10,
-                    5,
-                ],
-                "line-opacity": 0.7,
-            },
-        });
-
         // THICK ROADS
         map.addLayer({
             id: "roads",
@@ -502,6 +475,48 @@ export async function initializeMap(
                     },
                 },
                 "all-sprites",
+            );
+        }
+
+        // 3D PREFAB COMPANY BUILDINGS
+        if (hasAllDataLayer("prefabs")) {
+            const prefabBuildingColor = blendWithBg(
+                lightenColor(activeSettings.value.themeColor, 0),
+                0.6,
+            );
+
+            map.addLayer(
+                {
+                    id: "prefab-buildings-3d",
+                    type: "fill-extrusion",
+                    source: "all-data",
+                    "source-layer": "prefabs",
+                    filter: ["==", ["get", "color"], 2],
+                    minzoom: 10,
+                    layout: {
+                        visibility: settings.value.showBuildings
+                            ? "visible"
+                            : "none",
+                    },
+                    paint: {
+                        "fill-extrusion-color": prefabBuildingColor,
+                        "fill-extrusion-height": 160,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-vertical-gradient": true,
+                        "fill-extrusion-opacity": [
+                            "interpolate",
+                            ["linear"],
+                            ["zoom"],
+                            10,
+                            0,
+                            11,
+                            0.85,
+                        ],
+                    },
+                },
+                map.getLayer("village-labels")
+                    ? "village-labels"
+                    : "all-sprites",
             );
         }
 

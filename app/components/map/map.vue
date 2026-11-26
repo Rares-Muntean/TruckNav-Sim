@@ -268,10 +268,31 @@ watch(
     () => activeSettings.value.themeColor,
     (themeColor) => {
         if (!map.value) return;
+        const color0 = blendWithBg(lightenColor(themeColor, 0.3), 0.6);
+        const color1 = blendWithBg(lightenColor(themeColor, 0), 0.6);
 
         if (map.value.getLayer("prefab-zones")) {
-            const blended = blendWithBg(lightenColor(themeColor, 0.3), 0.6);
-            map.value.setPaintProperty("prefab-zones", "fill-color", blended);
+            map.value.setPaintProperty("prefab-zones", "fill-color", [
+                "match",
+                ["get", "color"],
+                0,
+                color0,
+                1,
+                color0,
+                2,
+                color1,
+                3,
+                color0,
+                "#3d546e",
+            ]);
+        }
+
+        if (map.value.getLayer("prefab-buildings-3d")) {
+            map.value.setPaintProperty(
+                "prefab-buildings-3d",
+                "fill-extrusion-color",
+                color1,
+            );
         }
     },
 );
@@ -304,12 +325,17 @@ watch(
     () => settings.value.showBuildings,
     (showBuildings) => {
         if (!map.value) return;
+        const visible = showBuildings ? "visible" : "none";
 
         if (map.value.getLayer("footprints-3d")) {
+            map.value.setLayoutProperty("footprints-3d", "visibility", visible);
+        }
+
+        if (map.value.getLayer("prefab-buildings-3d")) {
             map.value.setLayoutProperty(
-                "footprints-3d",
+                "prefab-buildings-3d",
                 "visibility",
-                showBuildings ? "visible" : "none",
+                visible,
             );
         }
     },
