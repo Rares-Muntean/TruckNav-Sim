@@ -102,8 +102,40 @@ self.onmessage = async (e: MessageEvent) => {
                 return;
             }
 
-            const { selectedGame, sdkScale, avgSpeed } =
+            const { selectedGame, sdkScale, avgSpeed, routeMode } =
                 payload as CalcMultiRoutePayload;
+
+            const isAts = selectedGame === "ats";
+            let totalWeight = 0;
+            let totalTime = 0;
+
+            for (
+                let i = 0;
+                i < multiResult.combinedNodeSequence.length - 1;
+                i++
+            ) {
+                const u = multiResult.combinedNodeSequence[i]!;
+                const v = multiResult.combinedNodeSequence[i + 1]!;
+
+                const road = adjacency.get(u)?.find((edge) => edge.to === v);
+                if (!road) continue;
+
+                let speed = isAts ? 60 : 48;
+                if (road.isFerry) speed = 35;
+                else if (road.roadTier === 3) speed = isAts ? 105 : 82;
+                else if (road.roadTier === 2) speed = isAts ? 85 : 70;
+                else if (road.roadTier === 1) speed = isAts ? 50 : 40;
+
+                const w = road.weight || 1;
+                totalTime += w / speed;
+                totalWeight += w;
+            }
+
+            let baseRoadSpeed =
+                totalTime > 0 ? totalWeight / totalTime : isAts ? 105 : 82;
+
+            if (routeMode === "shortest") baseRoadSpeed *= 0.93;
+            else if (routeMode === "scenic") baseRoadSpeed *= 0.86;
 
             finalizeAndSendRouteResult({
                 rawCoordinates: multiResult.combinedPathCoords,
@@ -114,6 +146,7 @@ self.onmessage = async (e: MessageEvent) => {
                 selectedGame,
                 sdkScale,
                 avgSpeed,
+                routeMode,
                 scaleConfig: workerScaleConfig,
                 adjacency,
                 nodeCoordsMap: nodeCoordsMapInstance,

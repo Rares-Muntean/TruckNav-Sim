@@ -304,6 +304,7 @@ export interface FinalizeRouteParams {
     selectedGame: "ets2" | "ats";
     sdkScale: number;
     avgSpeed: number;
+    routeMode?: RouteMode;
     scaleConfig: MapScaleConfig;
     adjacency: Map<number, RoadEdge[]>;
     nodeCoordsMap: TypedNodeCoordsMap;
@@ -327,6 +328,7 @@ export function finalizeAndSendRouteResult(params: FinalizeRouteParams) {
         selectedGame,
         sdkScale,
         avgSpeed,
+        routeMode,
         scaleConfig,
         adjacency,
         nodeCoordsMap,
@@ -340,9 +342,11 @@ export function finalizeAndSendRouteResult(params: FinalizeRouteParams) {
         finalSmoothedPath,
         cityNodes,
         selectedGame,
-        sdkScale,
         avgSpeed,
         scaleConfig,
+        nodeSequence,
+        adjacency,
+        routeMode,
     );
 
     const nodeKms = new Float32Array(nodeSequence.length);

@@ -2,7 +2,7 @@ import {
     convertGeoToAts,
     convertGeoToEts2,
 } from "~/assets/utils/map/converters";
-import type { GameType } from "~/types";
+import type { GameType, RoadEdge } from "~/types";
 import type { MapScaleConfig } from "~/composables/CityData";
 
 export interface WorkerCityArea {
@@ -133,20 +133,49 @@ export function buildRouteStatsCache(
     pathCoords: [number, number][],
     cities: WorkerCityArea[] | null,
     selectedGame: GameType,
-    sdkScale: number = 0,
     avgSpeed: number,
     scaleConfig: MapScaleConfig,
+    nodeSequence?: number[],
+    adjacency?: Map<number, RoadEdge[]>,
+    routeMode?: RouteMode,
 ) {
     const cache = new Float32Array(pathCoords.length * 3);
     const isAts = selectedGame === "ats";
+    const defaultHighway = isAts ? 105 : 82;
 
-    const baseHighway = isAts ? 105 : 82;
-    const highwaySpeed =
-        avgSpeed > 40 ? avgSpeed * 0.7 + baseHighway * 0.3 : baseHighway;
+    let roadBase = defaultHighway;
+    if (nodeSequence && adjacency) {
+        let totalWeight = 0;
+        let totalTime = 0;
 
+        for (let i = 0; i < nodeSequence.length - 1; i++) {
+            const road = adjacency
+                .get(nodeSequence[i]!)
+                ?.find((edge) => edge.to === nodeSequence[i + 1]);
+            if (!road) continue;
+
+            let speed = isAts ? 60 : 48;
+            if (road.isFerry) speed = 35;
+            else if (road.roadTier === 3) speed = isAts ? 105 : 82;
+            else if (road.roadTier === 2) speed = isAts ? 85 : 70;
+            else if (road.roadTier === 1) speed = isAts ? 50 : 40;
+
+            const w = road.weight || 1;
+            totalTime += w / speed;
+            totalWeight += w;
+        }
+
+        if (totalTime > 0) roadBase = totalWeight / totalTime;
+        if (routeMode === "shortest") roadBase *= 0.93;
+        else if (routeMode === "scenic") roadBase *= 0.86;
+    }
+
+    const driverPace =
+        avgSpeed > 45 ? Math.max(0.8, Math.min(1.2, avgSpeed / roadBase)) : 1.0;
+
+    const highwaySpeed = roadBase * driverPace;
     const baseCity = isAts ? 40 : 32;
-    const citySpeed =
-        avgSpeed > 40 ? avgSpeed * 0.4 + baseCity * 0.6 : baseCity;
+    const citySpeed = baseCity * (1 + (driverPace - 1) * 0.4);
     const speeds = { highway: highwaySpeed, city: citySpeed };
 
     const gamePoints = pathCoords.map((p) =>
@@ -178,7 +207,10 @@ export function buildRouteStatsCache(
         );
 
         const segmentKm = (rawLength * multiplier) / 1000;
-        const segmentSpeed = multiplier === 3 ? speeds.city : speeds.highway;
+        const segmentSpeed =
+            multiplier === (scaleConfig.urbanScale ?? 3)
+                ? speeds.city
+                : speeds.highway;
         const segmentGameHours = segmentKm / segmentSpeed;
 
         totalKm += segmentKm;
