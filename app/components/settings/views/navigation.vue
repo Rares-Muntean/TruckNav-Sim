@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { generateTruckIcon } from "~/assets/utils/map/markers";
 import { anim } from "~/assets/utils/animations/anim";
+import type { RouteMode, RouteTimeMode } from "~/composables/Settings";
 
 const {
     settings,
@@ -22,7 +23,17 @@ const hasDrawTurnNavigation = computed(
     () => activeSettings.value.drawTurnNavigation === true,
 );
 
-const usesGameTime = computed(() => settings.value.routeTimeMode === "game");
+const routeTimeOptions = computed(() => [
+    { label: t("settings.gameTime"), value: "game" as RouteTimeMode },
+    { label: t("settings.realTime"), value: "real" as RouteTimeMode },
+]);
+
+const routeModeOptions = computed(() => [
+    { label: "Best", value: "best" as RouteMode },
+    { label: "Shortest", value: "shortest" as RouteMode },
+    { label: "Scenic", value: "scenic" as RouteMode },
+]);
+
 const truckImgSrc = ref("");
 
 const isDriveInfoOpened = ref(false);
@@ -48,8 +59,14 @@ function toggleDrawTurnNavigation() {
     updateProfile("drawTurnNavigation", !hasDrawTurnNavigation.value);
 }
 
-function toggleRouteTimeMode() {
-    updateGlobal("routeTimeMode", usesGameTime.value ? "real" : "game");
+function cycleRouteTimeMode() {
+    const options = routeTimeOptions.value;
+    const currentIndex = options.findIndex(
+        (o) => o.value === settings.value.routeTimeMode,
+    );
+
+    const nextOption = options[(currentIndex + 1) % options.length]!;
+    updateGlobal("routeTimeMode", nextOption.value);
 }
 
 function toggleDriveInfoPanel() {
@@ -134,7 +151,7 @@ function handlePanelEnter(el: Element, done: () => void, query: string) {
 
                     <div
                         class="option setting stacked"
-                        @click="toggleRouteTimeMode"
+                        @click="cycleRouteTimeMode"
                     >
                         <div class="option-title">
                             <div class="icon-wrapper">
@@ -145,10 +162,36 @@ function handlePanelEnter(el: Element, done: () => void, query: string) {
                         </div>
 
                         <SegmentedControl
-                            :left-option="t('settings.gameTime')"
-                            :right-option="t('settings.realTime')"
                             size="normal"
-                            :active="usesGameTime"
+                            :options="routeTimeOptions"
+                            :model-value="settings.routeTimeMode"
+                            @update:model-value="
+                                updateGlobal('routeTimeMode', $event)
+                            "
+                        />
+                    </div>
+
+                    <div class="small-separator"></div>
+
+                    <div class="option setting stacked vertical">
+                        <div class="option-title">
+                            <div class="icon-wrapper">
+                                <Icon
+                                    name="lucide:route-arrow-right"
+                                    class="icon"
+                                />
+                            </div>
+
+                            <p>{{ t("settings.routeMode") }}</p>
+                        </div>
+
+                        <SegmentedControl
+                            size="normal"
+                            :options="routeModeOptions"
+                            :model-value="activeSettings.routeMode"
+                            @update:model-value="
+                                updateProfile('routeMode', $event)
+                            "
                         />
                     </div>
                 </div>

@@ -19,6 +19,7 @@ import RouteWorker from "~/workers/route.worker?worker&inline";
 import { clearTurnArrows, drawTurnArrows } from "~/assets/utils/map/turnArrows";
 import type { RoadEdge } from "~/types";
 import type { LocationData } from "./CityData";
+import type { RouteMode } from "./Settings";
 
 const REAL_TIME_DELAY_FACTOR = 0.25;
 const MAX_REAL_TIME_DELAY_MINUTES = 10;
@@ -73,6 +74,8 @@ export const useRouteController = (
 
     const waypointList = ref<[number, number][]>([]);
     const snappedWaypointNodeIds = ref<number[]>([]);
+
+    let nextRequestId = 0;
 
     function updateRouteEta(gameHours: number, realHours: number) {
         const usesRealTime = settings.value.routeTimeMode === "real";
@@ -301,6 +304,7 @@ export const useRouteController = (
 
             const userDlcs = toRaw(activeSettings.value.ownedDlcs);
 
+            const routeMode = activeSettings.value.routeMode;
             const result = await calculateMultiRouteInWorker(
                 startNodeId.value!,
                 targetWaypoints,
@@ -310,6 +314,7 @@ export const useRouteController = (
                 userDlcs,
                 sdkScale,
                 avgSpeed,
+                routeMode,
             );
 
             if (result) {
@@ -418,15 +423,21 @@ export const useRouteController = (
         ownedDlcs: number[],
         sdkScale: number,
         avgSpeed: number,
+        routeMode: RouteMode,
     ): Promise<any> {
         return new Promise((resolve) => {
+            const requestId = ++nextRequestId;
+
             if (!worker) {
                 resolve(null);
                 return;
             }
 
             const handler = (e: MessageEvent) => {
-                if (e.data.type === "RESULT") {
+                if (
+                    e.data.type === "RESULT" &&
+                    e.data.requestId === requestId
+                ) {
                     worker!.removeEventListener("message", handler);
                     resolve(e.data.payload);
                 }
@@ -445,6 +456,7 @@ export const useRouteController = (
 
             worker.postMessage({
                 type: "CALC_MULTI_ROUTE",
+                requestId,
                 payload: {
                     startId: Number(startId),
                     waypointsCoords: cleanCoords,
@@ -455,6 +467,7 @@ export const useRouteController = (
                     selectedGame: settings.value.selectedGame,
                     sdkScale: Number(sdkScale),
                     avgSpeed: Number(avgSpeed),
+                    routeMode,
                 },
             });
         });
@@ -589,7 +602,6 @@ export const useRouteController = (
                 truckHeading,
                 sdkScale,
                 avgSpeed,
-                waypointList.value,
             );
         }
     }
@@ -794,7 +806,7 @@ export const useRouteController = (
                         10.5,
                         4,
                         11.5,
-                        9,
+                        11,
                     ],
                 },
             },
@@ -943,61 +955,6 @@ export const useRouteController = (
                 },
             });
         }
-    }
-
-    function calculateRouteInWorker(
-        startId: number,
-        possibleEnds: number[],
-        heading: number,
-        startType: string,
-        targetCoords: [number, number],
-        projectedStartCoords: [number, number],
-        ownedDlcs: number[],
-        sdkScale: number,
-        avgSpeed: number,
-    ): Promise<any> {
-        return new Promise((resolve) => {
-            if (!worker) {
-                resolve(null);
-                return;
-            }
-
-            const handler = (e: MessageEvent) => {
-                if (e.data.type === "RESULT") {
-                    worker!.removeEventListener("message", handler);
-                    resolve(e.data.payload);
-                }
-            };
-
-            worker.addEventListener("message", handler);
-
-            const cleanEnds = possibleEnds.map((node) => Number(node));
-            const cleanTarget = [
-                Number(targetCoords[0]),
-                Number(targetCoords[1]),
-            ] as [number, number];
-            const cleanProjected = [
-                Number(projectedStartCoords[0]),
-                Number(projectedStartCoords[1]),
-            ] as [number, number];
-            const cleanDlcs = ownedDlcs.map((dlc) => Number(dlc));
-
-            worker.postMessage({
-                type: "CALC_ROUTE",
-                payload: {
-                    startId: Number(startId),
-                    possibleEnds: cleanEnds,
-                    heading: heading !== null ? Number(heading) : null,
-                    startType,
-                    targetCoords: cleanTarget,
-                    projectedStartCoords: cleanProjected,
-                    ownedDlcs: cleanDlcs,
-                    selectedGame: settings.value.selectedGame,
-                    sdkScale: Number(sdkScale),
-                    avgSpeed: Number(avgSpeed),
-                },
-            });
-        });
     }
 
     const lastRecalcTime = ref(0);

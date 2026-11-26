@@ -2,9 +2,7 @@ let adjacency: Map<number, RoadEdge[]> | null = null;
 let nodeCoordsF64: Float64Array | null = null;
 let nodeCoordsMapInstance: TypedNodeCoordsMap | null = null;
 
-import { calculateRoute } from "~/assets/utils/routing/algorithm";
 import {
-    buildDisplayCoordinatesForNodes,
     executeMultiRoute,
     finalizeAndSendRouteResult,
 } from "~/assets/utils/routing/routeExecution";
@@ -22,7 +20,7 @@ let workerScaleConfig: MapScaleConfig = {
 };
 
 self.onmessage = async (e: MessageEvent) => {
-    const { type, payload } = e.data;
+    const { type, requestId, payload } = e.data;
 
     if (type === "INIT_GRAPH") {
         try {
@@ -44,7 +42,11 @@ self.onmessage = async (e: MessageEvent) => {
             if (cities) cityNodes = cities;
             if (scaleConfig) workerScaleConfig = scaleConfig;
 
-            for (let i = 0; i < graphF32.length; i += 12) {
+            const isV2 = graphF32[0] === -2; // Checks if it's V2 (The version with the road tier property)
+            const startOffset = isV2 ? 4 : 0;
+            const stride = isV2 ? graphF32[2]! : 12;
+
+            for (let i = startOffset; i < graphF32.length; i += stride) {
                 const u = graphF32[i]!;
                 const v = graphF32[i + 1]!;
                 const w = graphF32[i + 2]!;
@@ -57,6 +59,7 @@ self.onmessage = async (e: MessageEvent) => {
                 const pointCount = graphF32[i + 9]!;
                 const maneuverType = graphF32[i + 10]!;
                 const exitNumber = graphF32[i + 11]!;
+                const roadTier = isV2 ? graphF32[i + 12] ?? 0 : 0;
 
                 if (!adjacency.has(u)) adjacency.set(u, []);
                 adjacency.get(u)!.push({
@@ -71,6 +74,7 @@ self.onmessage = async (e: MessageEvent) => {
                     pointCount,
                     maneuverType,
                     exitNumber,
+                    roadTier,
                 });
             }
             self.postMessage({ type: "READY" });
@@ -79,69 +83,10 @@ self.onmessage = async (e: MessageEvent) => {
         }
     }
 
-    if (type === "CALC_ROUTE") {
-        try {
-            if (!adjacency || !nodeCoordsMapInstance || !geometryF32) {
-                self.postMessage({ type: "RESULT", payload: null });
-                return;
-            }
-
-            const {
-                startId,
-                possibleEnds,
-                heading,
-                startType,
-                targetCoords,
-                ownedDlcs,
-                selectedGame,
-                sdkScale,
-                avgSpeed,
-            } = payload;
-
-            const result = calculateRoute(
-                startId,
-                new Set(possibleEnds),
-                heading,
-                adjacency,
-                nodeCoordsMapInstance as any,
-                startType,
-                ownedDlcs,
-                targetCoords,
-            );
-
-            if (!result || !result.path || !result.nodeSequence) {
-                self.postMessage({ type: "RESULT", payload: null });
-                return;
-            }
-
-            const rawDisplayPath = buildDisplayCoordinatesForNodes(
-                adjacency,
-                geometryF32,
-                result.nodeSequence,
-                result.path,
-            );
-
-            finalizeAndSendRouteResult({
-                rawCoordinates: rawDisplayPath,
-                nodeSequence: result.nodeSequence,
-                cityNodes,
-                selectedGame,
-                sdkScale,
-                avgSpeed,
-                scaleConfig: workerScaleConfig,
-                adjacency,
-                nodeCoordsMap: nodeCoordsMapInstance,
-            });
-        } catch (error) {
-            console.error("Web Worker calculation crash caught:", error);
-            self.postMessage({ type: "RESULT", payload: null });
-        }
-    }
-
     if (type === "CALC_MULTI_ROUTE") {
         try {
             if (!adjacency || !nodeCoordsMapInstance || !geometryF32) {
-                self.postMessage({ type: "RESULT", payload: null });
+                self.postMessage({ type: "RESULT", requestId, payload: null });
                 return;
             }
 
@@ -153,7 +98,7 @@ self.onmessage = async (e: MessageEvent) => {
             );
 
             if (!multiResult) {
-                self.postMessage({ type: "RESULT", payload: null });
+                self.postMessage({ type: "RESULT", requestId, payload: null });
                 return;
             }
 
@@ -172,10 +117,11 @@ self.onmessage = async (e: MessageEvent) => {
                 scaleConfig: workerScaleConfig,
                 adjacency,
                 nodeCoordsMap: nodeCoordsMapInstance,
+                requestId: requestId,
             });
         } catch (error) {
             console.error("Multi-routing worker error:", error);
-            self.postMessage({ type: "RESULT", payload: null });
+            self.postMessage({ type: "RESULT", requestId, payload: null });
         }
     }
 };

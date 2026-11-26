@@ -8,6 +8,7 @@ import {
     smoothPath,
     type WorkerCityArea,
 } from "./routeStats";
+import type { RouteMode } from "~/composables/Settings";
 
 const MAX_ALLOWED_TURN_ANGLE_RAD = 2.4;
 
@@ -119,6 +120,7 @@ export function calculateSingleTripSegment(
     candidateEndNodes: number[],
     targetCoords: [number, number],
     ownedDlcs: number[],
+    routeMode?: RouteMode,
 ): TripSegment | null {
     const result = calculateRoute(
         fromNodeId,
@@ -129,6 +131,7 @@ export function calculateSingleTripSegment(
         fromType,
         ownedDlcs,
         targetCoords,
+        routeMode,
     );
 
     if (!result) return null;
@@ -192,6 +195,7 @@ export function executeMultiRoute(
         heading,
         startType,
         ownedDlcs,
+        routeMode,
     } = payload;
 
     const finishedSegments: TripSegment[] = [];
@@ -213,6 +217,7 @@ export function executeMultiRoute(
             waypointsNodeGroups[i]!,
             waypointsCoords[i]!,
             ownedDlcs,
+            routeMode,
         );
 
         if (!currentSegment) return null;
@@ -237,6 +242,7 @@ export function executeMultiRoute(
                 waypointsNodeGroups[i]!,
                 waypointsCoords[i]!,
                 ownedDlcs,
+                routeMode,
             );
 
             const segmentBeforePrevious =
@@ -301,6 +307,7 @@ export interface FinalizeRouteParams {
     scaleConfig: MapScaleConfig;
     adjacency: Map<number, RoadEdge[]>;
     nodeCoordsMap: TypedNodeCoordsMap;
+    requestId?: number;
 }
 
 /**
@@ -323,6 +330,7 @@ export function finalizeAndSendRouteResult(params: FinalizeRouteParams) {
         scaleConfig,
         adjacency,
         nodeCoordsMap,
+        requestId,
     } = params;
 
     const simplified = simplifyPath(rawCoordinates, 0.000001);
@@ -378,6 +386,7 @@ export function finalizeAndSendRouteResult(params: FinalizeRouteParams) {
     self.postMessage(
         {
             type: "RESULT",
+            requestId,
             payload: {
                 nodeSequence,
                 displayPath: finalSmoothedPath,

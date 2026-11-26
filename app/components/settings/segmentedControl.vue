@@ -1,28 +1,29 @@
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends string | number | boolean">
+export interface SegmentOption<T> {
+    label: string;
+    value: T;
+}
+
 const props = defineProps<{
-    active: boolean;
+    options: SegmentOption<T>[];
     size: "small" | "normal";
-    leftOption: string;
-    rightOption: string;
+    modelValue: T;
 }>();
-const emit = defineEmits(["connect"]);
+
+const emit = defineEmits<{ "update:modelValue": [value: T] }>();
 </script>
 
 <template>
-    <div class="segmented-control" @click="emit('connect')" :class="[size]">
-        <button class="segment-btn" :class="[{ active: active }]">
-            <span class="label">{{ leftOption }}</span>
-        </button>
-
+    <div class="segmented-control" :class="[size]" @click.stop>
         <button
+            v-for="option in options"
+            :key="String(option.value)"
+            type="button"
             class="segment-btn"
-            :class="[
-                {
-                    active: !active,
-                },
-            ]"
+            :class="{ active: modelValue === option.value }"
+            @click="emit('update:modelValue', option.value)"
         >
-            <span class="label">{{ rightOption }}</span>
+            <span class="label">{{ option.label }}</span>
         </button>
     </div>
 </template>

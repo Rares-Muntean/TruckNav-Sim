@@ -9,10 +9,14 @@ const isRemoteGpsWindowOpened = ref(false);
 const etsActive = ref(false);
 const atsActive = ref(false);
 
-const startWithWindows = computed(() => settings.value.startWithWindows);
+// const startWithWindows = computed(() => settings.value.startWithWindows);
 const startMinimized = computed(() => settings.value.startMinimized);
 const autoStartNavigation = computed(() => settings.value.autoStartNavigation);
 
+const onOffOptions = [
+    { label: "On", value: true },
+    { label: "Off", value: false },
+];
 let ws: WebSocket | null = null;
 let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -166,16 +170,12 @@ const toggleRemoteGpsWindow = () => {
                             t("desktop.launchStartup")
                         }}</span>
                         <SegmentedControl
-                            left-option="On"
-                            right-option="Off"
-                            @connect="
-                                updateDesktopSetting(
-                                    'startWithWindows',
-                                    !startWithWindows,
-                                )
+                            :options="onOffOptions"
+                            :model-value="settings.startWithWindows"
+                            @update:model-value="
+                                updateDesktopSetting('startWithWindows', $event)
                             "
                             size="small"
-                            :active="startWithWindows"
                         />
                     </div>
 
@@ -184,16 +184,12 @@ const toggleRemoteGpsWindow = () => {
                             t("desktop.startMinimized")
                         }}</span>
                         <SegmentedControl
-                            left-option="On"
-                            right-option="Off"
-                            @connect="
-                                updateDesktopSetting(
-                                    'startMinimized',
-                                    !startMinimized,
-                                )
+                            :options="onOffOptions"
+                            :model-value="settings.startMinimized"
+                            @update:model-value="
+                                updateDesktopSetting('startMinimized', $event)
                             "
                             size="small"
-                            :active="startMinimized"
                         />
                     </div>
 
@@ -202,16 +198,15 @@ const toggleRemoteGpsWindow = () => {
                             t("settings.autoStartNav")
                         }}</span>
                         <SegmentedControl
-                            left-option="On"
-                            right-option="Off"
-                            @connect="
+                            :options="onOffOptions"
+                            :model-value="settings.autoStartNavigation"
+                            @update:model-value="
                                 updateDesktopSetting(
                                     'autoStartNavigation',
-                                    !autoStartNavigation,
+                                    $event,
                                 )
                             "
                             size="small"
-                            :active="autoStartNavigation"
                         />
                     </div>
                 </div>

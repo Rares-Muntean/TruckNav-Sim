@@ -4,6 +4,7 @@ export type UnitSystem = "metric" | "imperial";
 export type TextTheme = "light" | "dark";
 export type RouteTimeMode = "game" | "real";
 export type UiComponent = "speed" | "speedLimit" | "details-cards";
+export type RouteMode = "best" | "shortest" | "scenic";
 export type ActiveComponents = UiComponent[];
 export type LocaleCode =
     | "en"
@@ -45,6 +46,7 @@ export interface GameProfile {
     drawTurnNavigation: boolean;
     fontFamily: string;
     activeMod: string | "none";
+    routeMode: RouteMode;
 }
 
 export interface AppSettingsState {
@@ -88,6 +90,7 @@ const DEFAULT_PROFILE: GameProfile = {
     drawTurnNavigation: false,
     fontFamily: "Jakarta",
     activeMod: "none",
+    routeMode: "best",
 };
 
 const DEFAULT_SETTINGS: AppSettingsState = {

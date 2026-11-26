@@ -289,11 +289,11 @@ export async function initializeMap(
                     9,
                     2,
                     10,
-                    9,
+                    14,
                     11,
-                    16,
+                    20,
                     13,
-                    24,
+                    36,
                 ],
                 "line-opacity": 1,
             },
@@ -440,7 +440,7 @@ export async function initializeMap(
         // 3D BUILDING FOOTPRINTS
         if (hasAllDataLayer("footprints")) {
             const landCol = activeSettings.value?.landColor;
-            const buildingColor = lightenColor(landCol, 0.07);
+            const buildingColor = lightenColor(landCol, 0.08);
 
             map.addLayer(
                 {

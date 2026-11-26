@@ -29,6 +29,11 @@ if (activeTab) {
     });
 }
 
+const metricImperialOptions = computed(() => [
+    { label: t("settings.metric"), value: "metric" },
+    { label: t("settings.imperial"), value: "imperial" },
+]);
+
 const isMetric = computed(() => activeSettings.value.units === "metric");
 const rpcEnabled = computed(() => desktopSettings.value.rpcEnabled);
 const autoStartEnabled = computed(() => settings.value.autoStartNav);
@@ -100,8 +105,14 @@ const currentLanguageLabel = computed(() => {
     return foundLanguage ? foundLanguage.label : t("languages.english");
 });
 
-function toggleUnits() {
-    updateProfile("units", isMetric.value ? "imperial" : "metric");
+function cycleUnits() {
+    const options = metricImperialOptions.value;
+    const currentIndex = options.findIndex(
+        (o) => o.value === activeSettings.value.units,
+    );
+
+    const nextOption = options[(currentIndex + 1) % options.length]!;
+    updateProfile("units", nextOption.value as UnitSystem);
 }
 
 function toggleDlcPanel() {
@@ -172,7 +183,7 @@ onMounted(async () => {
 
                     <div class="small-separator"></div>
 
-                    <div class="option setting stacked" @click="toggleUnits">
+                    <div class="option setting stacked" @click="cycleUnits">
                         <div class="option-title">
                             <div class="icon-wrapper">
                                 <Icon name="lucide:ruler" class="icon" />
@@ -182,10 +193,12 @@ onMounted(async () => {
                         </div>
 
                         <SegmentedControl
-                            :left-option="t('settings.metric')"
-                            :right-option="t('settings.imperial')"
+                            :options="metricImperialOptions"
+                            :model-value="activeSettings.units"
+                            @update:model-value="
+                                updateProfile('units', $event as UnitSystem)
+                            "
                             size="normal"
-                            :active="isMetric"
                         />
                     </div>
 

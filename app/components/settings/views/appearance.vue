@@ -17,9 +17,10 @@ if (activeTab) {
     });
 }
 
-const isTextThemeLight = computed(
-    () => activeSettings.value.textColor === "light",
-);
+const lightDarkOptions = computed(() => [
+    { label: t("settings.dark"), value: "dark" },
+    { label: t("settings.light"), value: "light" },
+]);
 
 const fontItems = ref([
     "Jakarta",
@@ -35,8 +36,14 @@ const fontItems = ref([
     "Commissioner",
 ]);
 
-function toggleTextColor() {
-    updateProfile("textColor", isTextThemeLight.value ? "dark" : "light");
+function cycleTextColor() {
+    const options = lightDarkOptions.value;
+    const currentIndex = options.findIndex(
+        (o) => o.value === activeSettings.value.textColor,
+    );
+
+    const nextOption = options[(currentIndex + 1) % options.length]!;
+    updateProfile("textColor", nextOption.value as TextTheme);
 }
 
 function updateFont(val: string) {
@@ -328,10 +335,7 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                 </p>
 
                 <div class="items-wrapper-stacked">
-                    <div
-                        class="option setting stacked"
-                        @click="toggleTextColor"
-                    >
+                    <div class="option setting stacked" @click="cycleTextColor">
                         <div class="option-title">
                             <div class="icon-wrapper">
                                 <Icon name="lucide:type-outline" class="icon" />
@@ -341,9 +345,11 @@ const handlePanelEnter = (el: Element, done: () => void, query: string) => {
                         </div>
 
                         <SegmentedControl
-                            :left-option="t('settings.light')"
-                            :right-option="t('settings.dark')"
-                            :active="isTextThemeLight"
+                            :options="lightDarkOptions"
+                            :model-value="activeSettings.textColor"
+                            @update:model-value="
+                                updateProfile('textColor', $event as TextTheme)
+                            "
                             size="normal"
                         />
                     </div>

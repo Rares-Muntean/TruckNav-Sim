@@ -189,6 +189,16 @@ $button-padding: 8px 10px;
         border-radius: 0px;
         padding: 1rem 1rem;
     }
+
+    &.vertical {
+        flex-direction: column;
+        align-items: start;
+        gap: 1rem;
+
+        .segmented-control {
+            width: 100%;
+        }
+    }
 }
 
 .setting {

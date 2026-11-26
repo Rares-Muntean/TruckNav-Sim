@@ -70,8 +70,12 @@ export function useGraphSystem() {
                 { id: number; lng: number; lat: number }
             >();
 
+            const isV2 = graphF32[0] === -2;
+            const startOffset = isV2 ? 4 : 0;
+            const stride = isV2 ? graphF32[2]! : 12;
+
             // Stride is 12: [u, v, weight, hIn, hOut, isFerry, startIndex, pointCount]
-            for (let i = 0; i < graphF32.length; i += 12) {
+            for (let i = startOffset; i < graphF32.length; i += stride) {
                 const u = graphF32[i]!;
                 const v = graphF32[i + 1]!;
                 const weight = graphF32[i + 2]!;
@@ -84,6 +88,7 @@ export function useGraphSystem() {
                 const pointCount = graphF32[i + 9]!;
                 const maneuverType = graphF32[i + 10]!;
                 const exitNumber = graphF32[i + 11]!;
+                const roadTier = isV2 ? graphF32[i + 12]! : 0;
 
                 if (!adjacency.has(u)) adjacency.set(u, []);
                 adjacency.get(u)!.push({
@@ -98,6 +103,7 @@ export function useGraphSystem() {
                     pointCount,
                     maneuverType,
                     exitNumber,
+                    roadTier,
                 });
 
                 if (!uniqueNodes.has(u)) {

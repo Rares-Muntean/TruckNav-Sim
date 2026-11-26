@@ -1,5 +1,7 @@
 import { MinHeap } from "~/assets/utils/routing/MinHeap";
 import { getBearing, getAngleDiff } from "~/assets/utils/map/maths";
+import type { RouteMode } from "~/composables/Settings";
+import type { RoadEdge } from "~/types";
 
 const MAX_EDGES = 4000000;
 
@@ -31,7 +33,7 @@ function ensureCoordCache(nodeCoords: Map<number, [number, number]>) {
     }
 }
 
-function ensureEdgesMapped(adjacency: Map<number, any[]>) {
+function ensureEdgesMapped(adjacency: Map<number, RoadEdge[]>) {
     if (isEdgesMapped) return;
     globalNextEdgeId = 0;
 
@@ -63,7 +65,7 @@ function fastDistKm(
 const U_TURN_PENALTY = 100_000_000;
 function calculateTurnPenalty(
     currentArrivalHeading: number,
-    edge: any,
+    edge: RoadEdge,
     currentEdgeId: number,
     startEdgeId: number,
     startHeading: number | null,
@@ -151,11 +153,12 @@ export const calculateRoute = (
     start: number,
     possibleEnds: Set<number | undefined>,
     startHeading: number | null,
-    adjacency: Map<number, any[]>,
+    adjacency: Map<number, RoadEdge[]>,
     nodeCoords: Map<number, [number, number]>,
     startType: "road" | "yard" = "road",
     ownedDlcs: number[],
     targetLocation?: [number, number],
+    routeMode?: RouteMode,
 ): {
     path: [number, number][];
     nodeSequence: number[];
@@ -198,7 +201,9 @@ export const calculateRoute = (
     const startLat = flatCoords[start * 2 + 1]!;
 
     const distKm = fastDistKm(startLng, startLat, destLng, destLat);
-    const maxIterations = Math.max(200000, 70000 + distKm * 100000);
+    const baseMaxIter = Math.max(200000, 70000 + distKm * 100000);
+    const maxIterations =
+        routeMode && routeMode !== "shortest" ? baseMaxIter * 2 : baseMaxIter;
 
     const R = 300000;
     const DEG_TO_M = 5235.98775598;
@@ -256,7 +261,7 @@ export const calculateRoute = (
 
         for (let i = 0; i < neighbors.length; i++) {
             const edge = neighbors[i]!;
-            const neighborEdgeId = edge.edgeId;
+            const neighborEdgeId = edge.edgeId!;
 
             // DLC Check
             const dlcId = edge.requiredDlc || 0;
@@ -270,24 +275,47 @@ export const calculateRoute = (
                 continue;
             }
 
-            let stepCost = edge.weight || 1;
+            const baseWeight = edge.weight || 1;
+            let stepCost = baseWeight;
 
-            if (!edge.isFerry && ferryGraceCounter === 0) {
-                const nLng = flatCoords[neighborNodeId * 2]!;
-                const nLat = flatCoords[neighborNodeId * 2 + 1]!;
+            if (!edge.isFerry) {
+                if (routeMode === "best") {
+                    if (edge.roadTier === 3) stepCost = baseWeight * 1;
+                    if (edge.roadTier === 2) stepCost = baseWeight * 1.15;
+                    if (edge.roadTier === 1) stepCost = baseWeight * 1.35;
+                    if (edge.roadTier === 0) stepCost = baseWeight * 1.65;
 
-                stepCost += calculateTurnPenalty(
-                    currentArrivalHeading!,
-                    edge,
-                    currentEdgeId,
-                    START_EDGE_ID,
-                    startHeading,
-                    startType,
-                    cLng,
-                    cLat,
-                    nLng,
-                    nLat,
-                );
+                    if (
+                        edge.vPrefabId &&
+                        edge.vPrefabId > 0 &&
+                        edge.maneuverType !== 3
+                    ) {
+                        stepCost += 50;
+                    }
+                } else if (routeMode === "scenic") {
+                    if (edge.roadTier === 3) stepCost = baseWeight * 2.5;
+                    if (edge.roadTier === 2) stepCost = baseWeight * 1.6;
+                    if (edge.roadTier === 1) stepCost = baseWeight * 1.3;
+                    if (edge.roadTier === 0) stepCost = baseWeight * 1;
+                }
+
+                if (ferryGraceCounter === 0) {
+                    const nLng = flatCoords[neighborNodeId * 2]!;
+                    const nLat = flatCoords[neighborNodeId * 2 + 1]!;
+
+                    stepCost += calculateTurnPenalty(
+                        currentArrivalHeading!,
+                        edge,
+                        currentEdgeId,
+                        START_EDGE_ID,
+                        startHeading,
+                        startType,
+                        cLng,
+                        cLat,
+                        nLng,
+                        nLat,
+                    );
+                }
             }
 
             const tentativeG = currentG + Math.max(1, stepCost);

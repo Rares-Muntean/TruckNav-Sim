@@ -86,7 +86,7 @@ async function packData(
     }
 
     console.log("Building binary buffers");
-    const graphData: number[] = [];
+    const graphData: number[] = [-2, 2, 13, 0]; // [header, version number, stride, spare slot]
     const geometryData: number[] = [];
 
     let geomPointer = 0;
@@ -167,6 +167,7 @@ async function packData(
         const requiredDlc = props.required_dlc || 0;
         const maneuverType = props.maneuver_type || 0;
         const exitNumber = props.exit_number || 0;
+        const roadTier = props.road_tier ?? 0;
 
         graphData.push(
             uInt, // 0: Start node
@@ -181,6 +182,7 @@ async function packData(
             pointCount, // 9: Number of [lng, lat] pairs
             maneuverType, // 10: Maneuver id
             exitNumber, // 11: Roundabout exit number (0 if not roundabout)
+            roadTier, //12: RoadTier (local, freeway, etcs)
         );
 
         edgeCount++;

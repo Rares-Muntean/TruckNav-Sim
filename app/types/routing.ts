@@ -1,3 +1,5 @@
+import type { RouteMode } from "~/composables/Settings";
+
 export interface RoadEdge {
     to: number; // ID of the next Node this road leads to
     weight: number; // Distance
@@ -10,6 +12,8 @@ export interface RoadEdge {
     pointCount: number; // How many visual points are there on this road
     maneuverType: number; // Turn type
     exitNumber: number; // Roundabout exit number
+    roadTier: number; // Road tiers (local, freeway etc)
+    edgeId?: number;
 }
 
 export interface TripSegment {
@@ -33,6 +37,7 @@ export interface CalcMultiRoutePayload {
     selectedGame: "ets2" | "ats";
     sdkScale: number;
     avgSpeed: number;
+    routeMode?: RouteMode;
 }
 
 export interface NodeIndexItem {
