@@ -160,6 +160,8 @@
         "resetToDefaults": "Auf Standardwerte zurücksetzen",
         "releaseDate": "Veröffentlichungsdatum",
         "route": "Route",
+        "routeMode": "Routenführung",
+        "showDisc": "Kreis anzeigen",
         "selectComponents": "Komponenten auswählen",
         "showBuildings": "3D-Gebäude",
         "switchGameMaps": "Spiel & Karten wechseln",

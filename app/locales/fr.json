@@ -160,6 +160,8 @@
         "resetToDefaults": "Rétablir par défaut",
         "releaseDate": "Date de sortie",
         "route": "Itinéraire",
+        "routeMode": "Mode d'itinéraire",
+        "showDisc": "Afficher le disque",
         "selectComponents": "Sélectionner les composants",
         "showBuildings": "Bâtiments 3D",
         "switchGameMaps": "Changer de jeu & cartes",

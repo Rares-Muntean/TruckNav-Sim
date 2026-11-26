@@ -160,6 +160,8 @@
         "resetToDefaults": "Standaardinstellingen herstellen",
         "releaseDate": "Releasedatum",
         "route": "Route",
+        "routeMode": "Routeberekening",
+        "showDisc": "Schijf tonen",
         "selectComponents": "Componenten selecteren",
         "showBuildings": "3D-gebouwen",
         "switchGameMaps": "Wissel van game & kaarten",

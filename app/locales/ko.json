@@ -160,6 +160,8 @@
         "resetToDefaults": "기본값으로 초기화",
         "releaseDate": "출시일",
         "route": "경로",
+        "routeMode": "경로 탐색",
+        "showDisc": "디스크 표시",
         "selectComponents": "구성 요소 선택",
         "showBuildings": "3D 건물",
         "switchGameMaps": "게임 및 지도 변경",

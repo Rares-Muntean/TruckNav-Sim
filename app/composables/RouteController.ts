@@ -806,7 +806,7 @@ export const useRouteController = (
                         10.5,
                         4,
                         11.5,
-                        11,
+                        9,
                     ],
                 },
             },

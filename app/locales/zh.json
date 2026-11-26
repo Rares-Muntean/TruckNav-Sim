@@ -160,6 +160,8 @@
         "resetToDefaults": "恢复默认设置",
         "releaseDate": "发布日期",
         "route": "路线",
+        "routeMode": "路径规划",
+        "showDisc": "显示圆盘",
         "selectComponents": "选择组件",
         "showBuildings": "3D 建筑",
         "switchGameMaps": "切换游戏与地图",

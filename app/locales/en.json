@@ -160,6 +160,8 @@
         "resetToDefaults": "Reset to Defaults",
         "releaseDate": "Release Date",
         "route": "Route",
+        "routeMode": "Routing",
+        "showDisc": "Show Disc",
         "selectComponents": "Select Components",
         "showBuildings": "3D Buildings",
         "switchGameMaps": "Switch Game & Maps",

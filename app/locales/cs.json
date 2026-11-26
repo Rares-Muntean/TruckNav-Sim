@@ -160,6 +160,8 @@
         "resetToDefaults": "Obnovit výchozí nastavení",
         "releaseDate": "Datum vydání",
         "route": "Trasa",
+        "routeMode": "Režim trasy",
+        "showDisc": "Zobrazit disk",
         "selectComponents": "Vybrat prvky",
         "showBuildings": "3D budovy",
         "switchGameMaps": "Přepnout hru a mapy",
