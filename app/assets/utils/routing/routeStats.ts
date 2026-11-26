@@ -154,11 +154,11 @@ export function buildRouteStatsCache(
                 ?.find((edge) => edge.to === nodeSequence[i + 1]);
             if (!road) continue;
 
-            let speed = isAts ? 60 : 48;
+            let speed = isAts ? 60 : 50;
             if (road.isFerry) speed = 35;
-            else if (road.roadTier === 3) speed = isAts ? 105 : 82;
-            else if (road.roadTier === 2) speed = isAts ? 85 : 70;
-            else if (road.roadTier === 1) speed = isAts ? 50 : 40;
+            else if (road.roadTier === 3) speed = isAts ? 112 : 85;
+            else if (road.roadTier === 2) speed = isAts ? 88 : 74;
+            else if (road.roadTier === 1) speed = isAts ? 55 : 45;
 
             const w = road.weight || 1;
             totalTime += w / speed;
@@ -166,14 +166,15 @@ export function buildRouteStatsCache(
         }
 
         if (totalTime > 0) roadBase = totalWeight / totalTime;
-        if (routeMode === "shortest") roadBase *= 0.93;
-        else if (routeMode === "scenic") roadBase *= 0.86;
+        if (routeMode === "shortest") roadBase *= 0.985;
+        else if (routeMode === "scenic") roadBase *= 1;
     }
 
-    const driverPace =
-        avgSpeed > 45 ? Math.max(0.8, Math.min(1.2, avgSpeed / roadBase)) : 1.0;
+    const rawPace = avgSpeed > 45 ? avgSpeed / defaultHighway : 1.0;
+    const driverPace = Math.max(0.85, Math.min(1.15, 1 + (rawPace - 1) * 0.35));
 
     const highwaySpeed = roadBase * driverPace;
+
     const baseCity = isAts ? 40 : 32;
     const citySpeed = baseCity * (1 + (driverPace - 1) * 0.4);
     const speeds = { highway: highwaySpeed, city: citySpeed };

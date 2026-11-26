@@ -96,9 +96,6 @@ function calculateTurnPenalty(
         }
 
         if (angleDiff > 2.35) return U_TURN_PENALTY;
-        if (angleDiff > 1.5) return 10_000;
-        if (angleDiff > 1.0) return 1000;
-        if (angleDiff > 0.4) return 500;
     }
 
     return 0;
@@ -280,22 +277,14 @@ export const calculateRoute = (
 
             if (!edge.isFerry) {
                 if (routeMode === "best") {
-                    if (edge.roadTier === 3) stepCost = baseWeight * 1;
-                    if (edge.roadTier === 2) stepCost = baseWeight * 1.15;
-                    if (edge.roadTier === 1) stepCost = baseWeight * 1.35;
-                    if (edge.roadTier === 0) stepCost = baseWeight * 1.65;
-
-                    if (
-                        edge.vPrefabId &&
-                        edge.vPrefabId > 0 &&
-                        edge.maneuverType !== 3
-                    ) {
-                        stepCost += 50;
-                    }
+                    if (edge.roadTier === 3) stepCost = baseWeight * 1.0;
+                    if (edge.roadTier === 2) stepCost = baseWeight * 1.08;
+                    if (edge.roadTier === 1) stepCost = baseWeight * 1.18;
+                    if (edge.roadTier === 0) stepCost = baseWeight * 1.28;
                 } else if (routeMode === "scenic") {
-                    if (edge.roadTier === 3) stepCost = baseWeight * 2.5;
+                    if (edge.roadTier === 3) stepCost = baseWeight * 2;
                     if (edge.roadTier === 2) stepCost = baseWeight * 1.6;
-                    if (edge.roadTier === 1) stepCost = baseWeight * 1.3;
+                    if (edge.roadTier === 1) stepCost = baseWeight * 1.2;
                     if (edge.roadTier === 0) stepCost = baseWeight * 1;
                 }
 
